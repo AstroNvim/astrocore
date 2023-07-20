@@ -105,7 +105,7 @@ local cancelled_message = { { "Update cancelled", "WarningMsg" } }
 --- Sync Packer and then update Mason
 function M.update_packages()
   require("lazy").sync { wait = true }
-  require("astronvim.utils.mason").update_all()
+  require("astrocore.mason").update_all()
 end
 
 --- Create a table of options for the currently installed AstroNvim version
