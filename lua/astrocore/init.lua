@@ -2,8 +2,10 @@ local M = {}
 
 local utils = require "astrocore.utils"
 
+M.config = require "astrocore.config"
+
 function M.setup(opts)
-  M.config = vim.tbl_deep_extend("force", require "astrocore.config", opts)
+  M.config = vim.tbl_deep_extend("force", M.config, opts)
 
   -- mappings
   utils.set_mappings(M.config.mappings)
