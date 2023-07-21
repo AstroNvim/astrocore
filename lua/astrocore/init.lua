@@ -3,7 +3,7 @@ local M = {}
 local utils = require "astrocore.utils"
 
 function M.setup(opts)
-  M.config = opts
+  M.config = vim.tbl_deep_extend("force", require "astrocore.config", opts)
 
   -- mappings
   utils.set_mappings(M.config.mappings)
@@ -33,7 +33,7 @@ function M.setup(opts)
     desc = "Update buffers when adding new buffers",
     group = bufferline_group,
     callback = function(args)
-      local buf_utils = require "astronvim.utils.buffer"
+      local buf_utils = require "astrocore.buffer"
       if not vim.t.bufs then vim.t.bufs = {} end
       if not buf_utils.is_valid(args.buf) then return end
       if args.buf ~= buf_utils.current_buf then
@@ -67,7 +67,7 @@ function M.setup(opts)
           end
         end
       end
-      vim.t.bufs = vim.tbl_filter(require("astronvim.utils.buffer").is_valid, vim.t.bufs)
+      vim.t.bufs = vim.tbl_filter(require("astrocore.buffer").is_valid, vim.t.bufs)
       if removed then utils.event "BufsUpdated" end
       vim.cmd.redrawtabline()
     end,
@@ -214,7 +214,7 @@ function M.setup(opts)
       desc = "Save session on close",
       group = augroup("resession_auto_save", { clear = true }),
       callback = function()
-        local buf_utils = require "astronvim.utils.buffer"
+        local buf_utils = require "astrocore.buffer"
         local autosave = buf_utils.sessions.autosave
         if autosave and buf_utils.is_valid_session() then
           local save = require("resession").save
