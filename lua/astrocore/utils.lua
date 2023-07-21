@@ -39,7 +39,7 @@ function M.reload(quiet)
     end
   end
   if not was_modifiable then vim.opt.modifiable = false end
-  require("lazy").reload { plugins = { M.get_plugin "astrocore" } }
+  require("lazy").reload { plugins = { M.get_plugin "astrocore", M.get_plugin "astroui" } }
   if not quiet then -- if not quiet, then notify of result
     if success then
       M.notify("AstroNvim successfully reloaded", vim.log.levels.INFO)
