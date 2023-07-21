@@ -11,4 +11,5 @@ return {
       buftypes = {}, -- buffer types to ignore sessions
     },
   },
+  polish = nil,
 }

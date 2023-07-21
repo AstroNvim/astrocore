@@ -281,6 +281,10 @@ function M.setup(opts)
   cmd("AstroUpdate", function() require("astrocore.updater").update() end, { desc = "Update AstroNvim" })
   cmd("AstroVersion", function() require("astrocore.updater").version() end, { desc = "Check AstroNvim Version" })
   cmd("AstroReload", function() utils.reload() end, { desc = "Reload AstroNvim (Experimental)" })
+
+  vim.schedule(function()
+    if type(M.config.polish) == "function" then M.config.polish() end
+  end)
 end
 
 return M
