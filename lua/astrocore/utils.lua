@@ -10,6 +10,8 @@
 
 local M = {}
 
+M.user_terminals = {}
+
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table
@@ -137,7 +139,7 @@ end
 --- Toggle a user terminal if it exists, if not then create a new one and save it
 ---@param opts string|table A terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
 function M.toggle_term_cmd(opts)
-  local terms = astronvim.user_terminals
+  local terms = M.user_terminals
   -- if a command string is provided, create a basic table for Terminal:new() options
   if type(opts) == "string" then opts = { cmd = opts, hidden = true } end
   local num = vim.v.count > 0 and vim.v.count or 1
