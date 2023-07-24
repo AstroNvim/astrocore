@@ -1,5 +1,8 @@
 return {
+  autocmds = {},
+  commands = {},
   mappings = {},
+  on_keys = {},
   sessions = {
     autosave = {
       last = true, -- auto save last session
@@ -11,5 +14,4 @@ return {
       buftypes = {}, -- buffer types to ignore sessions
     },
   },
-  polish = nil,
 }
