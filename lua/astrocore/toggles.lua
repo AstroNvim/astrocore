@@ -17,8 +17,9 @@ local function ui_notify(silent, ...) return not silent and require("astrocore.u
 --- Toggle notifications for UI toggles
 ---@param silent? boolean if true then don't sent a notification
 function M.notifications(silent)
-  vim.g.ui_notifications_enabled = not vim.g.ui_notifications_enabled
-  ui_notify(silent, string.format("Notifications %s", bool2str(vim.g.ui_notifications_enabled)))
+  local features = require("astrocore").config.features
+  features.notifications = not features.notifications
+  ui_notify(silent, string.format("Notifications %s", bool2str(features.notifications)))
 end
 
 --- Toggle autopairs
@@ -31,7 +32,7 @@ function M.autopairs(silent)
     else
       autopairs.disable()
     end
-    vim.g.autopairs_enabled = autopairs.state.disabled
+    require("astrocore").config.features.autopairs = autopairs.state.disabled
     ui_notify(silent, string.format("autopairs %s", bool2str(not autopairs.state.disabled)))
   else
     ui_notify(silent, "autopairs not available")
@@ -48,9 +49,10 @@ end
 --- Toggle cmp entrirely
 ---@param silent? boolean if true then don't sent a notification
 function M.cmp(silent)
-  vim.g.cmp_enabled = not vim.g.cmp_enabled
+  local features = require("astrocore").config.features
+  features.cmp = not features.cmp
   local ok, _ = pcall(require, "cmp")
-  ui_notify(silent, ok and string.format("completion %s", bool2str(vim.g.cmp_enabled)) or "completion not available")
+  ui_notify(silent, ok and string.format("completion %s", bool2str(features.cmp)) or "completion not available")
 end
 
 --- Toggle showtabline=2|0
@@ -180,9 +182,10 @@ end
 --- Toggle URL/URI syntax highlighting rules
 ---@param silent? boolean if true then don't sent a notification
 function M.url_match(silent)
-  vim.g.highlighturl_enabled = not vim.g.highlighturl_enabled
+  local features = require("astrocore").config.features
+  features.highlighturl = not features.highlighturl
   require("astrocore.utils").set_url_match()
-  ui_notify(silent, string.format("URL highlighting %s", bool2str(vim.g.highlighturl_enabled)))
+  ui_notify(silent, string.format("URL highlighting %s", bool2str(features.highlighturl)))
 end
 
 local last_active_foldcolumn

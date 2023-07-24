@@ -295,7 +295,7 @@ end
 --- Add syntax matching rules for highlighting URLs/URIs
 function M.set_url_match()
   M.delete_url_match()
-  if vim.g.highlighturl_enabled then vim.fn.matchadd("HighlightURL", M.url_matcher, 15) end
+  if require("astrocore").config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15) end
 end
 
 --- Run a shell command and capture the output and if the command succeeded or failed
