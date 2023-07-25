@@ -22,35 +22,19 @@ function M.extend_tbl(default, opts)
 end
 
 --- Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
----@param quiet? boolean Whether or not to notify on completion of reloading
----@return boolean # True if the reload was successful, False otherwise
-function M.reload(quiet)
+function M.reload()
   local was_modifiable = vim.opt.modifiable:get()
+
+  local reload_module = require("plenary.reload").reload_module
+  reload_module "astronivm.options"
+  if package.loaded["config.options"] then reload_module "config.options" end
+
   if not was_modifiable then vim.opt.modifiable = true end
-  local core_modules = { "astronvim.bootstrap", "astronvim.options" }
-  local modules = vim.tbl_filter(function(module) return module:find "^user%." end, vim.tbl_keys(package.loaded))
-
-  vim.tbl_map(require("plenary.reload").reload_module, vim.list_extend(modules, core_modules))
-
-  local success = true
-  for _, module in ipairs(core_modules) do
-    local status_ok, fault = pcall(require, module)
-    if not status_ok then
-      vim.api.nvim_err_writeln("Failed to load " .. module .. "\n\n" .. fault)
-      success = false
-    end
-  end
+  local success, fault = pcall(require, "astronvim.options")
+  if not success then vim.api.nvim_err_writeln("Failed to load " .. module .. "\n\n" .. fault) end
   if not was_modifiable then vim.opt.modifiable = false end
   require("lazy").reload { plugins = { M.get_plugin "astrocore", M.get_plugin "astroui" } }
-  if not quiet then -- if not quiet, then notify of result
-    if success then
-      M.notify("AstroNvim successfully reloaded", vim.log.levels.INFO)
-    else
-      M.notify("Error reloading AstroNvim...", vim.log.levels.ERROR)
-    end
-  end
   vim.cmd.doautocmd "ColorScheme"
-  return success
 end
 
 --- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `lst`)
