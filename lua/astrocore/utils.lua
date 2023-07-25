@@ -21,6 +21,12 @@ function M.extend_tbl(default, opts)
   return default and vim.tbl_deep_extend("force", default, opts) or opts
 end
 
+--- Sync Lazy and then update Mason
+function M.update_packages()
+  require("lazy").sync { wait = true }
+  require("astrocore.mason").update_all()
+end
+
 --- Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
 function M.reload()
   local was_modifiable = vim.opt.modifiable:get()
