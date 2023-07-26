@@ -79,19 +79,9 @@ end
 ---@return table properties # the highlight group properties
 function M.get_hlgroup(name, fallback)
   if vim.fn.hlexists(name) == 1 then
-    local hl
-    if vim.api.nvim_get_hl then -- check for new neovim 0.9 API
-      hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-      if not hl.fg then hl.fg = "NONE" end
-      if not hl.bg then hl.bg = "NONE" end
-    else
-      hl = vim.api.nvim_get_hl_by_name(name, vim.o.termguicolors)
-      if not hl.foreground then hl.foreground = "NONE" end
-      if not hl.background then hl.background = "NONE" end
-      hl.fg, hl.bg = hl.foreground, hl.background
-      hl.ctermfg, hl.ctermbg = hl.fg, hl.bg
-      hl.sp = hl.special
-    end
+    local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+    if not hl.fg then hl.fg = "NONE" end
+    if not hl.bg then hl.bg = "NONE" end
     return hl
   end
   return fallback or {}
@@ -114,7 +104,7 @@ end
 --- Open a URL under the cursor with the current operating system
 ---@param path string The path of the file to open with the system opener
 function M.system_open(path)
-  -- TODO: REMOVE WHEN DROPPING NEOVIM <0.10
+  -- TODO: remove deprecated method check after dropping support for neovim v0.9
   if vim.ui.open then return vim.ui.open(path) end
   local cmd
   if vim.fn.has "win32" == 1 and vim.fn.executable "explorer" == 1 then
