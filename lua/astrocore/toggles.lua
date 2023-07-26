@@ -12,7 +12,7 @@
 local M = {}
 
 local function bool2str(bool) return bool and "on" or "off" end
-local function ui_notify(silent, ...) return not silent and require("astrocore.utils").notify(...) end
+local function ui_notify(silent, ...) return not silent and require("astrocore").notify(...) end
 
 --- Toggle notifications for UI toggles
 ---@param silent? boolean if true then don't sent a notification
@@ -184,7 +184,7 @@ end
 function M.url_match(silent)
   local features = require("astrocore").config.features
   features.highlighturl = not features.highlighturl
-  require("astrocore.utils").set_url_match()
+  require("astrocore").set_url_match()
   ui_notify(silent, string.format("URL highlighting %s", bool2str(features.highlighturl)))
 end
 

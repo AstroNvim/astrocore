@@ -10,9 +10,9 @@
 
 local M = {}
 
-local utils = require "astrocore.utils"
+local astro = require "astrocore"
 
-M.sessions = require("astrocore").config.sessions
+M.sessions = astro.config.sessions
 
 --- Placeholders for keeping track of most recent and previous buffer
 M.current_buf, M.last_buf = nil, nil
@@ -84,7 +84,7 @@ function M.move(n)
     end
   end
   vim.t.bufs = bufs -- set buffers
-  utils.event "BufsUpdated"
+  astro.event "BufsUpdated"
   vim.cmd.redrawtabline() -- redraw tabline
 end
 
@@ -104,7 +104,7 @@ end
 ---@param tabnr number The position of the buffer to navigate to
 function M.nav_to(tabnr)
   if tabnr > #vim.t.bufs or tabnr < 1 then
-    utils.notify(("No tab #%d"):format(tabnr), vim.log.levels.WARN)
+    astro.notify(("No tab #%d"):format(tabnr), vim.log.levels.WARN)
   else
     vim.cmd.b(vim.t.bufs[tabnr])
   end
@@ -116,10 +116,10 @@ function M.prev()
     if M.last_buf then
       vim.cmd.b(M.last_buf)
     else
-      utils.notify("No previous buffer found", vim.log.levels.WARN)
+      astro.notify("No previous buffer found", vim.log.levels.WARN)
     end
   else
-    utils.notify("Must be in a main editor window to switch the window buffer", vim.log.levels.ERROR)
+    astro.notify("Must be in a main editor window to switch the window buffer", vim.log.levels.ERROR)
   end
 end
 
@@ -127,7 +127,7 @@ end
 ---@param bufnr? number The buffer to close or the current buffer if not provided
 ---@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
 function M.close(bufnr, force)
-  if utils.is_available "mini.bufremove" and M.is_valid(bufnr) and #vim.t.bufs > 1 then
+  if astro.is_available "mini.bufremove" and M.is_valid(bufnr) and #vim.t.bufs > 1 then
     if not force and vim.api.nvim_get_option_value("modified", { buf = bufnr }) then
       local bufname = vim.fn.expand "%"
       local empty = bufname == ""
@@ -190,7 +190,7 @@ function M.sort(compare_func, skip_autocmd)
     local bufs = vim.t.bufs
     table.sort(bufs, compare_func)
     vim.t.bufs = bufs
-    if not skip_autocmd then utils.event "BufsUpdated" end
+    if not skip_autocmd then astro.event "BufsUpdated" end
     vim.cmd.redrawtabline()
     return true
   end
@@ -201,7 +201,7 @@ end
 function M.close_tab()
   if #vim.api.nvim_list_tabpages() > 1 then
     vim.t.bufs = nil
-    utils.event "BufsUpdated"
+    astro.event "BufsUpdated"
     vim.cmd.tabclose()
   end
 end
@@ -212,8 +212,7 @@ M.comparator = {}
 local fnamemodify = vim.fn.fnamemodify
 local function bufinfo(bufnr) return vim.fn.getbufinfo(bufnr)[1] end
 local function unique_path(bufnr)
-  return require("astronvim.utils.status.provider").unique_path() { bufnr = bufnr }
-    .. fnamemodify(bufinfo(bufnr).name, ":t")
+  return require("astroui.status.provider").unique_path() { bufnr = bufnr } .. fnamemodify(bufinfo(bufnr).name, ":t")
 end
 
 --- Comparator of two buffer numbers

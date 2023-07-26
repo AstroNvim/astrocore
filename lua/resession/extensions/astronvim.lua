@@ -36,7 +36,7 @@ M.on_load = function(data)
   buf_utils.current_buf = new_bufnrs[data.current_buf]
   buf_utils.last_buf = new_bufnrs[data.last_buf]
 
-  require("astrocore.utils").event "BufsUpdated"
+  require("astrocore").event "BufsUpdated"
 
   if vim.fn.bufnr() ~= buf_utils.current_buf then vim.cmd.b(buf_utils.current_buf) end
 end

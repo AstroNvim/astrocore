@@ -5,15 +5,14 @@
 -- This module can be loaded with `local mason_utils = require("astrocore.mason")`
 --
 -- @module astrocore.mason
--- @see astrocore.utils
+-- @see astrocore
 -- @copyright 2022
 -- @license GNU General Public License v3.0
 
 local M = {}
 
-local utils = require "astrocore.utils"
-local astroevent = utils.event
-local function mason_notify(msg, type) utils.notify(msg, type, { title = "Mason" }) end
+local astro = require "astrocore"
+local function mason_notify(msg, type) astro.notify(msg, type, { title = "Mason" }) end
 
 --- Update specified mason packages, or just update the registries if no packages are listed
 ---@param pkg_names? string|string[] The package names as defined in Mason (Not mason-lspconfig or mason-null-ls) if the value is nil then it will just update the registries
@@ -81,7 +80,7 @@ function M.update_all()
 
       if no_pkgs then
         mason_notify "No updates available"
-        astroevent "MasonUpdateCompleted"
+        astro.event "MasonUpdateCompleted"
       else
         local updated = false
         for _, pkg in ipairs(installed_pkgs) do
@@ -93,7 +92,7 @@ function M.update_all()
                 running = running - 1
                 if running == 0 then
                   mason_notify "Update Complete"
-                  astroevent "MasonUpdateCompleted"
+                  astro.event "MasonUpdateCompleted"
                 end
               end)
             else
@@ -104,7 +103,7 @@ function M.update_all()
                 else
                   mason_notify "No updates available"
                 end
-                astroevent "MasonUpdateCompleted"
+                astro.event "MasonUpdateCompleted"
               end
             end
           end)
