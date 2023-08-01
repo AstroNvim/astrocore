@@ -5,7 +5,7 @@
 -- This module can be loaded with `local ui = require("astrocore.toggles")`
 --
 -- @module astrocore.toggles
--- @see astrocore.toggles
+-- @see astrocore
 -- @copyright 2022
 -- @license GNU General Public License v3.0
 
