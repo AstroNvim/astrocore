@@ -6,7 +6,7 @@
 --
 -- @module astrocore.mason
 -- @see astrocore
--- @copyright 2022
+-- @copyright 2023
 -- @license GNU General Public License v3.0
 
 local M = {}
