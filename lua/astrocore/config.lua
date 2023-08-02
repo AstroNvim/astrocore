@@ -8,6 +8,7 @@
 -- @copyright 2023
 -- @license GNU General Public License v3.0
 
+---@type AstroCoreConfig
 return {
   autocmds = {},
   commands = {},

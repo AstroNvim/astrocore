@@ -321,6 +321,9 @@ function M.file_worktree(file, worktrees)
   end
 end
 
+--- Setup and configure AstroCore
+---@param opts AstroCoreConfig
+---@see astrocore.config
 function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts)
 
