@@ -1,17 +1,18 @@
---- ### AstroNvim Core Utilities
---
--- Various utility functions to use within AstroNvim and user configurations.
---
--- This module can be loaded with `local astro = require "astrocore"`
---
--- @module astrocore
--- @copyright 2023
--- @license GNU General Public License v3.0
-
+---AstroNvim Core Utilities
+---
+---Various utility functions to use within AstroNvim and user configurations.
+---
+---This module can be loaded with `local astro = require "astrocore"`
+---
+---copyright 2023
+---license GNU General Public License v3.0
+---@class astrocore
 local M = {}
 
+--- The configuration as set by the user through the `setup()` function
 M.config = require "astrocore.config"
-
+--- A table to manage ToggleTerm terminals created by the user, indexed by the command run and then the instance number
+---@type table<string,table<integer,table>>
 M.user_terminals = {}
 
 --- Merge extended options with a default table of options
@@ -203,6 +204,10 @@ function M.load_plugin_with_func(plugin, module, func_names)
   end
 end
 
+--- A placeholder variable used to queue section names to be registered by which-key
+---@type table?
+M.which_key_queue = nil
+
 --- Register queued which-key mappings
 function M.which_key_register()
   if M.which_key_queue then
@@ -322,7 +327,7 @@ function M.file_worktree(file, worktrees)
 end
 
 --- Setup and configure AstroCore
----@param opts AstroCoreConfig
+---@param opts AstroCoreOpts
 ---@see astrocore.config
 function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts)

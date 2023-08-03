@@ -1,14 +1,12 @@
---- ### Mason Utils
---
--- Mason related utility functions to use within AstroNvim and user configurations.
---
--- This module can be loaded with `local mason_utils = require("astrocore.mason")`
---
--- @module astrocore.mason
--- @see astrocore
--- @copyright 2023
--- @license GNU General Public License v3.0
-
+---Mason Utilities
+---
+---Mason related utility functions to use within AstroNvim and user configurations.
+---
+---This module can be loaded with `local mason_utils = require("astrocore.mason")`
+---
+---copyright 2023
+---license GNU General Public License v3.0
+---@class astrocore.mason
 local M = {}
 
 local astro = require "astrocore"

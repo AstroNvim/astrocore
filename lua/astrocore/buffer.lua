@@ -1,13 +1,12 @@
---- ### AstroNvim Buffer Utilities
---
--- Buffer management related utility functions
---
--- This module can be loaded with `local buffer_utils = require "astrocore.buffer"`
---
--- @module astrocore.buffer
--- @copyright 2023
--- @license GNU General Public License v3.0
-
+---AstroNvim Buffer Utilities
+---
+---Buffer management related utility functions
+---
+---This module can be loaded with `local buffer_utils = require "astrocore.buffer"`
+---
+---copyright 2023
+---license GNU General Public License v3.0
+---@class astrocore.buffer
 local M = {}
 
 local astro = require "astrocore"
@@ -89,7 +88,7 @@ function M.move(n)
 end
 
 --- Navigate left and right by n places in the bufferline
--- @param n number The number of tabs to navigate to (positive = right, negative = left)
+---@param n number The number of tabs to navigate to (positive = right, negative = left)
 function M.nav(n)
   local current = vim.api.nvim_get_current_buf()
   for i, v in ipairs(vim.t.bufs) do

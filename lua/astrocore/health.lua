@@ -1,3 +1,10 @@
+-- ### AstroNvim Health Checks
+--
+-- use with `:checkhealth astrocore`
+--
+-- copyright 2023
+-- license GNU General Public License v3.0
+
 local M = {}
 
 -- TODO: remove deprecated method check after dropping support for neovim v0.9

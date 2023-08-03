@@ -1,14 +1,12 @@
---- ### AstroNvim UI/UX Toggles
---
---  Utility functions for easy UI toggles.
---
--- This module can be loaded with `local ui = require("astrocore.toggles")`
---
--- @module astrocore.toggles
--- @see astrocore
--- @copyright 2023
--- @license GNU General Public License v3.0
-
+---AstroNvim UI/UX Toggles
+---
+--- Utility functions for easy UI toggles.
+---
+---This module can be loaded with `local ui = require("astrocore.toggles")`
+---
+---copyright 2023
+---license GNU General Public License v3.0
+---@class astrocore.toggles
 local M = {}
 
 local function bool2str(bool) return bool and "on" or "off" end
