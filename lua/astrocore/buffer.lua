@@ -180,11 +180,11 @@ function M.close_right(force)
 end
 
 --- Sort a the buffers in the current tab based on some comparator
----@param compare_func string|function a string of a comparator defined in require("astrocore.buffer").comparator or a custom comparator function
+---@param compare_func string|function a string of a comparator defined in require("astrocore.buffer.comparator") or a custom comparator function
 ---@param skip_autocmd boolean|nil whether or not to skip triggering AstroBufsUpdated autocmd event
 ---@return boolean # Whether or not the buffers were sorted
 function M.sort(compare_func, skip_autocmd)
-  if type(compare_func) == "string" then compare_func = M.comparator[compare_func] end
+  if type(compare_func) == "string" then compare_func = require("astrocore.buffer.comparator")[compare_func] end
   if type(compare_func) == "function" then
     local bufs = vim.t.bufs
     table.sort(bufs, compare_func)
@@ -204,48 +204,5 @@ function M.close_tab()
     vim.cmd.tabclose()
   end
 end
-
---- A table of buffer comparator functions
-M.comparator = {}
-
-local fnamemodify = vim.fn.fnamemodify
-local function bufinfo(bufnr) return vim.fn.getbufinfo(bufnr)[1] end
-local function unique_path(bufnr)
-  return require("astroui.status.provider").unique_path() { bufnr = bufnr } .. fnamemodify(bufinfo(bufnr).name, ":t")
-end
-
---- Comparator of two buffer numbers
----@param bufnr_a integer buffer number A
----@param bufnr_b integer buffer number B
----@return boolean comparison true if A is sorted before B, false if B should be sorted before A
-function M.comparator.bufnr(bufnr_a, bufnr_b) return bufnr_a < bufnr_b end
-
---- Comparator of two buffer numbers based on the file extensions
----@param bufnr_a integer buffer number A
----@param bufnr_b integer buffer number B
----@return boolean comparison true if A is sorted before B, false if B should be sorted before A
-function M.comparator.extension(bufnr_a, bufnr_b)
-  return fnamemodify(bufinfo(bufnr_a).name, ":e") < fnamemodify(bufinfo(bufnr_b).name, ":e")
-end
-
---- Comparator of two buffer numbers based on the full path
----@param bufnr_a integer buffer number A
----@param bufnr_b integer buffer number B
----@return boolean comparison true if A is sorted before B, false if B should be sorted before A
-function M.comparator.full_path(bufnr_a, bufnr_b)
-  return fnamemodify(bufinfo(bufnr_a).name, ":p") < fnamemodify(bufinfo(bufnr_b).name, ":p")
-end
-
---- Comparator of two buffers based on their unique path
----@param bufnr_a integer buffer number A
----@param bufnr_b integer buffer number B
----@return boolean comparison true if A is sorted before B, false if B should be sorted before A
-function M.comparator.unique_path(bufnr_a, bufnr_b) return unique_path(bufnr_a) < unique_path(bufnr_b) end
-
---- Comparator of two buffers based on modification date
----@param bufnr_a integer buffer number A
----@param bufnr_b integer buffer number B
----@return boolean comparison true if A is sorted before B, false if B should be sorted before A
-function M.comparator.modified(bufnr_a, bufnr_b) return bufinfo(bufnr_a).lastused > bufinfo(bufnr_b).lastused end
 
 return M
