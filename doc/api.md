@@ -415,15 +415,6 @@ function astrocore.buffer.close_tab()
 
  Close the current tab
 
-### comparator
-
-
-```lua
-table
-```
-
- A table of buffer comparator functions
-
 ### current_buf
 
 
@@ -539,11 +530,103 @@ function astrocore.buffer.sort(compare_func: string|function, skip_autocmd: bool
 
  Sort a the buffers in the current tab based on some comparator
 
-*param* `compare_func` — a string of a comparator defined in require("astrocore.buffer").comparator or a custom comparator function
+*param* `compare_func` — a string of a comparator defined in require("astrocore.buffer.comparator") or a custom comparator function
 
 *param* `skip_autocmd` — whether or not to skip triggering AstroBufsUpdated autocmd event
 
 *return* — Whether or not the buffers were sorted
+
+
+## astrocore.buffer.comparator
+
+AstroNvim Buffer Comparators
+
+Buffer comparator functions for sorting buffers
+
+This module can be loaded with `local buffer_comparators = require "astrocore.buffer.comparator"`
+
+copyright 2023
+license GNU General Public License v3.0
+
+### bufnr
+
+
+```lua
+function astrocore.buffer.comparator.bufnr(bufnr_a: integer, bufnr_b: integer)
+  -> comparison: boolean
+```
+
+ Comparator of two buffer numbers
+
+*param* `bufnr_a` — buffer number A
+
+*param* `bufnr_b` — buffer number B
+
+*return* `comparison` — true if A is sorted before B, false if B should be sorted before A
+
+### extension
+
+
+```lua
+function astrocore.buffer.comparator.extension(bufnr_a: integer, bufnr_b: integer)
+  -> comparison: boolean
+```
+
+ Comparator of two buffer numbers based on the file extensions
+
+*param* `bufnr_a` — buffer number A
+
+*param* `bufnr_b` — buffer number B
+
+*return* `comparison` — true if A is sorted before B, false if B should be sorted before A
+
+### full_path
+
+
+```lua
+function astrocore.buffer.comparator.full_path(bufnr_a: integer, bufnr_b: integer)
+  -> comparison: boolean
+```
+
+ Comparator of two buffer numbers based on the full path
+
+*param* `bufnr_a` — buffer number A
+
+*param* `bufnr_b` — buffer number B
+
+*return* `comparison` — true if A is sorted before B, false if B should be sorted before A
+
+### modified
+
+
+```lua
+function astrocore.buffer.comparator.modified(bufnr_a: integer, bufnr_b: integer)
+  -> comparison: boolean
+```
+
+ Comparator of two buffers based on modification date
+
+*param* `bufnr_a` — buffer number A
+
+*param* `bufnr_b` — buffer number B
+
+*return* `comparison` — true if A is sorted before B, false if B should be sorted before A
+
+### unique_path
+
+
+```lua
+function astrocore.buffer.comparator.unique_path(bufnr_a: integer, bufnr_b: integer)
+  -> comparison: boolean
+```
+
+ Comparator of two buffers based on their unique path
+
+*param* `bufnr_a` — buffer number A
+
+*param* `bufnr_b` — buffer number B
+
+*return* `comparison` — true if A is sorted before B, false if B should be sorted before A
 
 
 ## astrocore.mason
