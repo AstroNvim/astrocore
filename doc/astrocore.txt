@@ -1,14 +1,820 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 02
+*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 04
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
 
 1. astrocore                                             |astrocore-astrocore|
+2. Lua API                                                 |astrocore-lua-api|
+  - astrocore                                    |astrocore-lua-api-astrocore|
+  - astrocore.buffer                      |astrocore-lua-api-astrocore.buffer|
+  - astrocore.mason                        |astrocore-lua-api-astrocore.mason|
+  - astrocore.toggles                    |astrocore-lua-api-astrocore.toggles|
 
 ==============================================================================
 1. astrocore                                             *astrocore-astrocore*
 
 Core tooling built for AstroNvim
+
+
+==============================================================================
+2. Lua API                                                 *astrocore-lua-api*
+
+astrocore API documentation
+
+
+ASTROCORE                                        *astrocore-lua-api-astrocore*
+
+AstroNvim Core Utilities
+
+Various utility functions to use within AstroNvim and user configurations.
+
+This module can be loaded with `local astro = require "astrocore"`
+
+copyright 2023 license GNU General Public License v3.0
+
+
+ALPHA_BUTTON ~
+
+>lua
+    function astrocore.alpha_button(sc: string, txt: string)
+      -> table
+<
+
+Create a button entity to use with the alpha dashboard
+
+_param_ `sc` — The keybinding string to convert to a button
+
+_param_ `txt` — The explanation text of what the keybinding does
+
+_return_ — A button entity table for an alpha configuration
+
+
+CMD ~
+
+>lua
+    function astrocore.cmd(cmd: string|string[], show_error?: boolean)
+      -> string|nil
+<
+
+Run a shell command and capture the output and if the command succeeded or
+failed
+
+_param_ `cmd` — The terminal command to execute
+
+_param_ `show_error` — Whether or not to show an unsuccessful command as an
+error to the user
+
+_return_ — The result of a successfully executed command or nil
+
+
+CONDITIONAL_FUNC ~
+
+>lua
+    function astrocore.conditional_func(func: function, condition: boolean, ...any)
+      -> result: any
+<
+
+Call function if a condition is met
+
+_param_ `func` — The function to run
+
+_param_ `condition` — Whether to run the function or not
+
+_return_ `result` — the result of the function running or nil
+
+
+CONFIG ~
+
+>lua
+    AstroCoreOpts
+<
+
+The configuration as set by the user through the `setup()` function
+
+
+DELETE_URL_MATCH ~
+
+>lua
+    function astrocore.delete_url_match()
+<
+
+Delete the syntax matching rules for URLs/URIs if set
+
+
+EMPTY_MAP_TABLE ~
+
+>lua
+    function astrocore.empty_map_table()
+      -> table<string, table>
+<
+
+Get an empty table of mappings with a key for each map mode
+
+_return_ — a table with entries for each map mode
+
+
+EVENT ~
+
+>lua
+    function astrocore.event(event: string)
+<
+
+Trigger an AstroNvim user event
+
+_param_ `event` — The event name to be appended to Astro
+
+
+EXTEND_TBL ~
+
+>lua
+    function astrocore.extend_tbl(default?: table, opts?: table)
+      -> table
+<
+
+Merge extended options with a default table of options
+
+_param_ `default` — The default table that you want to merge into
+
+_param_ `opts` — The new options that should be merged with the default table
+
+_return_ — The merged table
+
+
+FILE_WORKTREE ~
+
+>lua
+    function astrocore.file_worktree(file?: string, worktrees?: table<string, string>[])
+      -> table<string, string>|nil
+<
+
+Get the first worktree that a file belongs to
+
+_param_ `file` — the file to check, defaults to the current file
+
+_param_ `worktrees` — an array like table of worktrees with entries
+`toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
+
+_return_ — a table specifying the `toplevel` and `gitdir` of a worktree or
+nil if not found
+
+
+GET_HLGROUP ~
+
+>lua
+    function astrocore.get_hlgroup(name: string, fallback?: table)
+      -> properties: table
+<
+
+Get highlight properties for a given highlight name
+
+_param_ `name` — The highlight group name
+
+_param_ `fallback` — The fallback highlight properties
+
+_return_ `properties` — the highlight group properties
+
+
+GET_PLUGIN ~
+
+>lua
+    function astrocore.get_plugin(plugin: string)
+      -> available: LazyPlugin?
+<
+
+Get a plugin spec from lazy
+
+_param_ `plugin` — The plugin to search for
+
+_return_ `available` — The found plugin spec from Lazy
+
+
+IS_AVAILABLE ~
+
+>lua
+    function astrocore.is_available(plugin: string)
+      -> available: boolean
+<
+
+Check if a plugin is defined in lazy. Useful with lazy loading when a plugin is
+not necessarily loaded yet
+
+_param_ `plugin` — The plugin to search for
+
+_return_ `available` — Whether the plugin is available
+
+
+LIST_INSERT_UNIQUE ~
+
+>lua
+    function astrocore.list_insert_unique(lst: any[]|nil, vals: any)
+      -> any[]
+<
+
+Insert one or more values into a list like table and maintain that you do not
+insert non-unique values (THIS MODIFIES `lst`)
+
+_param_ `lst` — The list like table that you want to insert into
+
+_param_ `vals` — Either a list like table of values to be inserted or a
+single value to be inserted
+
+_return_ — The modified list like table
+
+
+LOAD_PLUGIN_WITH_FUNC ~
+
+>lua
+    function astrocore.load_plugin_with_func(plugin: string, module: table, func_names: string|string[])
+<
+
+A helper function to wrap a module function to require a plugin before running
+
+_param_ `plugin` — The plugin to call `require("lazy").load` with
+
+_param_ `module` — The system module where the functions live
+(e.g. `vim.ui`)
+
+_param_ `func_names` — The functions to wrap in the given module (e.g. `{
+"ui", "select }`)
+
+
+NOTIFY ~
+
+>lua
+    function astrocore.notify(msg: string, type: number|nil, opts?: table)
+<
+
+Serve a notification with a title of AstroNvim
+
+_param_ `msg` — The notification body
+
+_param_ `type` — The type of the notification (:help vim.log.levels)
+
+_param_ `opts` — The nvim-notify options to use (:help notify-options)
+
+
+PLUGIN_OPTS ~
+
+>lua
+    function astrocore.plugin_opts(plugin: string)
+      -> opts: table
+<
+
+Resolve the options table for a given plugin with lazy
+
+_param_ `plugin` — The plugin to search for
+
+_return_ `opts` — The plugin options
+
+
+RELOAD ~
+
+>lua
+    function astrocore.reload()
+<
+
+Partially reload AstroNvim user settings. Includes core vim options, mappings,
+and highlights. This is an experimental feature and may lead to instabilities
+until restart.
+
+
+SET_MAPPINGS ~
+
+>lua
+    function astrocore.set_mappings(map_table: table, base?: table)
+<
+
+Table based API for setting keybindings
+
+_param_ `map_table` — A nested table where the first key is the vim mode, the
+second key is the key to map, and the value is the function to set the mapping
+to
+
+_param_ `base` — A base set of options to set on every keybinding
+
+
+SET_URL_MATCH ~
+
+>lua
+    function astrocore.set_url_match()
+<
+
+Add syntax matching rules for highlighting URLs/URIs
+
+
+SETUP ~
+
+>lua
+    function astrocore.setup(opts: AstroCoreOpts)
+<
+
+Setup and configure AstroCore See: astrocore.config
+<file:///home/runner/work/astrocore/astrocore/./lua/astrocore/init.lua#13#0>
+
+
+SYSTEM_OPEN ~
+
+>lua
+    function astrocore.system_open(path: string)
+<
+
+Open a URL under the cursor with the current operating system
+
+_param_ `path` — The path of the file to open with the system opener
+
+
+TOGGLE_TERM_CMD ~
+
+>lua
+    function astrocore.toggle_term_cmd(opts: string|table)
+<
+
+Toggle a user terminal if it exists, if not then create a new one and save it
+
+_param_ `opts` — A terminal command string or a table of options for
+Terminal:new() (Check toggleterm.nvim documentation for table format)
+
+
+UPDATE_PACKAGES ~
+
+>lua
+    function astrocore.update_packages()
+<
+
+Sync Lazy and then update Mason
+
+
+URL_MATCHER ~
+
+>lua
+    string
+<
+
+regex used for matching a valid URL/URI string
+
+
+USER_TERMINALS ~
+
+>lua
+    { [string]: table<integer, table> }
+<
+
+A table to manage ToggleTerm terminals created by the user, indexed by the
+command run and then the instance number
+
+
+WHICH_KEY_QUEUE ~
+
+>lua
+    nil
+<
+
+A placeholder variable used to queue section names to be registered by
+which-key
+
+
+WHICH_KEY_REGISTER ~
+
+>lua
+    function astrocore.which_key_register()
+<
+
+Register queued which-key mappings
+
+
+ASTROCORE.BUFFER                          *astrocore-lua-api-astrocore.buffer*
+
+AstroNvim Buffer Utilities
+
+Buffer management related utility functions
+
+This module can be loaded with `local buffer_utils = require
+"astrocore.buffer"`
+
+copyright 2023 license GNU General Public License v3.0
+
+
+CLOSE ~
+
+>lua
+    function astrocore.buffer.close(bufnr?: number, force?: boolean)
+<
+
+Close a given buffer
+
+_param_ `bufnr` — The buffer to close or the current buffer if not provided
+
+_param_ `force` — Whether or not to foce close the buffers or confirm changes
+(default: false)
+
+
+CLOSE_ALL ~
+
+>lua
+    function astrocore.buffer.close_all(keep_current?: boolean, force?: boolean)
+<
+
+Close all buffers
+
+_param_ `keep_current` — Whether or not to keep the current buffer (default:
+false)
+
+_param_ `force` — Whether or not to foce close the buffers or confirm changes
+(default: false)
+
+
+CLOSE_LEFT ~
+
+>lua
+    function astrocore.buffer.close_left(force?: boolean)
+<
+
+Close buffers to the left of the current buffer
+
+_param_ `force` — Whether or not to foce close the buffers or confirm changes
+(default: false)
+
+
+CLOSE_RIGHT ~
+
+>lua
+    function astrocore.buffer.close_right(force?: boolean)
+<
+
+Close buffers to the right of the current buffer
+
+_param_ `force` — Whether or not to foce close the buffers or confirm changes
+(default: false)
+
+
+CLOSE_TAB ~
+
+>lua
+    function astrocore.buffer.close_tab()
+<
+
+Close the current tab
+
+
+COMPARATOR ~
+
+>lua
+    table
+<
+
+A table of buffer comparator functions
+
+
+CURRENT_BUF ~
+
+>lua
+    nil
+<
+
+Placeholders for keeping track of most recent and previous buffer
+
+
+IS_RESTORABLE ~
+
+>lua
+    function astrocore.buffer.is_restorable(bufnr: number)
+      -> boolean
+<
+
+Check if a buffer can be restored
+
+_param_ `bufnr` — The buffer to check
+
+_return_ — Whether the buffer is restorable or not
+
+
+IS_VALID ~
+
+>lua
+    function astrocore.buffer.is_valid(bufnr?: number)
+      -> boolean
+<
+
+Check if a buffer is valid
+
+_param_ `bufnr` — The buffer to check, default to current buffer
+
+_return_ — Whether the buffer is valid or not
+
+
+IS_VALID_SESSION ~
+
+>lua
+    function astrocore.buffer.is_valid_session()
+      -> boolean
+<
+
+Check if the current buffers form a valid session
+
+_return_ — Whether the current session of buffers is a valid session
+
+
+LAST_BUF ~
+
+>lua
+    nil
+<
+
+
+MOVE ~
+
+>lua
+    function astrocore.buffer.move(n: number)
+<
+
+Move the current buffer tab n places in the bufferline
+
+_param_ `n` — The number of tabs to move the current buffer over by (positive
+= right, negative = left)
+
+
+NAV ~
+
+>lua
+    function astrocore.buffer.nav(n: number)
+<
+
+Navigate left and right by n places in the bufferline
+
+_param_ `n` — The number of tabs to navigate to (positive = right, negative =
+left)
+
+
+NAV_TO ~
+
+>lua
+    function astrocore.buffer.nav_to(tabnr: number)
+<
+
+Navigate to a specific buffer by its position in the bufferline
+
+_param_ `tabnr` — The position of the buffer to navigate to
+
+
+PREV ~
+
+>lua
+    function astrocore.buffer.prev()
+<
+
+Navigate to the previously used buffer
+
+
+SESSIONS ~
+
+>lua
+    AstroCoreSessionOpts?
+<
+
+
+SORT ~
+
+>lua
+    function astrocore.buffer.sort(compare_func: string|function, skip_autocmd: boolean|nil)
+      -> boolean
+<
+
+Sort a the buffers in the current tab based on some comparator
+
+_param_ `compare_func` — a string of a comparator defined in
+require("astrocore.buffer").comparator or a custom comparator function
+
+_param_ `skip_autocmd` — whether or not to skip triggering AstroBufsUpdated
+autocmd event
+
+_return_ — Whether or not the buffers were sorted
+
+
+ASTROCORE.MASON                            *astrocore-lua-api-astrocore.mason*
+
+Mason Utilities
+
+Mason related utility functions to use within AstroNvim and user
+configurations.
+
+This module can be loaded with `local mason_utils = require("astrocore.mason")`
+
+copyright 2023 license GNU General Public License v3.0
+
+
+UPDATE ~
+
+>lua
+    function astrocore.mason.update(pkg_names?: string|string[], auto_install?: boolean)
+<
+
+Update specified mason packages, or just update the registries if no packages
+are listed
+
+_param_ `pkg_names` — The package names as defined in Mason (Not
+mason-lspconfig or mason-null-ls) if the value is nil then it will just update
+the registries
+
+_param_ `auto_install` — whether or not to install a package that is not
+currently installed (default: True)
+
+
+UPDATE_ALL ~
+
+>lua
+    function astrocore.mason.update_all()
+<
+
+Update all packages in Mason
+
+
+ASTROCORE.TOGGLES                        *astrocore-lua-api-astrocore.toggles*
+
+AstroNvim UI/UX Toggles
+
+Utility functions for easy UI toggles.
+
+This module can be loaded with `local ui = require("astrocore.toggles")`
+
+copyright 2023 license GNU General Public License v3.0
+
+
+AUTOPAIRS ~
+
+>lua
+    function astrocore.toggles.autopairs(silent?: boolean)
+<
+
+Toggle autopairs
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+BACKGROUND ~
+
+>lua
+    function astrocore.toggles.background(silent?: boolean)
+<
+
+Toggle background="dark"|"light"
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+BUFFER_SYNTAX ~
+
+>lua
+    function astrocore.toggles.buffer_syntax(bufnr?: number, silent?: boolean)
+<
+
+Toggle syntax highlighting and treesitter
+
+_param_ `bufnr` — the buffer to toggle syntax on
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+CMP ~
+
+>lua
+    function astrocore.toggles.cmp(silent?: boolean)
+<
+
+Toggle cmp entrirely
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+CONCEAL ~
+
+>lua
+    function astrocore.toggles.conceal(silent?: boolean)
+<
+
+Toggle conceal=2|0
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+FOLDCOLUMN ~
+
+>lua
+    function astrocore.toggles.foldcolumn(silent?: boolean)
+<
+
+Toggle foldcolumn=0|1
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+INDENT ~
+
+>lua
+    function astrocore.toggles.indent(silent?: boolean)
+<
+
+Set the indent and tab related numbers
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+NOTIFICATIONS ~
+
+>lua
+    function astrocore.toggles.notifications(silent?: boolean)
+<
+
+Toggle notifications for UI toggles
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+NUMBER ~
+
+>lua
+    function astrocore.toggles.number(silent?: boolean)
+<
+
+Change the number display modes
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+PASTE ~
+
+>lua
+    function astrocore.toggles.paste(silent?: boolean)
+<
+
+Toggle paste
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+SIGNCOLUMN ~
+
+>lua
+    function astrocore.toggles.signcolumn(silent?: boolean)
+<
+
+Toggle signcolumn="auto"|"no"
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+SPELL ~
+
+>lua
+    function astrocore.toggles.spell(silent?: boolean)
+<
+
+Toggle spell
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+STATUSLINE ~
+
+>lua
+    function astrocore.toggles.statusline(silent?: boolean)
+<
+
+Toggle laststatus=3|2|0
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+TABLINE ~
+
+>lua
+    function astrocore.toggles.tabline(silent?: boolean)
+<
+
+Toggle showtabline=2|0
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+URL_MATCH ~
+
+>lua
+    function astrocore.toggles.url_match(silent?: boolean)
+<
+
+Toggle URL/URI syntax highlighting rules
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+WRAP ~
+
+>lua
+    function astrocore.toggles.wrap(silent?: boolean)
+<
+
+Toggle wrap
+
+_param_ `silent` — if true then don’t sent a notification
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 
