@@ -9,6 +9,7 @@ Table of Contents                                *astrocore-table-of-contents*
   - Installation                            |astrocore-astrocore-installation|
   - Configuration                          |astrocore-astrocore-configuration|
   - API                                              |astrocore-astrocore-api|
+  - Contributing                            |astrocore-astrocore-contributing|
 2. Lua API                                                 |astrocore-lua-api|
   - astrocore                                    |astrocore-lua-api-astrocore|
   - astrocore.buffer                      |astrocore-lua-api-astrocore.buffer|
@@ -171,6 +172,12 @@ API                                                  *astrocore-astrocore-api*
 
 **AstroCore** provides a Lua API with utility functions. This can be viewed
 with `:h astrocore` or in the repository at doc/api.md <doc/api.md>
+
+
+CONTRIBUTING                                *astrocore-astrocore-contributing*
+
+If you plan to contribute, please check the contribution guidelines
+<https://github.com/AstroNvim/.github/blob/main/CONTRIBUTING.md> first.
 
 
 ==============================================================================
