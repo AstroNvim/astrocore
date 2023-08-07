@@ -12,7 +12,12 @@ local M = {}
 local fnamemodify = vim.fn.fnamemodify
 local function bufinfo(bufnr) return vim.fn.getbufinfo(bufnr)[1] end
 local function unique_path(bufnr)
-  return require("astroui.status.provider").unique_path() { bufnr = bufnr } .. fnamemodify(bufinfo(bufnr).name, ":t")
+  local status_avail, provider = pcall(require, "astroui.status.provider")
+  if not status_avail then
+    vim.notify("AstroUI required for unique path calculation", vim.log.levels.ERROR, { title = "AstroNvim" })
+    return ""
+  end
+  return provider.unique_path() { bufnr = bufnr } .. fnamemodify(bufinfo(bufnr).name, ":t")
 end
 
 --- Comparator of two buffer numbers

@@ -42,7 +42,9 @@ function M.reload()
   local success, fault = pcall(require, "astronvim.options")
   if not success then vim.api.nvim_err_writeln("Failed to load " .. module .. "\n\n" .. fault) end
   if not was_modifiable then vim.opt.modifiable = false end
-  require("lazy").reload { plugins = { M.get_plugin "astrocore", M.get_plugin "astroui" } }
+  local lazy = require "lazy"
+  lazy.reload { plugins = { M.get_plugin "astrocore" } }
+  if M.is_available "astroui" then lazy.reload { plugins = { M.get_plugin "astroui" } } end
   vim.cmd.doautocmd "ColorScheme"
 end
 
