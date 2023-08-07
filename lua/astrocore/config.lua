@@ -64,7 +64,43 @@
 ---@field notifications boolean? enable or disable notifications on start (boolean; default = true)
 
 ---@class AstroCoreOpts
+---Configuration of auto commands
+---The key into the table is the group name for the auto commands (`:h augroup`) and the value
+---is a list of autocmd tables where `event` key is the event(s) that trigger the auto command
+---and the rest are auto command options (`:h nvim_create_autocmd`)
+---Example:
+---
+---```lua
+---autocmds = {
+---  -- first key is the `augroup` (:h augroup)
+---  highlighturl = {
+---    -- list of auto commands to set
+---    {
+---      -- events to trigger
+---      event = { "VimEnter", "FileType", "BufEnter", "WinEnter" },
+---      -- the rest of the autocmd options (:h nvim_create_autocmd)
+---      desc = "URL Highlighting",
+---      callback = function() require("astrocore").set_url_match() end
+---    }
+---  }
+---}
+---```
 ---@field autocmds table<string,table[]>?
+---Configuration of user commands
+---The key into the table is the name of the user command and the value is a table of command options
+---Example:
+---
+---```lua
+---commands = {
+---  -- key is the command name
+---  AstroReload = {
+---    -- first element with no key is the command (string or function)
+---    function() require("astrocore").reload() end,
+---    -- the rest are options for creating user commands (:h nvim_create_user_command)
+---    desc = "Reload AstroNvim (Experimental)",
+---  }
+---}
+---```
 ---@field commands table<string,table>?
 ---Configuration of vim mappings to create.
 ---The first key into the table is the vim map mode (`:h map-modes`), and the value is a table of entries to be passed to `vim.keymap.set` (`:h vim.keymap.set`):
@@ -98,6 +134,24 @@
 ---}
 ---```
 ---@field mappings table<string,table<string,(table|boolean|string)?>?>?
+---Configuration of vim `on_key` functions.
+---The key into the table is the namespace of the function and the value is a list like table of `on_key` functions
+---Example:
+---
+---```lua
+---on_keys = {
+---  -- first key is the namespace
+---  auto_hlsearch = {
+---    -- list of functions to execute on key press (:h vim.on_key)
+---    function(char) -- example automatically disables `hlsearch` when not actively searching
+---      if vim.fn.mode() == "n" then
+---        local new_hlsearch = vim.tbl_contains({ "<CR>", "n", "N", "*", "#", "?", "/" }, vim.fn.keytrans(char))
+---        if vim.opt.hlsearch:get() ~= new_hlsearch then vim.opt.hlsearch = new_hlsearch end
+---      end
+---    end,
+---  },
+---},
+---```
 ---@field on_keys table<string,fun(key:string)[]>?
 ---Configuration table of features provided by AstroCore
 ---Example:
