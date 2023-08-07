@@ -51,7 +51,7 @@ Install the plugin with the lazy plugin manager:
       "AstroNvim/astrocore",
       dependencies = { "nvim-lua/plenary.nvim" },
       lazy = false, -- disable lazy loading
-      prioirty = 10000, -- load AstroCore first
+      priority = 10000, -- load AstroCore first
       opts = {
         -- set configuration options  as described below
       }
