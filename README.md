@@ -142,3 +142,7 @@ require('resession').setup({
 **AstroCore** provides a Lua API with utility functions. This can be viewed with `:h astrocore` or in the repository at [doc/api.md](doc/api.md)
 
 [resession]: https://github.com/stevearc/resession.nvim/
+
+## 🚀 Contributing
+
+If you plan to contribute, please check the [contribution guidelines](https://github.com/AstroNvim/.github/blob/main/CONTRIBUTING.md) first.
