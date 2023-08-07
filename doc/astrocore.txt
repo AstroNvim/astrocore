@@ -72,8 +72,8 @@ Install the plugin with the lazy plugin manager:
 
 CONFIGURATION                              *astrocore-astrocore-configuration*
 
-**AstroCore** comes with the no defaults, but it configured fully through the
-`opts` table in lazy. Here are descriptions of the options and some example
+**AstroCore** comes with the no defaults, but can be configured fully through
+the `opts` table in lazy. Here are descriptions of the options and some example
 usages:
 
 >lua
