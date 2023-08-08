@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 07
+*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 08
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
