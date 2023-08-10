@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 08
+*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 10
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -415,6 +415,20 @@ _param_ `msg` — The notification body
 _param_ `type` — The type of the notification (:help vim.log.levels)
 
 _param_ `opts` — The nvim-notify options to use (:help notify-options)
+
+
+ON_LOAD ~
+
+>lua
+    function astrocore.on_load(plugin: string, func: fun())
+<
+
+Execute a function when a specified plugin is loaded with Lazy.nvim, or
+immediately if already loaded
+
+_param_ `plugin` — the name of the plugin to defer the function execution on
+
+_param_ `func` — the function to execute when the plugin is loaded
 
 
 PLUGIN_OPTS ~

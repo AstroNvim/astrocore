@@ -224,6 +224,19 @@ function astrocore.notify(msg: string, type: number|nil, opts?: table)
 
 *param* `opts` — The nvim-notify options to use (:help notify-options)
 
+### on_load
+
+
+```lua
+function astrocore.on_load(plugin: string, func: fun())
+```
+
+ Execute a function when a specified plugin is loaded with Lazy.nvim, or immediately if already loaded
+
+*param* `plugin` — the name of the plugin to defer the function execution on
+
+*param* `func` — the function to execute when the plugin is loaded
+
 ### plugin_opts
 
 
