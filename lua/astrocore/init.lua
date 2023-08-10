@@ -266,6 +266,7 @@ end
 ---@param map_table table A nested table where the first key is the vim mode, the second key is the key to map, and the value is the function to set the mapping to
 ---@param base? table A base set of options to set on every keybinding
 function M.set_mappings(map_table, base)
+  local was_no_which_key_queue = not M.which_key_queue
   -- iterate over the first keys for each mode
   base = base or {}
   for mode, maps in pairs(map_table) do
@@ -291,7 +292,7 @@ function M.set_mappings(map_table, base)
       end
     end
   end
-  if package.loaded["which-key"] then M.which_key_register() end -- if which-key is loaded already, register
+  if was_no_which_key_queue and M.which_key_queue then M.on_load("which-key.nvim", M.which_key_register) end
 end
 
 --- regex used for matching a valid URL/URI string
