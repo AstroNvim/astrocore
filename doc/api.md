@@ -13,22 +13,6 @@ This module can be loaded with `local astro = require "astrocore"`
 copyright 2023
 license GNU General Public License v3.0
 
-### alpha_button
-
-
-```lua
-function astrocore.alpha_button(sc: string, txt: string)
-  -> table
-```
-
- Create a button entity to use with the alpha dashboard
-
-*param* `sc` — The keybinding string to convert to a button
-
-*param* `txt` — The explanation text of what the keybinding does
-
-*return* — A button entity table for an alpha configuration
-
 ### cmd
 
 

@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 10
+*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2023 August 15
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -171,7 +171,7 @@ usages:
 API                                                  *astrocore-astrocore-api*
 
 **AstroCore** provides a Lua API with utility functions. This can be viewed
-with `:h astrocore` or in the repository at doc/api.md <doc/api.md>
+with |astrocore| or in the repository at doc/api.md <doc/api.md>
 
 
 CONTRIBUTING                                *astrocore-astrocore-contributing*
@@ -195,22 +195,6 @@ Various utility functions to use within AstroNvim and user configurations.
 This module can be loaded with `local astro = require "astrocore"`
 
 copyright 2023 license GNU General Public License v3.0
-
-
-ALPHA_BUTTON ~
-
->lua
-    function astrocore.alpha_button(sc: string, txt: string)
-      -> table
-<
-
-Create a button entity to use with the alpha dashboard
-
-_param_ `sc` — The keybinding string to convert to a button
-
-_param_ `txt` — The explanation text of what the keybinding does
-
-_return_ — A button entity table for an alpha configuration
 
 
 CMD ~
