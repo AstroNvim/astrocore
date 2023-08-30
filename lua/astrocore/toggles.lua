@@ -114,6 +114,20 @@ function M.indent(silent)
   end
 end
 
+--- Toggle indent guides
+---@param silent? boolean if true then don't sent a notification
+function M.toggle_buffer_indent_guides(silent)
+  vim.g.indent_blankline_enabled = not vim.g.indent_blankline_enabled
+  pcall(vim.cmd.IndentBlanklineRefresh)
+  vim.g.miniindentscope_disable = not vim.g.miniindentscope_disable
+  if MiniIndentscope and not vim.g.miniindentscope_disable then
+    MiniIndentscope.draw()
+  else
+    MiniIndentscope.undraw()
+  end
+  ui_notify(silent, "Indent guides " .. (bool2str(vim.g.indent_blankline_enabled)))
+end
+
 --- Change the number display modes
 ---@param silent? boolean if true then don't sent a notification
 function M.number(silent)
