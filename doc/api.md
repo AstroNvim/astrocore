@@ -750,6 +750,19 @@ function astrocore.toggles.indent(silent?: boolean)
 
 *param* `silent` — if true then don't sent a notification
 
+### indent_guides
+
+
+```lua
+function astrocore.toggles.indent_guides(bufnr?: number, silent?: boolean)
+```
+
+ Toggle indent guides
+
+*param* `bufnr` — the buffer to toggle indent scope on
+
+*param* `silent` — if true then don't sent a notification
+
 ### notifications
 
 
