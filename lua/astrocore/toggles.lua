@@ -123,6 +123,11 @@ function M.buffer_indent_guides(bufnr, silent)
   if vim.b[bufnr][indentscope] == nil then vim.b[bufnr][indentscope] = vim.g[indentscope] end
   vim.b[bufnr][indentscope] = not vim.b[bufnr][indentscope] -- toggle indentscope
   vim.b[bufnr][blankline] = not vim.b[bufnr][indentscope] -- get opposite of disabled value
+  if vim.b[bufnr][indentscope] then
+    require("mini.indentscope").undraw()
+  else
+    require("mini.indentscope").draw()
+  end
   pcall(vim.cmd.IndentBlanklineRefresh)
   ui_notify(silent, string.format("Buffer indent guides %s", bool2str(vim.b[bufnr][blankline])))
 end
