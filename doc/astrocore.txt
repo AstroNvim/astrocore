@@ -1,4 +1,4 @@
-*astrocore.txt*       For Neovim >= 0.9.0       Last change: 2023 September 01
+*astrocore.txt*       For Neovim >= 0.9.0       Last change: 2023 September 18
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -131,7 +131,7 @@ usages:
           -- list of functions to execute on key press (:h vim.on_key)
           function(char) -- example automatically disables `hlsearch` when not actively searching
             if vim.fn.mode() == "n" then
-              local new_hlsearch = vim.tbl_contains({ "<CR>", "n", "N", "", "", "?", "/" }, vim.fn.keytrans(char))
+              local new_hlsearch = vim.tbl_contains({ "<CR>", "n", "N", "*", "#", "?", "/" }, vim.fn.keytrans(char))
               if vim.opt.hlsearch:get() ~= new_hlsearch then vim.opt.hlsearch = new_hlsearch end
             end
           end,
@@ -143,7 +143,7 @@ usages:
         cmp = true, -- enable or disable cmp on start
         highlighturl = true, -- enable or disable highlighting of urls on start
         -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
-        max_file = { size = 1024  100, lines = 10000 },
+        max_file = { size = 1024 * 100, lines = 10000 },
         notifications = true, -- enable or disable notifications on start
       },
       -- Enable git integration for detached worktrees
@@ -721,7 +721,7 @@ Navigate to the previously used buffer
 SESSIONS ~
 
 >lua
-    AstroCoreSessionOpts?
+    unknown
 <
 
 

@@ -514,7 +514,7 @@ function astrocore.buffer.prev()
 
 
 ```lua
-AstroCoreSessionOpts?
+unknown
 ```
 
 ### sort
