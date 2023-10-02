@@ -119,12 +119,13 @@ end
 ---@param silent? boolean if true then don't sent a notification
 function M.buffer_indent_guides(bufnr, silent)
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
-  local indentscope, blankline = "miniindentscope_disable", "indent_blankline_enabled"
+  local indentscope = "miniindentscope_disable"
   if vim.b[bufnr][indentscope] == nil then vim.b[bufnr][indentscope] = vim.g[indentscope] end
   vim.b[bufnr][indentscope] = not vim.b[bufnr][indentscope] -- toggle indentscope
-  vim.b[bufnr][blankline] = not vim.b[bufnr][indentscope] -- get opposite of disabled value
-  pcall(vim.cmd.IndentBlanklineRefresh)
-  ui_notify(silent, string.format("indent guides %s", bool2str(vim.b[bufnr][blankline])))
+  pcall(require("mini.indentscope")[vim.b[bufnr][indentscope] and "undraw" or "draw"])
+  local ibl_avail, ibl = pcall(require, "ibl")
+  if ibl_avail then ibl.setup_buffer(bufnr, { enabled = not vim.b[bufnr][indentscope] }) end
+  ui_notify(silent, string.format("indent guides %s", bool2str(not vim.b[bufnr][indentscope])))
 end
 
 --- Change the number display modes
