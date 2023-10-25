@@ -50,7 +50,21 @@ function M.cmp(silent)
   local features = require("astrocore").config.features
   features.cmp = not features.cmp
   local ok, _ = pcall(require, "cmp")
-  ui_notify(silent, ok and string.format("completion %s", bool2str(features.cmp)) or "completion not available")
+  ui_notify(silent, ok and string.format("Global completion %s", bool2str(features.cmp)) or "completion not available")
+end
+
+--- Toggle buffer local cmp
+---@param bufnr? number the buffer to toggle cmp completion on
+---@param silent? boolean if true then don't sent a notification
+function M.buffer_cmp(bufnr, silent)
+  bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
+  if vim.b[bufnr].cmp_enabled == nil then vim.b[bufnr].cmp_enabled = require("astrocore").config.features.cmp end
+  vim.b[bufnr].cmp_enabled = not vim.b[bufnr].cmp_enabled
+  local ok, _ = pcall(require, "cmp")
+  ui_notify(
+    silent,
+    ok and string.format("Buffer completion %s", bool2str(vim.b[bufnr].cmp_enabled)) or "completion not available"
+  )
 end
 
 --- Toggle showtabline=2|0
