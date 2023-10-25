@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2023 October 12
+*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2023 October 25
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -907,6 +907,19 @@ BACKGROUND ~
 <
 
 Toggle background="dark"|"light"
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+BUFFER_CMP ~
+
+>lua
+    function astrocore.toggles.buffer_cmp(bufnr?: number, silent?: boolean)
+<
+
+Toggle buffer local cmp
+
+_param_ `bufnr` — the buffer to toggle cmp completion on
 
 _param_ `silent` — if true then don’t sent a notification
 

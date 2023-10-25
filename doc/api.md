@@ -693,6 +693,19 @@ function astrocore.toggles.background(silent?: boolean)
 
 *param* `silent` — if true then don't sent a notification
 
+### buffer_cmp
+
+
+```lua
+function astrocore.toggles.buffer_cmp(bufnr?: number, silent?: boolean)
+```
+
+ Toggle buffer local cmp
+
+*param* `bufnr` — the buffer to toggle cmp completion on
+
+*param* `silent` — if true then don't sent a notification
+
 ### buffer_indent_guides
 
 
