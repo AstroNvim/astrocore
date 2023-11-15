@@ -28,19 +28,18 @@ end
 ---@param bufnr number The buffer to check
 ---@return boolean # Whether the buffer is restorable or not
 function M.is_restorable(bufnr)
-  if not M.is_valid(bufnr) or vim.api.nvim_get_option_value("bufhidden", { buf = bufnr }) ~= "" then return false end
+  if not M.is_valid(bufnr) or vim.bo[bufnr].bufhidden ~= "" then return false end
 
-  local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
-  if buftype == "" then
+  if vim.bo[bufnr].buftype == "" then
     -- Normal buffer, check if it listed.
-    if not vim.api.nvim_get_option_value("buflisted", { buf = bufnr }) then return false end
+    if not vim.bo[bufnr].buflisted then return false end
     -- Check if it has a filename.
     if vim.api.nvim_buf_get_name(bufnr) == "" then return false end
   end
 
   if
-    vim.tbl_contains(M.sessions.ignore.filetypes, vim.api.nvim_get_option_value("filetype", { buf = bufnr }))
-    or vim.tbl_contains(M.sessions.ignore.buftypes, vim.api.nvim_get_option_value("buftype", { buf = bufnr }))
+    vim.tbl_contains(M.sessions.ignore.filetypes, vim.bo[bufnr].filetype)
+    or vim.tbl_contains(M.sessions.ignore.buftypes, vim.bo[bufnr].buftype)
   then
     return false
   end
@@ -128,7 +127,7 @@ end
 function M.close(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
   if astro.is_available "mini.bufremove" and M.is_valid(bufnr) and #vim.t.bufs > 1 then
-    if not force and vim.api.nvim_get_option_value("modified", { buf = bufnr }) then
+    if not force and vim.bo[bufnr].modified then
       local bufname = vim.fn.expand "%"
       local empty = bufname == ""
       if empty then bufname = "Untitled" end
@@ -144,7 +143,7 @@ function M.close(bufnr, force)
     end
     require("mini.bufremove").delete(bufnr, force)
   else
-    local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
+    local buftype = vim.bo[bufnr].buftype
     vim.cmd(("silent! %s %d"):format((force or buftype == "terminal") and "bdelete!" or "confirm bdelete", bufnr))
   end
 end
