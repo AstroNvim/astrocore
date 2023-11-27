@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2023 November 15
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2023 November 27
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -559,7 +559,7 @@ copyright 2023 license GNU General Public License v3.0
 CLOSE ~
 
 >lua
-    function astrocore.buffer.close(bufnr?: number, force?: boolean)
+    function astrocore.buffer.close(bufnr?: integer, force?: boolean)
 <
 
 Close a given buffer
@@ -612,10 +612,12 @@ _param_ `force` — Whether or not to foce close the buffers or confirm changes
 CLOSE_TAB ~
 
 >lua
-    function astrocore.buffer.close_tab()
+    function astrocore.buffer.close_tab(tabpage?: integer)
 <
 
-Close the current tab
+Close a given tab
+
+_param_ `tabpage` — The tabpage to close or the current tab if not provided
 
 
 CURRENT_BUF ~

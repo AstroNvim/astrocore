@@ -359,7 +359,7 @@ license GNU General Public License v3.0
 
 
 ```lua
-function astrocore.buffer.close(bufnr?: number, force?: boolean)
+function astrocore.buffer.close(bufnr?: integer, force?: boolean)
 ```
 
  Close a given buffer
@@ -407,10 +407,12 @@ function astrocore.buffer.close_right(force?: boolean)
 
 
 ```lua
-function astrocore.buffer.close_tab()
+function astrocore.buffer.close_tab(tabpage?: integer)
 ```
 
- Close the current tab
+ Close a given tab
+
+*param* `tabpage` — The tabpage to close or the current tab if not provided
 
 ### current_buf
 
