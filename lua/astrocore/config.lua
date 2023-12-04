@@ -85,7 +85,7 @@
 ---  }
 ---}
 ---```
----@field autocmds table<string,table[]>?
+---@field autocmds table<string,table[]|false>?
 ---Configuration of user commands
 ---The key into the table is the name of the user command and the value is a table of command options
 ---Example:
@@ -101,7 +101,7 @@
 ---  }
 ---}
 ---```
----@field commands table<string,table>?
+---@field commands table<string,table|false>?
 ---Configuration of vim mappings to create.
 ---The first key into the table is the vim map mode (`:h map-modes`), and the value is a table of entries to be passed to `vim.keymap.set` (`:h vim.keymap.set`):
 ---  - The key is the first parameter or the vim mode (only a single mode supported) and the value is a table of keymaps within that mode:
@@ -133,7 +133,7 @@
 ---  }
 ---}
 ---```
----@field mappings table<string,table<string,(table|boolean|string)?>?>?
+---@field mappings table<string,table<string,(table|string|false)?>?>?
 ---Configuration of vim `on_key` functions.
 ---The key into the table is the namespace of the function and the value is a list like table of `on_key` functions
 ---Example:
@@ -152,7 +152,7 @@
 ---  },
 ---},
 ---```
----@field on_keys table<string,fun(key:string)[]>?
+---@field on_keys table<string,fun(key:string)[]|false>?
 ---Configuration table of features provided by AstroCore
 ---Example:
 --
