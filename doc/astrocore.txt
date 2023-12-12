@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2023 December 04
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2023 December 12
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -389,7 +389,7 @@ _param_ `func_names` — The functions to wrap in the given module (e.g. `{
 NOTIFY ~
 
 >lua
-    function astrocore.notify(msg: string, type: number|nil, opts?: table)
+    function astrocore.notify(msg: string, type: integer|nil, opts?: table)
 <
 
 Serve a notification with a title of AstroNvim
@@ -632,7 +632,7 @@ Placeholders for keeping track of most recent and previous buffer
 IS_RESTORABLE ~
 
 >lua
-    function astrocore.buffer.is_restorable(bufnr: number)
+    function astrocore.buffer.is_restorable(bufnr: integer)
       -> boolean
 <
 
@@ -646,7 +646,7 @@ _return_ — Whether the buffer is restorable or not
 IS_VALID ~
 
 >lua
-    function astrocore.buffer.is_valid(bufnr?: number)
+    function astrocore.buffer.is_valid(bufnr?: integer)
       -> boolean
 <
 
@@ -679,7 +679,7 @@ LAST_BUF ~
 MOVE ~
 
 >lua
-    function astrocore.buffer.move(n: number)
+    function astrocore.buffer.move(n: integer)
 <
 
 Move the current buffer tab n places in the bufferline
@@ -691,7 +691,7 @@ _param_ `n` — The number of tabs to move the current buffer over by (positive
 NAV ~
 
 >lua
-    function astrocore.buffer.nav(n: number)
+    function astrocore.buffer.nav(n: integer)
 <
 
 Navigate left and right by n places in the bufferline
@@ -703,7 +703,7 @@ left)
 NAV_TO ~
 
 >lua
-    function astrocore.buffer.nav_to(tabnr: number)
+    function astrocore.buffer.nav_to(tabnr: integer)
 <
 
 Navigate to a specific buffer by its position in the bufferline
@@ -916,7 +916,7 @@ _param_ `silent` — if true then don’t sent a notification
 BUFFER_CMP ~
 
 >lua
-    function astrocore.toggles.buffer_cmp(bufnr?: number, silent?: boolean)
+    function astrocore.toggles.buffer_cmp(bufnr?: integer, silent?: boolean)
 <
 
 Toggle buffer local cmp
@@ -929,7 +929,7 @@ _param_ `silent` — if true then don’t sent a notification
 BUFFER_INDENT_GUIDES ~
 
 >lua
-    function astrocore.toggles.buffer_indent_guides(bufnr?: number, silent?: boolean)
+    function astrocore.toggles.buffer_indent_guides(bufnr?: integer, silent?: boolean)
 <
 
 Toggle indent guides
@@ -942,7 +942,7 @@ _param_ `silent` — if true then don’t sent a notification
 BUFFER_SYNTAX ~
 
 >lua
-    function astrocore.toggles.buffer_syntax(bufnr?: number, silent?: boolean)
+    function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 <
 
 Toggle syntax highlighting and treesitter

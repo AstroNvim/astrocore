@@ -197,7 +197,7 @@ function astrocore.load_plugin_with_func(plugin: string, module: table, func_nam
 
 
 ```lua
-function astrocore.notify(msg: string, type: number|nil, opts?: table)
+function astrocore.notify(msg: string, type: integer|nil, opts?: table)
 ```
 
  Serve a notification with a title of AstroNvim
@@ -427,7 +427,7 @@ nil
 
 
 ```lua
-function astrocore.buffer.is_restorable(bufnr: number)
+function astrocore.buffer.is_restorable(bufnr: integer)
   -> boolean
 ```
 
@@ -441,7 +441,7 @@ function astrocore.buffer.is_restorable(bufnr: number)
 
 
 ```lua
-function astrocore.buffer.is_valid(bufnr?: number)
+function astrocore.buffer.is_valid(bufnr?: integer)
   -> boolean
 ```
 
@@ -474,7 +474,7 @@ nil
 
 
 ```lua
-function astrocore.buffer.move(n: number)
+function astrocore.buffer.move(n: integer)
 ```
 
  Move the current buffer tab n places in the bufferline
@@ -485,7 +485,7 @@ function astrocore.buffer.move(n: number)
 
 
 ```lua
-function astrocore.buffer.nav(n: number)
+function astrocore.buffer.nav(n: integer)
 ```
 
  Navigate left and right by n places in the bufferline
@@ -496,7 +496,7 @@ function astrocore.buffer.nav(n: number)
 
 
 ```lua
-function astrocore.buffer.nav_to(tabnr: number)
+function astrocore.buffer.nav_to(tabnr: integer)
 ```
 
  Navigate to a specific buffer by its position in the bufferline
@@ -699,7 +699,7 @@ function astrocore.toggles.background(silent?: boolean)
 
 
 ```lua
-function astrocore.toggles.buffer_cmp(bufnr?: number, silent?: boolean)
+function astrocore.toggles.buffer_cmp(bufnr?: integer, silent?: boolean)
 ```
 
  Toggle buffer local cmp
@@ -712,7 +712,7 @@ function astrocore.toggles.buffer_cmp(bufnr?: number, silent?: boolean)
 
 
 ```lua
-function astrocore.toggles.buffer_indent_guides(bufnr?: number, silent?: boolean)
+function astrocore.toggles.buffer_indent_guides(bufnr?: integer, silent?: boolean)
 ```
 
  Toggle indent guides
@@ -725,7 +725,7 @@ function astrocore.toggles.buffer_indent_guides(bufnr?: number, silent?: boolean
 
 
 ```lua
-function astrocore.toggles.buffer_syntax(bufnr?: number, silent?: boolean)
+function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 ```
 
  Toggle syntax highlighting and treesitter
