@@ -17,7 +17,7 @@ M.sessions = astro.config.sessions
 M.current_buf, M.last_buf = nil, nil
 
 --- Check if a buffer is valid
----@param bufnr number? The buffer to check, default to current buffer
+---@param bufnr integer? The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer is valid or not
 function M.is_valid(bufnr)
   if not bufnr then bufnr = 0 end
@@ -25,7 +25,7 @@ function M.is_valid(bufnr)
 end
 
 --- Check if a buffer can be restored
----@param bufnr number The buffer to check
+---@param bufnr integer The buffer to check
 ---@return boolean # Whether the buffer is restorable or not
 function M.is_restorable(bufnr)
   if not M.is_valid(bufnr) or vim.bo[bufnr].bufhidden ~= "" then return false end
@@ -60,7 +60,7 @@ function M.is_valid_session()
 end
 
 --- Move the current buffer tab n places in the bufferline
----@param n number The number of tabs to move the current buffer over by (positive = right, negative = left)
+---@param n integer The number of tabs to move the current buffer over by (positive = right, negative = left)
 function M.move(n)
   if n == 0 then return end -- if n = 0 then no shifts are needed
   local bufs = vim.t.bufs -- make temp variable
@@ -87,7 +87,7 @@ function M.move(n)
 end
 
 --- Navigate left and right by n places in the bufferline
----@param n number The number of tabs to navigate to (positive = right, negative = left)
+---@param n integer The number of tabs to navigate to (positive = right, negative = left)
 function M.nav(n)
   local current = vim.api.nvim_get_current_buf()
   for i, v in ipairs(vim.t.bufs) do
@@ -99,7 +99,7 @@ function M.nav(n)
 end
 
 --- Navigate to a specific buffer by its position in the bufferline
----@param tabnr number The position of the buffer to navigate to
+---@param tabnr integer The position of the buffer to navigate to
 function M.nav_to(tabnr)
   if tabnr > #vim.t.bufs or tabnr < 1 then
     astro.notify(("No tab #%d"):format(tabnr), vim.log.levels.WARN)

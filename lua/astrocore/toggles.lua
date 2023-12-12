@@ -54,7 +54,7 @@ function M.cmp(silent)
 end
 
 --- Toggle buffer local cmp
----@param bufnr? number the buffer to toggle cmp completion on
+---@param bufnr? integer the buffer to toggle cmp completion on
 ---@param silent? boolean if true then don't sent a notification
 function M.buffer_cmp(bufnr, silent)
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
@@ -129,7 +129,7 @@ function M.indent(silent)
 end
 
 --- Toggle indent guides
----@param bufnr? number the buffer to toggle indent scope on
+---@param bufnr? integer the buffer to toggle indent scope on
 ---@param silent? boolean if true then don't sent a notification
 function M.buffer_indent_guides(bufnr, silent)
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
@@ -184,7 +184,7 @@ function M.wrap(silent)
 end
 
 --- Toggle syntax highlighting and treesitter
----@param bufnr? number the buffer to toggle syntax on
+---@param bufnr? integer the buffer to toggle syntax on
 ---@param silent? boolean if true then don't sent a notification
 function M.buffer_syntax(bufnr, silent)
   -- HACK: this should just be `bufnr = bufnr or 0` but it looks like `vim.treesitter.stop` has a bug with `0` being current
