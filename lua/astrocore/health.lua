@@ -24,10 +24,10 @@ function M.check()
 
   if vim.version().prerelease then
     health.warn "Neovim nightly is not officially supported and may have breaking changes"
-  elseif vim.fn.has "nvim-0.8" == 1 then
-    health.ok "Using stable Neovim >= 0.8.0"
+  elseif vim.fn.has "nvim-0.9" == 1 then
+    health.ok "Using stable Neovim >= 0.9.0"
   else
-    health.error "Neovim >= 0.8.0 is required"
+    health.error "Neovim >= 0.9.0 is required"
   end
 
   local programs = {
@@ -35,18 +35,6 @@ function M.check()
       cmd = { "git" },
       type = "error",
       msg = "Used for core functionality such as updater and plugin management",
-      -- extra_check = function(program)
-      --   local git_version = require("astrocore.git").git_version()
-      --   if git_version then
-      --     if git_version.major < 2 or (git_version.major == 2 and git_version.min < 19) then
-      --       program.msg = ("Git %s installed, >= 2.19.0 is required"):format(git_version.str)
-      --     else
-      --       return true
-      --     end
-      --   else
-      --     program.msg = "Unable to validate git version"
-      --   end
-      -- end,
     },
     {
       cmd = { "xdg-open", "open", "explorer" },
