@@ -17,7 +17,7 @@ local function ui_notify(silent, ...) return not silent and require("astrocore")
 function M.notifications(silent)
   local features = require("astrocore").config.features
   features.notifications = not features.notifications
-  ui_notify(silent, string.format("Notifications %s", bool2str(features.notifications)))
+  ui_notify(silent, ("Notifications %s"):format(bool2str(features.notifications)))
 end
 
 --- Toggle autopairs
@@ -31,7 +31,7 @@ function M.autopairs(silent)
       autopairs.disable()
     end
     require("astrocore").config.features.autopairs = autopairs.state.disabled
-    ui_notify(silent, string.format("autopairs %s", bool2str(not autopairs.state.disabled)))
+    ui_notify(silent, ("autopairs %s"):format(bool2str(not autopairs.state.disabled)))
   else
     ui_notify(silent, "autopairs not available")
   end
@@ -41,7 +41,7 @@ end
 ---@param silent? boolean if true then don't sent a notification
 function M.background(silent)
   vim.go.background = vim.go.background == "light" and "dark" or "light"
-  ui_notify(silent, string.format("background=%s", vim.go.background))
+  ui_notify(silent, ("background=%s"):format(vim.go.background))
 end
 
 --- Toggle cmp entrirely
@@ -50,7 +50,7 @@ function M.cmp(silent)
   local features = require("astrocore").config.features
   features.cmp = not features.cmp
   local ok, _ = pcall(require, "cmp")
-  ui_notify(silent, ok and string.format("Global completion %s", bool2str(features.cmp)) or "completion not available")
+  ui_notify(silent, ok and ("Global completion %s"):format(bool2str(features.cmp)) or "completion not available")
 end
 
 --- Toggle buffer local cmp
@@ -63,7 +63,7 @@ function M.buffer_cmp(bufnr, silent)
   local ok, _ = pcall(require, "cmp")
   ui_notify(
     silent,
-    ok and string.format("Buffer completion %s", bool2str(vim.b[bufnr].cmp_enabled)) or "completion not available"
+    ok and ("Buffer completion %s"):format(bool2str(vim.b[bufnr].cmp_enabled)) or "completion not available"
   )
 end
 
@@ -71,14 +71,14 @@ end
 ---@param silent? boolean if true then don't sent a notification
 function M.tabline(silent)
   vim.opt.showtabline = vim.opt.showtabline:get() == 0 and 2 or 0
-  ui_notify(silent, string.format("tabline %s", bool2str(vim.opt.showtabline:get() == 2)))
+  ui_notify(silent, ("tabline %s"):format(bool2str(vim.opt.showtabline:get() == 2)))
 end
 
 --- Toggle conceal=2|0
 ---@param silent? boolean if true then don't sent a notification
 function M.conceal(silent)
   vim.opt.conceallevel = vim.opt.conceallevel:get() == 0 and 2 or 0
-  ui_notify(silent, string.format("conceal %s", bool2str(vim.opt.conceallevel:get() == 2)))
+  ui_notify(silent, ("conceal %s"):format(bool2str(vim.opt.conceallevel:get() == 2)))
 end
 
 --- Toggle laststatus=3|2|0
@@ -96,7 +96,7 @@ function M.statusline(silent)
     vim.opt.laststatus = 0
     status = "off"
   end
-  ui_notify(silent, string.format("statusline %s", status))
+  ui_notify(silent, ("statusline %s"):format(status))
 end
 
 --- Toggle signcolumn="auto"|"no"
@@ -109,7 +109,7 @@ function M.signcolumn(silent)
   else
     vim.wo.signcolumn = "no"
   end
-  ui_notify(silent, string.format("signcolumn=%s", vim.wo.signcolumn))
+  ui_notify(silent, ("signcolumn=%s"):format(vim.wo.signcolumn))
 end
 
 --- Set the indent and tab related numbers
@@ -124,7 +124,7 @@ function M.indent(silent)
     vim.bo.tabstop = indent -- local to buffer
     vim.bo.softtabstop = indent -- local to buffer
     vim.bo.shiftwidth = indent -- local to buffer
-    ui_notify(silent, string.format("indent=%d %s", indent, vim.bo.expandtab and "expandtab" or "noexpandtab"))
+    ui_notify(silent, ("indent=%d %s"):format(indent, vim.bo.expandtab and "expandtab" or "noexpandtab"))
   end
 end
 
@@ -139,7 +139,7 @@ function M.buffer_indent_guides(bufnr, silent)
   pcall(require("mini.indentscope")[vim.b[bufnr][indentscope] and "undraw" or "draw"])
   local ibl_avail, ibl = pcall(require, "ibl")
   if ibl_avail then ibl.setup_buffer(bufnr, { enabled = not vim.b[bufnr][indentscope] }) end
-  ui_notify(silent, string.format("indent guides %s", bool2str(not vim.b[bufnr][indentscope])))
+  ui_notify(silent, ("indent guides %s"):format(bool2str(not vim.b[bufnr][indentscope])))
 end
 
 --- Change the number display modes
@@ -156,31 +156,28 @@ function M.number(silent)
   else -- not number and relativenumber
     vim.wo.relativenumber = false
   end
-  ui_notify(
-    silent,
-    string.format("number %s, relativenumber %s", bool2str(vim.wo.number), bool2str(vim.wo.relativenumber))
-  )
+  ui_notify(silent, ("number %s, relativenumber %s"):format(bool2str(vim.wo.number), bool2str(vim.wo.relativenumber)))
 end
 
 --- Toggle spell
 ---@param silent? boolean if true then don't sent a notification
 function M.spell(silent)
   vim.wo.spell = not vim.wo.spell -- local to window
-  ui_notify(silent, string.format("spell %s", bool2str(vim.wo.spell)))
+  ui_notify(silent, ("spell %s"):format(bool2str(vim.wo.spell)))
 end
 
 --- Toggle paste
 ---@param silent? boolean if true then don't sent a notification
 function M.paste(silent)
   vim.opt.paste = not vim.opt.paste:get() -- local to window
-  ui_notify(silent, string.format("paste %s", bool2str(vim.opt.paste:get())))
+  ui_notify(silent, ("paste %s"):format(bool2str(vim.opt.paste:get())))
 end
 
 --- Toggle wrap
 ---@param silent? boolean if true then don't sent a notification
 function M.wrap(silent)
   vim.wo.wrap = not vim.wo.wrap -- local to window
-  ui_notify(silent, string.format("wrap %s", bool2str(vim.wo.wrap)))
+  ui_notify(silent, ("wrap %s"):format(bool2str(vim.wo.wrap)))
 end
 
 --- Toggle syntax highlighting and treesitter
@@ -200,7 +197,7 @@ function M.buffer_syntax(bufnr, silent)
     vim.bo[bufnr].syntax = "off"
     if astrolsp_avail and vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   end
-  ui_notify(silent, string.format("syntax %s", vim.bo[bufnr].syntax))
+  ui_notify(silent, ("syntax %s"):format(vim.bo[bufnr].syntax))
 end
 
 --- Toggle URL/URI syntax highlighting rules
@@ -209,7 +206,7 @@ function M.url_match(silent)
   local features = require("astrocore").config.features
   features.highlighturl = not features.highlighturl
   require("astrocore").set_url_match()
-  ui_notify(silent, string.format("URL highlighting %s", bool2str(features.highlighturl)))
+  ui_notify(silent, ("URL highlighting %s"):format(bool2str(features.highlighturl)))
 end
 
 local last_active_foldcolumn
@@ -219,7 +216,7 @@ function M.foldcolumn(silent)
   local curr_foldcolumn = vim.wo.foldcolumn
   if curr_foldcolumn ~= "0" then last_active_foldcolumn = curr_foldcolumn end
   vim.wo.foldcolumn = curr_foldcolumn == "0" and (last_active_foldcolumn or "1") or "0"
-  ui_notify(silent, string.format("foldcolumn=%s", vim.wo.foldcolumn))
+  ui_notify(silent, ("foldcolumn=%s"):format(vim.wo.foldcolumn))
 end
 
 return M
