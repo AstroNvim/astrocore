@@ -15,7 +15,7 @@ local function ui_notify(silent, ...) return not silent and require("astrocore")
 --- Toggle notifications for UI toggles
 ---@param silent? boolean if true then don't sent a notification
 function M.notifications(silent)
-  local features = require("astrocore").config.features
+  local features = assert(require("astrocore").config.features)
   features.notifications = not features.notifications
   ui_notify(silent, ("Notifications %s"):format(bool2str(features.notifications)))
 end
@@ -47,7 +47,7 @@ end
 --- Toggle cmp entrirely
 ---@param silent? boolean if true then don't sent a notification
 function M.cmp(silent)
-  local features = require("astrocore").config.features
+  local features = assert(require("astrocore").config.features)
   features.cmp = not features.cmp
   local ok, _ = pcall(require, "cmp")
   ui_notify(silent, ok and ("Global completion %s"):format(bool2str(features.cmp)) or "completion not available")
@@ -169,8 +169,9 @@ end
 --- Toggle paste
 ---@param silent? boolean if true then don't sent a notification
 function M.paste(silent)
-  vim.opt.paste = not vim.opt.paste:get() -- local to window
-  ui_notify(silent, ("paste %s"):format(bool2str(vim.opt.paste:get())))
+  local paste = not assert(vim.opt.paste):get()
+  vim.opt.paste = paste -- local to window
+  ui_notify(silent, ("paste %s"):format(bool2str(paste)))
 end
 
 --- Toggle wrap
@@ -203,7 +204,7 @@ end
 --- Toggle URL/URI syntax highlighting rules
 ---@param silent? boolean if true then don't sent a notification
 function M.url_match(silent)
-  local features = require("astrocore").config.features
+  local features = assert(require("astrocore").config.features)
   features.highlighturl = not features.highlighturl
   require("astrocore").set_url_match()
   ui_notify(silent, ("URL highlighting %s"):format(bool2str(features.highlighturl)))

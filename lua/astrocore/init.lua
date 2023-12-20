@@ -294,7 +294,7 @@ function M.cmd(cmd, show_error)
   if not success and (show_error == nil or show_error) then
     vim.api.nvim_err_writeln(("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result))
   end
-  return success and result:gsub("[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "") or nil
+  return success and assert(result):gsub("[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "") or nil
 end
 
 --- Get the first worktree that a file belongs to
@@ -304,7 +304,7 @@ end
 function M.file_worktree(file, worktrees)
   worktrees = worktrees or require("astrocore").config.git_worktrees
   if not worktrees then return end
-  file = file or vim.fn.expand "%"
+  file = file or vim.fn.expand "%" --[[@as string]]
   for _, worktree in ipairs(worktrees) do
     if
       M.cmd({
