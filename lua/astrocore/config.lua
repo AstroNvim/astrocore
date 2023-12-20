@@ -134,6 +134,7 @@
 ---}
 ---```
 ---@field mappings table<string,table<string,(table|string|false)?>?>?
+---@field _map_sections table<string,{ desc: string?, name: string? }>?
 ---Configuration of vim `on_key` functions.
 ---The key into the table is the namespace of the function and the value is a list like table of `on_key` functions
 ---Example:
