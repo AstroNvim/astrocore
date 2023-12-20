@@ -182,7 +182,7 @@ end
 function M.on_load(plugin, func)
   local lazy_config_avail, lazy_config = pcall(require, "lazy.core.config")
   if lazy_config_avail then
-    if lazy_config.plugins[plugin] and lazy_config.plugins[plugin]._.loaded then
+    if vim.tbl_get(lazy_config.plugins, plugin, "_", "loaded") then
       vim.schedule(func)
     else
       local autocmd
