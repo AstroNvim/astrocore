@@ -212,14 +212,14 @@ function astrocore.notify(msg: string, type: integer|nil, opts?: table)
 
 
 ```lua
-function astrocore.on_load(plugins: string|string[], func: fun())
+function astrocore.on_load(plugins: string|string[], load_op: string|fun()|string[])
 ```
 
  Execute a function when a specified plugin is loaded with Lazy.nvim, or immediately if already loaded
 
 *param* `plugins` — the name of the plugin or a list of plugins to defer the function execution on. If a list is provided, only one needs to be loaded to execute the provided function
 
-*param* `func` — the function to execute when the plugin is loaded
+*param* `load_op` — the function to execute when the plugin is loaded, a plugin name to load, or a list of plugin names to load
 
 ### plugin_opts
 

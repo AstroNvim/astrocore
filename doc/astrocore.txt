@@ -404,7 +404,7 @@ _param_ `opts` — The nvim-notify options to use (:help notify-options)
 ON_LOAD ~
 
 >lua
-    function astrocore.on_load(plugins: string|string[], func: fun())
+    function astrocore.on_load(plugins: string|string[], load_op: string|fun()|string[])
 <
 
 Execute a function when a specified plugin is loaded with Lazy.nvim, or
@@ -414,7 +414,8 @@ _param_ `plugins` — the name of the plugin or a list of plugins to defer the
 function execution on. If a list is provided, only one needs to be loaded to
 execute the provided function
 
-_param_ `func` — the function to execute when the plugin is loaded
+_param_ `load_op` — the function to execute when the plugin is loaded, a
+plugin name to load, or a list of plugin names to load
 
 
 PLUGIN_OPTS ~
