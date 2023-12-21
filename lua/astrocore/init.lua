@@ -177,26 +177,29 @@ function M.load_plugin_with_func(plugin, module, func_names)
 end
 
 --- Execute a function when a specified plugin is loaded with Lazy.nvim, or immediately if already loaded
----@param plugin string the name of the plugin to defer the function execution on
+---@param plugins string|string[] the name of the plugin or a list of plugins to defer the function execution on. If a list is provided, only one needs to be loaded to execute the provided function
 ---@param func fun() the function to execute when the plugin is loaded
-function M.on_load(plugin, func)
+function M.on_load(plugins, func)
+  if type(plugins) == "string" then plugins = { plugins } end
   local lazy_config_avail, lazy_config = pcall(require, "lazy.core.config")
   if lazy_config_avail then
-    if vim.tbl_get(lazy_config.plugins, plugin, "_", "loaded") then
-      vim.schedule(func)
-    else
-      local autocmd
-      autocmd = vim.api.nvim_create_autocmd("User", {
-        pattern = "LazyLoad",
-        desc = ("A function to be ran when %s is loaded"):format(plugin),
-        callback = function(args)
-          if args.data == plugin then
-            func()
-            if autocmd then vim.api.nvim_del_autocmd(autocmd) end
-          end
-        end,
-      })
+    for _, plugin in ipairs(plugins) do
+      if vim.tbl_get(lazy_config.plugins, plugin, "_", "loaded") then
+        vim.schedule(func)
+        return
+      end
     end
+    local autocmd
+    autocmd = vim.api.nvim_create_autocmd("User", {
+      pattern = "LazyLoad",
+      desc = ("A function to be ran when one of these plugins runs: %s"):format(vim.inspect(plugins)),
+      callback = function(args)
+        if vim.tbl_contains(plugins, args.data) then
+          func()
+          if autocmd then vim.api.nvim_del_autocmd(autocmd) end
+        end
+      end,
+    })
   end
 end
 
