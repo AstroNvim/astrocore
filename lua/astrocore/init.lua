@@ -246,7 +246,7 @@ end
 function M.set_mappings(map_table, base)
   local was_no_which_key_queue = not M.which_key_queue
   -- iterate over the first keys for each mode
-  base = base or {}
+  base = vim.tbl_deep_extend("force", { silent = true }, base or {})
   for mode, maps in pairs(map_table) do
     -- iterate over each keybinding set in the current mode
     for keymap, options in pairs(maps) do
