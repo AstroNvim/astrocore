@@ -50,15 +50,14 @@ end
 
 --- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `lst`)
 ---@param lst any[]|nil The list like table that you want to insert into
----@param vals any|any[] Either a list like table of values to be inserted or a single value to be inserted
+---@param ... any Values to be inserted
 ---@return any[] # The modified list like table
-function M.list_insert_unique(lst, vals)
+function M.list_insert_unique(lst, ...)
   if not lst then lst = {} end
   assert(vim.tbl_islist(lst), "Provided table is not a list like table")
-  if not vim.tbl_islist(vals) then vals = { vals } end
   local added = {}
   vim.tbl_map(function(v) added[v] = true end, lst)
-  for _, val in ipairs(vals) do
+  for _, val in ipairs { ... } do
     if not added[val] then
       table.insert(lst, val)
       added[val] = true
@@ -163,10 +162,9 @@ end
 --- A helper function to wrap a module function to require a plugin before running
 ---@param plugin string The plugin to call `require("lazy").load` with
 ---@param module table The system module where the functions live (e.g. `vim.ui`)
----@param func_names string|string[] The functions to wrap in the given module (e.g. `{ "ui", "select }`)
-function M.load_plugin_with_func(plugin, module, func_names)
-  if type(func_names) == "string" then func_names = { func_names } end
-  for _, func in ipairs(func_names) do
+---@param ... string The functions to wrap in the given module (e.g. `"ui", "select"`)
+function M.load_plugin_with_func(plugin, module, ...)
+  for _, func in ipairs { ... } do
     local old_func = module[func]
     module[func] = function(...)
       module[func] = old_func
