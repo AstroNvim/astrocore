@@ -19,6 +19,19 @@
 ---@class AstroCoreAutocmd: vim.api.keyset.create_autocmd
 ---@field event string|string[] Event(s) that will trigger the handler
 
+---@alias AstroCoreRooterSpec string|string[]|fun(bufnr: integer): (string|string[])
+
+---@class AstroCoreRooterIgnore
+---@field dirs string[]? a list of patterns that match directories to exclude from root detection
+---@field servers string[]? a list of language servers to exclude from root detection
+
+---@class AstroCoreRooterOpts
+---@field detector AstroCoreRooterSpec[]? a list of specifications for the rooter detection
+---@field ignore AstroCoreRooterIgnore? configure things to ignore from root detection
+---@field scope "global"|"tab"|"win"? what scope to change the working directory
+---@field autochdir boolean? whether or not to change working directory automatically
+---@field notify boolean? whether or not to notify on working directory change
+
 ---@class AstroCoreGitWorktree
 ---@field toplevel string the top level directory
 ---@field gitdir string the location of the git directory
@@ -188,6 +201,22 @@
 ---}
 ---```
 ---@field git_worktrees AstroCoreGitWorktree[]?
+---Enable git integration for detached worktrees
+---Example:
+--
+---```lua
+---rooter = {
+---  autochdir = true,
+---  detector = { "lsp", { ".git" } },
+---  ignore = {
+---    dirs = {},
+---    servers = {},
+---  }
+---  notify = false,
+---  scope = "global",
+---}
+---```
+---@field rooter AstroCoreRooterOpts|false?
 ---Configuration table of session options for AstroNvim's session management powered by Resession
 ---Example:
 --
@@ -220,6 +249,18 @@ local M = {
     notifications = true,
   },
   git_worktrees = nil,
+  -- enable by default once tested
+  -- rooter = {
+  --   detector = { "lsp", { ".git" } },
+  --   ignore = {
+  --     dirs = {},
+  --     servers = {},
+  --   },
+  --   scope = "global",
+  --   autochdir = true,
+  --   notify = false,
+  -- },
+  rooter = false,
   sessions = {
     autosave = { last = true, cwd = true },
     ignore = {
