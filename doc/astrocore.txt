@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2024 January 22
+*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2024 January 25
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -15,6 +15,7 @@ Table of Contents                                *astrocore-table-of-contents*
   - astrocore.buffer                      |astrocore-lua-api-astrocore.buffer|
   - astrocore.buffer.comparator|astrocore-lua-api-astrocore.buffer.comparator|
   - astrocore.mason                        |astrocore-lua-api-astrocore.mason|
+  - astrocore.rooter                      |astrocore-lua-api-astrocore.rooter|
   - astrocore.toggles                    |astrocore-lua-api-astrocore.toggles|
 
 ==============================================================================
@@ -880,6 +881,158 @@ UPDATE_ALL ~
 <
 
 Update all packages in Mason
+
+
+ASTROCORE.ROOTER                          *astrocore-lua-api-astrocore.rooter*
+
+AstroNvim Rooter
+
+Utilities necessary for automatic root detectoin
+
+This module can be loaded with `local rooter = require "astrocore.rooter"`
+
+copyright 2023 license GNU General Public License v3.0
+
+
+BUFPATH ~
+
+>lua
+    function astrocore.rooter.bufpath(bufnr: integer)
+      -> path: string?
+<
+
+Get the real path of a buffer
+
+_param_ `bufnr` — the buffer
+
+_return_ `path` — the real path
+
+
+DETECT ~
+
+>lua
+    function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
+      -> detected: AstroCoreRooterRoot[]
+<
+
+Detect roots in a given buffer
+
+_param_ `bufnr` — the buffer to detect
+
+_param_ `all` — whether to return all roots or just one
+
+_return_ `detected` — roots
+
+
+DISABLED ~
+
+>lua
+    boolean
+<
+
+
+EXISTS ~
+
+>lua
+    function astrocore.rooter.exists(path: string)
+      -> exists: boolean
+<
+
+Check if a path exists
+
+_param_ `path` — the path
+
+_return_ `exists` — whether or not the path exists
+
+
+INFO ~
+
+>lua
+    function astrocore.rooter.info(silent?: integer)
+      -> the: string
+<
+
+Get information information about the current root
+
+_param_ `silent` — whether or not to notify with verbose details
+
+_return_ `the` — currently detected root
+
+
+IS_EXCLUDED ~
+
+>lua
+    function astrocore.rooter.is_excluded(path: string)
+      -> excluded: boolean
+<
+
+Check if a path is excluded
+
+_param_ `path` — the path
+
+_return_ `excluded` — whether or not the path is excluded
+
+
+NORMPATH ~
+
+>lua
+    function astrocore.rooter.normpath(path: string)
+      -> string
+<
+
+Normalize path
+
+
+REALPATH ~
+
+>lua
+    function astrocore.rooter.realpath(path?: string)
+      -> the: string?
+<
+
+Resolve a given path
+
+_param_ `path` — the path to resolve
+
+_return_ `the` — resolved path
+
+
+RESOLVE ~
+
+>lua
+    function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[])
+      -> function
+<
+
+Resolve the root detection function for a given spec
+
+_param_ `spec` — the root detector specification
+
+
+ROOT ~
+
+>lua
+    function astrocore.rooter.root(bufnr?: integer)
+<
+
+Run the root detection and set the current working directory if a new root is
+detected
+
+_param_ `bufnr` — the buffer to detect
+
+
+SET_PWD ~
+
+>lua
+    function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot)
+      -> success: boolean
+<
+
+Set the current directory to a given root
+
+_param_ `root` — the root to set the pwd to
+
+_return_ `success` — whether or not the pwd was successfully set
 
 
 ASTROCORE.TOGGLES                        *astrocore-lua-api-astrocore.toggles*
