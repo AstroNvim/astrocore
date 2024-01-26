@@ -668,6 +668,10 @@ AstroNvim Rooter
 
 Utilities necessary for automatic root detectoin
 
+This module is heavily inspired by LazyVim and project.nvim
+https://github.com/ahmedkhalf/project.nvim
+https://github.com/LazyVim/LazyVim/blob/98db7ec0d287adcd8eaf6a93c4a392f588b5615a/lua/lazyvim/util/root.lua
+
 This module can be loaded with `local rooter = require "astrocore.rooter"`
 
 copyright 2023
@@ -703,13 +707,6 @@ function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
 
 *return* `detected` — roots
 
-### disabled
-
-
-```lua
-boolean
-```
-
 ### exists
 
 
@@ -728,15 +725,10 @@ function astrocore.rooter.exists(path: string)
 
 
 ```lua
-function astrocore.rooter.info(silent?: integer)
-  -> the: string
+function astrocore.rooter.info()
 ```
 
  Get information information about the current root
-
-*param* `silent` — whether or not to notify with verbose details
-
-*return* `the` — currently detected root
 
 ### is_excluded
 
@@ -824,6 +816,17 @@ This module can be loaded with `local ui = require("astrocore.toggles")`
 
 copyright 2023
 license GNU General Public License v3.0
+
+### autochdir
+
+
+```lua
+function astrocore.toggles.autochdir(silent?: boolean)
+```
+
+ Toggle rooter autochdir
+
+*param* `silent` — if true then don't sent a notification
 
 ### autopairs
 

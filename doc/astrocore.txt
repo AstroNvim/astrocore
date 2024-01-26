@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2024 January 25
+*astrocore.txt*        For Neovim >= 0.9.0        Last change: 2024 January 26
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -33,6 +33,7 @@ FEATURES                                        *astrocore-astrocore-features*
 - Easy toggles of UI/UX elements and features
 - Universal interface for setting up git worktrees
 - Tab local buffer management for a clean `tabline`
+- Project root detection with automatic `cd` features
 - Session management with resession.nvim <https://github.com/stevearc/resession.nvim/>
 
 
@@ -49,14 +50,14 @@ INSTALLATION                                *astrocore-astrocore-installation*
 Install the plugin with the lazy plugin manager:
 
 >lua
-    {
+    return {
       "AstroNvim/astrocore",
       dependencies = { "nvim-lua/plenary.nvim" },
       lazy = false, -- disable lazy loading
       priority = 10000, -- load AstroCore first
       opts = {
         -- set configuration options  as described below
-      }
+      },
     }
 <
 
@@ -64,11 +65,11 @@ Install the plugin with the lazy plugin manager:
   If you want to enable session management with resession.nvim
   <https://github.com/stevearc/resession.nvim/>, enable it in the setup:
 >lua
-    require('resession').setup({
-        extensions = {
-            astrocore = {}
-        }
-    })
+    require("resession").setup {
+      extensions = {
+        astrocore = {},
+      },
+    }
 <
 
 
@@ -80,7 +81,7 @@ usages:
 
 >lua
     ---@type AstroCoreConfig
-    {
+    local opts = {
       -- easily configure auto commands
       autocmds = {
         -- first key is the `augroup` (:h augroup)
@@ -150,6 +151,25 @@ usages:
       -- Enable git integration for detached worktrees
       git_worktrees = {
         { toplevel = vim.env.HOME, gitdir = vim.env.HOME .. "/.dotfiles" },
+      },
+      -- Configure project root detection, check status with `:AstroRootInfo`
+      rooter = {
+        -- list of detectors in order of prevalence, elements can be:
+        --   "lsp" : lsp detection
+        --   string[] : a list of directory patterns to look for
+        --   fun(bufnr: integer): string|string[] : a function that takes a buffer number and outputs detected roots
+        detector = { "lsp", { ".git", "_darcs", ".hg", ".bzr", ".svn", "lua", "Makefile", "package.json" } },
+        -- ignore things from root detection
+        ignore = {
+          servers = {}, -- list of language server names to ignore (Ex. { "efm" })
+          dirs = {}, -- list of directory patterns (Ex. { "~/.cargo/*" })
+        },
+        -- whether or not to disable automatic working directory updating (update with `:AstroRoot`)
+        autochdir = true,
+        -- scope of working directory to change ("global"|"tab"|"win")
+        scope = "global",
+        -- whether or not to notify on every working directory change
+        notify = false,
       },
       -- Configuration table of session options for AstroNvim's session management powered by Resession
       sessions = {
@@ -889,6 +909,10 @@ AstroNvim Rooter
 
 Utilities necessary for automatic root detectoin
 
+This module is heavily inspired by LazyVim and project.nvim
+https://github.com/ahmedkhalf/project.nvim
+https://github.com/LazyVim/LazyVim/blob/98db7ec0d287adcd8eaf6a93c4a392f588b5615a/lua/lazyvim/util/root.lua
+
 This module can be loaded with `local rooter = require "astrocore.rooter"`
 
 copyright 2023 license GNU General Public License v3.0
@@ -924,13 +948,6 @@ _param_ `all` — whether to return all roots or just one
 _return_ `detected` — roots
 
 
-DISABLED ~
-
->lua
-    boolean
-<
-
-
 EXISTS ~
 
 >lua
@@ -948,15 +965,10 @@ _return_ `exists` — whether or not the path exists
 INFO ~
 
 >lua
-    function astrocore.rooter.info(silent?: integer)
-      -> the: string
+    function astrocore.rooter.info()
 <
 
 Get information information about the current root
-
-_param_ `silent` — whether or not to notify with verbose details
-
-_return_ `the` — currently detected root
 
 
 IS_EXCLUDED ~
@@ -1044,6 +1056,17 @@ Utility functions for easy UI toggles.
 This module can be loaded with `local ui = require("astrocore.toggles")`
 
 copyright 2023 license GNU General Public License v3.0
+
+
+AUTOCHDIR ~
+
+>lua
+    function astrocore.toggles.autochdir(silent?: boolean)
+<
+
+Toggle rooter autochdir
+
+_param_ `silent` — if true then don’t sent a notification
 
 
 AUTOPAIRS ~
