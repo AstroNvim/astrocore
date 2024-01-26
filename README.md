@@ -8,6 +8,7 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 - Easy toggles of UI/UX elements and features
 - Universal interface for setting up git worktrees
 - Tab local buffer management for a clean `tabline`
+- Project root detection with automatic `cd` features
 - Session management with [resession.nvim][resession]
 
 ## ⚡️ Requirements
@@ -22,25 +23,25 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 Install the plugin with the lazy plugin manager:
 
 ```lua
-{
+return {
   "AstroNvim/astrocore",
   dependencies = { "nvim-lua/plenary.nvim" },
   lazy = false, -- disable lazy loading
   priority = 10000, -- load AstroCore first
   opts = {
     -- set configuration options  as described below
-  }
+  },
 }
 ```
 
 > 💡 If you want to enable session management with [resession.nvim][resession], enable it in the setup:
 
 ```lua
-require('resession').setup({
-    extensions = {
-        astrocore = {}
-    }
-})
+require("resession").setup {
+  extensions = {
+    astrocore = {},
+  },
+}
 ```
 
 ## ⚙️ Configuration
@@ -49,7 +50,7 @@ require('resession').setup({
 
 ```lua
 ---@type AstroCoreConfig
-{
+local opts = {
   -- easily configure auto commands
   autocmds = {
     -- first key is the `augroup` (:h augroup)
@@ -119,6 +120,25 @@ require('resession').setup({
   -- Enable git integration for detached worktrees
   git_worktrees = {
     { toplevel = vim.env.HOME, gitdir = vim.env.HOME .. "/.dotfiles" },
+  },
+  -- Configure project root detection, check status with `:AstroRootInfo`
+  rooter = {
+    -- list of detectors in order of prevalence, elements can be:
+    --   "lsp" : lsp detection
+    --   string[] : a list of directory patterns to look for
+    --   fun(bufnr: integer): string|string[] : a function that takes a buffer number and outputs detected roots
+    detector = { "lsp", { ".git", "_darcs", ".hg", ".bzr", ".svn", "lua", "Makefile", "package.json" } },
+    -- ignore things from root detection
+    ignore = {
+      servers = {}, -- list of language server names to ignore (Ex. { "efm" })
+      dirs = {}, -- list of directory patterns (Ex. { "~/.cargo/*" })
+    },
+    -- whether or not to disable automatic working directory updating (update with `:AstroRoot`)
+    autochdir = true,
+    -- scope of working directory to change ("global"|"tab"|"win")
+    scope = "global",
+    -- whether or not to notify on every working directory change
+    notify = false,
   },
   -- Configuration table of session options for AstroNvim's session management powered by Resession
   sessions = {

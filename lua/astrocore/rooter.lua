@@ -2,6 +2,10 @@
 ---
 ---Utilities necessary for automatic root detectoin
 ---
+---This module is heavily inspired by LazyVim and project.nvim
+---https://github.com/ahmedkhalf/project.nvim
+---https://github.com/LazyVim/LazyVim/blob/98db7ec0d287adcd8eaf6a93c4a392f588b5615a/lua/lazyvim/util/root.lua
+---
 ---This module can be loaded with `local rooter = require "astrocore.rooter"`
 ---
 ---copyright 2023
@@ -11,6 +15,11 @@ local M = { detectors = {} }
 
 ---@type AstroCoreRooterOpts
 local config = require("astrocore").config.rooter
+local vim_autochdir
+
+local notify = function(msg, level)
+  require("astrocore").notify(msg, level or vim.log.levels.INFO, { title = "AstroNvim Rooter" })
+end
 
 ---@class AstroCoreRooterRoot
 ---@field paths string[]
@@ -119,13 +128,13 @@ function M.detect(bufnr, all)
 end
 
 --- Get information information about the current root
----@param silent integer? whether or not to notify with verbose details
----@return string the currently detected root
-function M.info(silent)
-  local roots = M.detect(0, true)
-  if not silent then
+function M.info()
+  local lines = {}
+  if vim_autochdir then
+    table.insert(lines, "Rooting disabled when `autochdir` is set")
+  else
+    local roots = M.detect(0, true)
     local first = true
-    local lines = {}
     for _, root in ipairs(roots) do
       for _, path in ipairs(root.paths) do
         local surround = first and "**" or ""
@@ -154,9 +163,8 @@ function M.info(silent)
       if setting then table.insert(lines, key .. " = " .. vim.inspect(setting)) end
     end
     table.insert(lines, "```")
-    require("astrocore").notify(table.concat(lines, "\n"), vim.log.levels.INFO, { title = "AstroNvim Rooter" })
   end
-  return roots[1] and roots[1].paths[1] or vim.loop.cwd()
+  notify(table.concat(lines, "\n"))
 end
 
 --- Set the current directory to a given root
@@ -177,7 +185,7 @@ function M.set_pwd(root)
         vim.api.nvim_err_writeln(("Unable to parse scope: %s"):format(config.scope))
       end
 
-      if config.notify then vim.notify("Set CWD to " .. path .. " using " .. vim.inspect(root.spec)) end
+      if config.notify then notify(("Set CWD to `%s`"):format(path)) end
     end
     return true
   end
@@ -205,17 +213,16 @@ function M.exists(path) return vim.fn.empty(vim.fn.glob(path)) == 0 end
 function M.root(bufnr)
   -- add `autochdir` protection
   local autochdir = vim.opt.autochdir:get()
-  if not M.disabled and autochdir then
-    require("astrocore").notify("AstroNvim's rooter disabled, unset `autochdir` to re-enable", vim.log.levels.WARN)
-    M.disabled = true
-  elseif M.disabled and not autochdir then
-    M.disabled = false
+  if not vim_autochdir and autochdir then
+    notify("Rooting disabled, unset `autochdir` to re-enable", vim.log.levels.WARN)
+    vim_autochdir = true
+  elseif vim_autochdir and not autochdir then
+    vim_autochdir = false
   end
 
-  if M.disabled or vim.v.vim_did_enter == 0 then return end
+  if vim_autochdir or vim.v.vim_did_enter == 0 then return end
 
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-
   local root = M.detect(bufnr)[1]
   if root then M.set_pwd(root) end
 end

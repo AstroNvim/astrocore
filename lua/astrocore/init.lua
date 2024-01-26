@@ -374,6 +374,7 @@ function M.setup(opts)
     end
   end
 
+  -- initialize rooter
   if M.config.rooter then
     local root_config = M.config.rooter --[[@as AstroCoreRooterOpts]]
     vim.api.nvim_create_user_command(
@@ -388,26 +389,28 @@ function M.setup(opts)
     )
 
     local group = vim.api.nvim_create_augroup("rooter", { clear = true }) -- clear the augroup no matter what
-    if root_config.autochdir then
-      vim.api.nvim_create_autocmd({ "VimEnter", "BufEnter" }, {
+    vim.api.nvim_create_autocmd({ "VimEnter", "BufEnter" }, {
+      nested = true,
+      group = group,
+      desc = "Root detection when entering a buffer",
+      callback = function(args)
+        if root_config.autochdir then require("astrocore.rooter").root(args.buf) end
+      end,
+    })
+    if vim.tbl_contains(root_config.detector or {}, "lsp") then
+      vim.api.nvim_create_autocmd("LspAttach", {
         nested = true,
         group = group,
-        desc = "Root detection when entering a buffer",
-        callback = function(args) require("astrocore.rooter").root(args.buf) end,
-      })
-      if vim.tbl_contains(root_config.detector or {}, "lsp") then
-        vim.api.nvim_create_autocmd("LspAttach", {
-          nested = true,
-          group = group,
-          desc = "Root detection on LSP attach",
-          callback = function(args)
+        desc = "Root detection on LSP attach",
+        callback = function(args)
+          if root_config.autochdir then
             local server = assert(vim.lsp.get_client_by_id(args.data.client_id)).name
             if not vim.tbl_contains(vim.tbl_get(root_config, "ignore", "servers") or {}, server) then
               require("astrocore.rooter").root(args.buf)
             end
-          end,
-        })
-      end
+          end
+        end,
+      })
     end
   end
 end

@@ -12,6 +12,18 @@ local M = {}
 local function bool2str(bool) return bool and "on" or "off" end
 local function ui_notify(silent, ...) return not silent and require("astrocore").notify(...) end
 
+--- Toggle rooter autochdir
+---@param silent? boolean if true then don't sent a notification
+function M.autochdir(silent)
+  local root_config = require("astrocore").config.rooter
+  if not root_config then
+    ui_notify(silent, "Rooter not configured")
+  else
+    root_config.autochdir = not root_config.autochdir
+    ui_notify(silent, ("Rooter autochdir %s"):format(bool2str(root_config.autochdir)))
+  end
+end
+
 --- Toggle notifications for UI toggles
 ---@param silent? boolean if true then don't sent a notification
 function M.notifications(silent)

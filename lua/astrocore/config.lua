@@ -249,17 +249,6 @@ local M = {
     notifications = true,
   },
   git_worktrees = nil,
-  -- enable by default once tested
-  -- rooter = {
-  --   detector = { "lsp", { ".git" } },
-  --   ignore = {
-  --     dirs = {},
-  --     servers = {},
-  --   },
-  --   scope = "global",
-  --   autochdir = true,
-  --   notify = false,
-  -- },
   rooter = false,
   sessions = {
     autosave = { last = true, cwd = true },
