@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 01
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 02
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -1100,19 +1100,6 @@ BUFFER_CMP ~
 Toggle buffer local cmp
 
 _param_ `bufnr` — the buffer to toggle cmp completion on
-
-_param_ `silent` — if true then don’t sent a notification
-
-
-BUFFER_INDENT_GUIDES ~
-
->lua
-    function astrocore.toggles.buffer_indent_guides(bufnr?: integer, silent?: boolean)
-<
-
-Toggle indent guides
-
-_param_ `bufnr` — the buffer to toggle indent scope on
 
 _param_ `silent` — if true then don’t sent a notification
 
