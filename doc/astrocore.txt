@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 05
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 06
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -145,7 +145,7 @@ usages:
         cmp = true, -- enable or disable cmp on start
         highlighturl = true, -- enable or disable highlighting of urls on start
         -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
-        max_file = { size = 1024 * 100, lines = 10000 },
+        large_buf = { size = 1024 * 100, lines = 10000 },
         notifications = true, -- enable or disable notifications on start
       },
       -- Enable git integration for detached worktrees
@@ -285,12 +285,15 @@ _return_ — a table with entries for each map mode
 EVENT ~
 
 >lua
-    function astrocore.event(event: string)
+    function astrocore.event(event: string|vim.api.keyset_exec_autocmds, instant?: boolean)
 <
 
 Trigger an AstroNvim user event
 
-_param_ `event` — The event name to be appended to Astro
+_param_ `event` — The event pattern or full autocmd options (pattern always
+prepended with "Astro")
+
+_param_ `instant` — Whether or not to execute instantly or schedule
 
 
 EXTEND_TBL ~

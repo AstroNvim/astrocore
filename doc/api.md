@@ -79,12 +79,14 @@ function astrocore.empty_map_table()
 
 
 ```lua
-function astrocore.event(event: string)
+function astrocore.event(event: string|vim.api.keyset_exec_autocmds, instant?: boolean)
 ```
 
  Trigger an AstroNvim user event
 
-*param* `event` — The event name to be appended to Astro
+*param* `event` — The event pattern or full autocmd options (pattern always prepended with "Astro")
+
+*param* `instant` — Whether or not to execute instantly or schedule
 
 ### extend_tbl
 
