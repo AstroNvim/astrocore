@@ -98,9 +98,17 @@ function M.notify(msg, type, opts)
 end
 
 --- Trigger an AstroNvim user event
----@param event string The event name to be appended to Astro
-function M.event(event)
-  vim.schedule(function() vim.api.nvim_exec_autocmds("User", { pattern = "Astro" .. event, modeline = false }) end)
+---@param event string|vim.api.keyset_exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
+---@param instant boolean? Whether or not to execute instantly or schedule
+function M.event(event, instant)
+  if type(event) == "string" then event = { pattern = event } end
+  event = M.extend_tbl({ modeline = false }, event)
+  event.pattern = "Astro" .. event.pattern
+  if instant then
+    vim.api.nvim_exec_autocmds("User", event)
+  else
+    vim.schedule(function() vim.api.nvim_exec_autocmds("User", event) end)
+  end
 end
 
 --- Open a URL under the cursor with the current operating system
