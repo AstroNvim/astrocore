@@ -80,12 +80,12 @@
 ---Example:
 ---
 ---```lua
----max_file = {
+---large_buf = {
 ---  size = 1024 * 100,
 ---  lines = 10000
 ---},
 ---```
----@field max_file AstroCoreMaxFile?
+---@field large_buf AstroCoreMaxFile?
 ---@field notifications boolean? enable or disable notifications on start (boolean; default = true)
 
 ---@class AstroCoreOpts
@@ -188,7 +188,7 @@
 ---  cmp = true,
 ---  highlighturl = true,
 ---  notiifcations = true,
----  max_file = { size = 1024 * 100, lines = 10000 },
+---  large_buf = { size = 1024 * 100, lines = 10000 },
 ---}
 ---```
 ---@field features AstroCoreFeatureOpts?
@@ -245,7 +245,7 @@ local M = {
     autopairs = true,
     cmp = true,
     highlighturl = true,
-    max_file = { size = 1024 * 100, lines = 10000 },
+    large_buf = { size = 1024 * 100, lines = 10000 },
     notifications = true,
   },
   git_worktrees = nil,

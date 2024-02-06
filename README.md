@@ -114,7 +114,7 @@ local opts = {
     cmp = true, -- enable or disable cmp on start
     highlighturl = true, -- enable or disable highlighting of urls on start
     -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
-    max_file = { size = 1024 * 100, lines = 10000 },
+    large_buf = { size = 1024 * 100, lines = 10000 },
     notifications = true, -- enable or disable notifications on start
   },
   -- Enable git integration for detached worktrees
