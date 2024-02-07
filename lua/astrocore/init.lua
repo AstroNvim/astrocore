@@ -398,6 +398,23 @@ function M.setup(opts)
     end
   end
 
+  local large_buf = M.config.features.large_buf
+  if large_buf then
+    vim.api.nvim_create_autocmd("BufRead", {
+      group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
+      desc = "Root detection when entering a buffer",
+      callback = function(args)
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(args.buf))
+        if
+          (ok and stats and stats.size > large_buf.size) or vim.api.nvim_buf_line_count(args.buf) > large_buf.lines
+        then
+          vim.b[args.buf].large_buf = true
+          M.event("LargeBuf", true)
+        end
+      end,
+    })
+  end
+
   -- initialize rooter
   if M.config.rooter then
     local root_config = M.config.rooter --[[@as AstroCoreRooterOpts]]

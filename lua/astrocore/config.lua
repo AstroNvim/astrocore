@@ -77,6 +77,7 @@
 ---@field cmp boolean? enable or disable cmp on start (boolean; default = true)
 ---@field highlighturl boolean? enable or disable highlighting of urls on start (boolean; default = true)
 ---table for defining the size of the max file for all features, above these limits we disable features like treesitter.
+---value can also be `false` to disable large buffer detection.
 ---Example:
 ---
 ---```lua
@@ -85,7 +86,7 @@
 ---  lines = 10000
 ---},
 ---```
----@field large_buf AstroCoreMaxFile?
+---@field large_buf AstroCoreMaxFile|false?
 ---@field notifications boolean? enable or disable notifications on start (boolean; default = true)
 
 ---@class AstroCoreOpts
