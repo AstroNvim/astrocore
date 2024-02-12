@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 07
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 12
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -75,8 +75,8 @@ Install the plugin with the lazy plugin manager:
 
 CONFIGURATION                              *astrocore-astrocore-configuration*
 
-**AstroCore** comes with the no defaults, but can be configured fully through
-the `opts` table in lazy. Here are descriptions of the options and some example
+**AstroCore** comes with no defaults, but can be configured fully through the
+`opts` table in lazy. Here are descriptions of the options and some example
 usages:
 
 >lua
