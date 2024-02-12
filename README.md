@@ -46,7 +46,7 @@ require("resession").setup {
 
 ## ⚙️ Configuration
 
-**AstroCore** comes with the no defaults, but can be configured fully through the `opts` table in lazy. Here are descriptions of the options and some example usages:
+**AstroCore** comes with no defaults, but can be configured fully through the `opts` table in lazy. Here are descriptions of the options and some example usages:
 
 ```lua
 ---@type AstroCoreConfig
