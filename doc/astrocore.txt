@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 12
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 13
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -137,6 +137,17 @@ usages:
               if vim.opt.hlsearch:get() ~= new_hlsearch then vim.opt.hlsearch = new_hlsearch end
             end
           end,
+        },
+      },
+      -- easily configure vim options
+      options = {
+        -- first key is the type of option `vim.<first_key>`
+        opt = {
+          relativenumber = true, -- sets `vim.opt.relativenumber`
+          signcolumn = "auto", -- sets `vim.opt.relativenumber`
+        },
+        g = {
+          -- set global `vim.g` settings here
         },
       },
       -- configure AstroNvim features
