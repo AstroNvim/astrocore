@@ -108,6 +108,17 @@ local opts = {
       end,
     },
   },
+  -- easily configure vim options
+  options = {
+    -- first key is the type of option `vim.<first_key>`
+    opt = {
+      relativenumber = true, -- sets `vim.opt.relativenumber`
+      signcolumn = "auto", -- sets `vim.opt.relativenumber`
+    },
+    g = {
+      -- set global `vim.g` settings here
+    },
+  },
   -- configure AstroNvim features
   features = {
     autopairs = true, -- enable or disable autopairs on start

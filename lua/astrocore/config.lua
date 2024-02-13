@@ -180,6 +180,23 @@
 ---},
 ---```
 ---@field on_keys table<string,fun(key:string)[]|false>?
+---Configuration of `vim` options (`vim.<first_key>.<second_key> = value`)
+---The first key into the table is the type of option and the second key is the setting
+---Example:
+---
+---```lua
+---options = {
+---  -- first key is the type of option
+---  opt = { -- (`vim.opt`)
+---    relativenumber = true, -- sets `vim.opt.relativenumber`
+---    signcolumn = "auto", -- sets `vim.opt.signcolumn`
+---  },
+---  g = { -- (`vim.g`)
+---    -- set global `vim.g.<key>` settings here
+---  }
+---}
+---```
+---@field options table<string,table<string,any>>?
 ---Configuration table of features provided by AstroCore
 ---Example:
 --
@@ -242,6 +259,7 @@ local M = {
   commands = {},
   mappings = {},
   on_keys = {},
+  options = {},
   features = {
     autopairs = true,
     cmp = true,

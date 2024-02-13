@@ -361,6 +361,14 @@ end
 function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts)
 
+  -- options
+  if vim.bo.filetype == "lazy" then vim.cmd.bw() end
+  for scope, settings in pairs(M.config.options) do
+    for setting, value in pairs(settings) do
+      vim[scope][setting] = value
+    end
+  end
+
   -- mappings
   M.set_mappings(M.config.mappings)
 
