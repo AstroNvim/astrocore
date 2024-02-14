@@ -341,22 +341,6 @@ _return_ — a table specifying the `toplevel` and `gitdir` of a worktree or
 nil if not found
 
 
-GET_HLGROUP ~
-
->lua
-    function astrocore.get_hlgroup(name: string, fallback?: table)
-      -> properties: table
-<
-
-Get highlight properties for a given highlight name
-
-_param_ `name` — The highlight group name
-
-_param_ `fallback` — The fallback highlight properties
-
-_return_ `properties` — the highlight group properties
-
-
 GET_PLUGIN ~
 
 >lua

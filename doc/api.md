@@ -120,22 +120,6 @@ function astrocore.file_worktree(file?: string, worktrees?: table<string, string
 
 *return* — a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 
-### get_hlgroup
-
-
-```lua
-function astrocore.get_hlgroup(name: string, fallback?: table)
-  -> properties: table
-```
-
- Get highlight properties for a given highlight name
-
-*param* `name` — The highlight group name
-
-*param* `fallback` — The fallback highlight properties
-
-*return* `properties` — the highlight group properties
-
 ### get_plugin
 
 
