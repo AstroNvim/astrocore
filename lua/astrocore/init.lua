@@ -56,7 +56,9 @@ function M.list_insert_unique(lst, ...)
   if not lst then lst = {} end
   assert(vim.tbl_islist(lst), "Provided table is not a list like table")
   local added = {}
-  vim.tbl_map(function(v) added[v] = true end, lst)
+  for _, val in ipairs(lst) do
+    added[val] = true
+  end
   for _, val in ipairs { ... } do
     if not added[val] then
       table.insert(lst, val)
