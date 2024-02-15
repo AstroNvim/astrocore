@@ -173,14 +173,14 @@ end
 ---@param module table The system module where the functions live (e.g. `vim.ui`)
 ---@param ... string The functions to wrap in the given module (e.g. `"ui", "select"`)
 function M.load_plugin_with_func(plugin, module, ...)
-  for _, func in ipairs { ... } do
+  for _, func in ipairs(vim.F.pack_len(...)) do
     local old_func = module[func]
     module[func] = function(...)
       module[func] = old_func
-      local vars = { ... }
+      local vars = vim.F.pack_len(...)
       vim.schedule(function()
         require("lazy").load { plugins = { plugin } }
-        module[func]((unpack or table.unpack)(vars))
+        module[func](vim.F.unpack_len(vars))
       end)
     end
   end
