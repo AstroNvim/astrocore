@@ -14,7 +14,6 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 ## ⚡️ Requirements
 
 - Neovim >= 0.9
-- [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
 - [lazy.nvim](https://github.com/folke/lazy.nvim)
 - [resession.nvim][resession] (_optional_)
 
@@ -25,7 +24,6 @@ Install the plugin with the lazy plugin manager:
 ```lua
 return {
   "AstroNvim/astrocore",
-  dependencies = { "nvim-lua/plenary.nvim" },
   lazy = false, -- disable lazy loading
   priority = 10000, -- load AstroCore first
   opts = {

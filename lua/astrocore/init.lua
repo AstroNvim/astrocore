@@ -32,18 +32,10 @@ end
 
 --- Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
 function M.reload()
-  local was_modifiable = vim.opt.modifiable:get()
-
-  local reload_module = require("plenary.reload").reload_module
-  reload_module "astronivm.options"
-  if package.loaded["config.options"] then reload_module "config.options" end
-
+  local lazy, was_modifiable = require "lazy", vim.opt.modifiable:get()
   if not was_modifiable then vim.opt.modifiable = true end
-  local success, fault = pcall(require, "astronvim.options")
-  if not success then vim.api.nvim_err_writeln("Failed to load " .. module .. "\n\n" .. fault) end
-  if not was_modifiable then vim.opt.modifiable = false end
-  local lazy = require "lazy"
   lazy.reload { plugins = { M.get_plugin "astrocore" } }
+  if not was_modifiable then vim.opt.modifiable = false end
   if M.is_available "astroui" then lazy.reload { plugins = { M.get_plugin "astroui" } } end
   vim.cmd.doautocmd "ColorScheme"
 end
