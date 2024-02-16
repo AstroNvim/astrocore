@@ -196,14 +196,13 @@ function M.on_load(plugins, load_op)
         return
       end
     end
-    local autocmd
-    autocmd = vim.api.nvim_create_autocmd("User", {
+    vim.api.nvim_create_autocmd("User", {
       pattern = "LazyLoad",
       desc = ("A function to be ran when one of these plugins runs: %s"):format(vim.inspect(plugins)),
       callback = function(args)
         if vim.tbl_contains(plugins, args.data) then
           load_op()
-          if autocmd then vim.api.nvim_del_autocmd(autocmd) end
+          return true
         end
       end,
     })
