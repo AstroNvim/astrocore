@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 15
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 16
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -40,7 +40,6 @@ FEATURES                                        *astrocore-astrocore-features*
 REQUIREMENTS                                *astrocore-astrocore-requirements*
 
 - Neovim >= 0.9
-- plenary.nvim <https://github.com/nvim-lua/plenary.nvim>
 - lazy.nvim <https://github.com/folke/lazy.nvim>
 - resession.nvim <https://github.com/stevearc/resession.nvim/> (_optional_)
 
@@ -52,7 +51,6 @@ Install the plugin with the lazy plugin manager:
 >lua
     return {
       "AstroNvim/astrocore",
-      dependencies = { "nvim-lua/plenary.nvim" },
       lazy = false, -- disable lazy loading
       priority = 10000, -- load AstroCore first
       opts = {
