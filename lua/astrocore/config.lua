@@ -219,19 +219,23 @@
 ---}
 ---```
 ---@field git_worktrees AstroCoreGitWorktree[]?
----Enable git integration for detached worktrees
+---Enable and configure project root detection
 ---Example:
 --
 ---```lua
 ---rooter = {
----  autochdir = true,
----  detector = { "lsp", { ".git" } },
+---  detector = {
+---    "lsp", -- highest priority is getting workspace from running language servers
+---    { ".git", "_darcs", ".hg", ".bzr", ".svn" }, -- next check for a version controlled parent directory
+---    { "lua", "MakeFile", "package.json" }, -- lastly check for known project root files
+---  },
 ---  ignore = {
----    dirs = {},
----    servers = {},
----  }
----  notify = false,
----  scope = "global",
+---    servers = {}, -- list of language server names to ignore (Ex. { "efm" })
+---    dirs = {}, -- list of directory patterns (Ex. { "~/.cargo/*" })
+---  },
+---  autochdir = false, -- automatically update working directory
+---  scope = "global", -- scope of working directory to change ("global"|"tab"|"win")
+---  notify = false, -- show notification on every working directory change
 ---}
 ---```
 ---@field rooter AstroCoreRooterOpts|false?

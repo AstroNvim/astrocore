@@ -136,17 +136,21 @@ local opts = {
     --   "lsp" : lsp detection
     --   string[] : a list of directory patterns to look for
     --   fun(bufnr: integer): string|string[] : a function that takes a buffer number and outputs detected roots
-    detector = { "lsp", { ".git", "_darcs", ".hg", ".bzr", ".svn", "lua", "Makefile", "package.json" } },
+    detector = {
+      "lsp", -- highest priority is getting workspace from running language servers
+      { ".git", "_darcs", ".hg", ".bzr", ".svn" }, -- next check for a version controlled parent directory
+      { "lua", "MakeFile", "package.json" }, -- lastly check for known project root files
+    },
     -- ignore things from root detection
     ignore = {
       servers = {}, -- list of language server names to ignore (Ex. { "efm" })
       dirs = {}, -- list of directory patterns (Ex. { "~/.cargo/*" })
     },
-    -- whether or not to disable automatic working directory updating (update with `:AstroRoot`)
-    autochdir = true,
+    -- automatically update working directory (update manually with `:AstroRoot`)
+    autochdir = false,
     -- scope of working directory to change ("global"|"tab"|"win")
     scope = "global",
-    -- whether or not to notify on every working directory change
+    -- show notification on every working directory change
     notify = false,
   },
   -- Configuration table of session options for AstroNvim's session management powered by Resession
