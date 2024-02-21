@@ -106,8 +106,8 @@ function M.system_open(path)
       cmd = { "cmd.exe", "/K", "explorer" }
     end
   elseif vim.fn.has "unix" == 1 then
-    if vim.fn.executable "wslview" == 1 then
-      cmd = { "wslview" }
+    if vim.fn.executable "explorer.exe" == 1 then
+      cmd = { "explorer.exe" }
     elseif vim.fn.executable "xdg-open" == 1 then
       cmd = { "xdg-open" }
     end
