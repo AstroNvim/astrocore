@@ -40,24 +40,24 @@ function M.reload()
   vim.cmd.doautocmd "ColorScheme"
 end
 
---- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `lst`)
----@param lst any[]|nil The list like table that you want to insert into
----@param ... any Values to be inserted
+--- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `dst`)
+---@param dst any[]|nil The list like table that you want to insert into
+---@param src any[] Values to be inserted
 ---@return any[] # The modified list like table
-function M.list_insert_unique(lst, ...)
-  if not lst then lst = {} end
-  assert(vim.tbl_islist(lst), "Provided table is not a list like table")
+function M.list_insert_unique(dst, src)
+  if not dst then dst = {} end
+  assert(vim.tbl_islist(dst), "Provided table is not a list like table")
   local added = {}
-  for _, val in ipairs(lst) do
+  for _, val in ipairs(dst) do
     added[val] = true
   end
-  for _, val in ipairs { ... } do
+  for _, val in ipairs(src) do
     if not added[val] then
-      table.insert(lst, val)
+      table.insert(dst, val)
       added[val] = true
     end
   end
-  return lst
+  return dst
 end
 
 --- Call function if a condition is met
@@ -163,9 +163,10 @@ end
 --- A helper function to wrap a module function to require a plugin before running
 ---@param plugin string The plugin to call `require("lazy").load` with
 ---@param module table The system module where the functions live (e.g. `vim.ui`)
----@param ... string The functions to wrap in the given module (e.g. `"ui", "select"`)
-function M.load_plugin_with_func(plugin, module, ...)
-  for _, func in ipairs(vim.F.pack_len(...)) do
+---@param funcs string|string[] The functions to wrap in the given module (e.g. `"ui", "select"`)
+function M.load_plugin_with_func(plugin, module, funcs)
+  if type(funcs) == "string" then funcs = { funcs } end
+  for _, func in ipairs(funcs) do
     local old_func = module[func]
     module[func] = function(...)
       module[func] = old_func
