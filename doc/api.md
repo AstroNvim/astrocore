@@ -152,15 +152,15 @@ function astrocore.is_available(plugin: string)
 
 
 ```lua
-function astrocore.list_insert_unique(lst: any[]|nil, ...any)
+function astrocore.list_insert_unique(dst: any[]|nil, src: any[])
   -> any[]
 ```
 
- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `lst`)
+ Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `dst`)
 
-*param* `lst` — The list like table that you want to insert into
+*param* `dst` — The list like table that you want to insert into
 
-*param* `...` — Values to be inserted
+*param* `src` — Values to be inserted
 
 *return* — The modified list like table
 
@@ -168,7 +168,7 @@ function astrocore.list_insert_unique(lst: any[]|nil, ...any)
 
 
 ```lua
-function astrocore.load_plugin_with_func(plugin: string, module: table, ...string)
+function astrocore.load_plugin_with_func(plugin: string, module: table, funcs: string|string[])
 ```
 
  A helper function to wrap a module function to require a plugin before running
@@ -177,7 +177,7 @@ function astrocore.load_plugin_with_func(plugin: string, module: table, ...strin
 
 *param* `module` — The system module where the functions live (e.g. `vim.ui`)
 
-*param* `...` — The functions to wrap in the given module (e.g. `"ui", "select"`)
+*param* `funcs` — The functions to wrap in the given module (e.g. `"ui", "select"`)
 
 ### notify
 

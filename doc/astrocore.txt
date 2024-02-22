@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 21
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 22
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -375,16 +375,16 @@ _return_ `available` — Whether the plugin is available
 LIST_INSERT_UNIQUE ~
 
 >lua
-    function astrocore.list_insert_unique(lst: any[]|nil, ...any)
+    function astrocore.list_insert_unique(dst: any[]|nil, src: any[])
       -> any[]
 <
 
 Insert one or more values into a list like table and maintain that you do not
-insert non-unique values (THIS MODIFIES `lst`)
+insert non-unique values (THIS MODIFIES `dst`)
 
-_param_ `lst` — The list like table that you want to insert into
+_param_ `dst` — The list like table that you want to insert into
 
-_param_ `...` — Values to be inserted
+_param_ `src` — Values to be inserted
 
 _return_ — The modified list like table
 
@@ -392,7 +392,7 @@ _return_ — The modified list like table
 LOAD_PLUGIN_WITH_FUNC ~
 
 >lua
-    function astrocore.load_plugin_with_func(plugin: string, module: table, ...string)
+    function astrocore.load_plugin_with_func(plugin: string, module: table, funcs: string|string[])
 <
 
 A helper function to wrap a module function to require a plugin before running
@@ -402,7 +402,7 @@ _param_ `plugin` — The plugin to call `require("lazy").load` with
 _param_ `module` — The system module where the functions live
 (e.g. `vim.ui`)
 
-_param_ `...` — The functions to wrap in the given module (e.g. `"ui",
+_param_ `funcs` — The functions to wrap in the given module (e.g. `"ui",
 "select"`)
 
 
