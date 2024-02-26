@@ -104,7 +104,7 @@ function M.detect(bufnr, all)
   if not require("astrocore.buffer").is_valid(bufnr) then return ret end
 
   local path = M.bufpath(bufnr)
-  if path and (not M.exists(path) or M.is_excluded(path)) then return ret end
+  if path and M.is_excluded(path) then return ret end
 
   for _, spec in ipairs(config.detector or {}) do
     local paths = M.resolve(spec)(bufnr)
@@ -202,11 +202,6 @@ function M.is_excluded(path)
   end
   return false
 end
-
---- Check if a path exists
----@param path string the path
----@return boolean exists whether or not the path exists
-function M.exists(path) return vim.fn.empty(vim.fn.glob(path)) == 0 end
 
 --- Run the root detection and set the current working directory if a new root is detected
 ---@param bufnr integer? the buffer to detect
