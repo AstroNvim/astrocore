@@ -948,20 +948,6 @@ _param_ `all` — whether to return all roots or just one
 _return_ `detected` — roots
 
 
-EXISTS ~
-
->lua
-    function astrocore.rooter.exists(path: string)
-      -> exists: boolean
-<
-
-Check if a path exists
-
-_param_ `path` — the path
-
-_return_ `exists` — whether or not the path exists
-
-
 INFO ~
 
 >lua
