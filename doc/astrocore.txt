@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2024 February 26
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 01
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -102,6 +102,19 @@ usages:
           function() require("astrocore").reload() end,
           -- the rest are options for creating user commands (:h nvim_create_user_command)
           desc = "Reload AstroNvim (Experimental)",
+        },
+      },
+      -- passed to `vim.filetype.add`
+      filetypes = {
+        -- see `:h vim.filetype.add` for usage
+        extension = {
+          foo = "fooscript",
+        },
+        filename = {
+          [".foorc"] = "fooscript",
+        },
+        pattern = {
+          [".*/etc/foo/.*"] = "fooscript",
         },
       },
       -- Configuration of vim mappings to create
