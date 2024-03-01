@@ -73,6 +73,19 @@ local opts = {
       desc = "Reload AstroNvim (Experimental)",
     },
   },
+  -- passed to `vim.filetype.add`
+  filetypes = {
+    -- see `:h vim.filetype.add` for usage
+    extension = {
+      foo = "fooscript",
+    },
+    filename = {
+      [".foorc"] = "fooscript",
+    },
+    pattern = {
+      [".*/etc/foo/.*"] = "fooscript",
+    },
+  },
   -- Configuration of vim mappings to create
   mappings = {
     -- map mode (:h map-modes)

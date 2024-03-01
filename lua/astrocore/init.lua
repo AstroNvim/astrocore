@@ -376,6 +376,9 @@ function M.setup(opts)
     end
   end
 
+  -- vim.filetype
+  if M.config.filetypes then vim.filetype.add(M.config.filetypes) end
+
   -- on_key hooks
   for namespace, funcs in pairs(M.config.on_keys) do
     if funcs then

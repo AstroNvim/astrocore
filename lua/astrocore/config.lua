@@ -128,6 +128,26 @@
 ---}
 ---```
 ---@field commands table<string,AstroCoreCommand|false>?
+---Configuration of filetypes, simply runs `vim.filetype.add`
+---
+---See `:h vim.filetype.add` for details on usage
+---
+---Example:
+---
+---```lua
+---filetypes = { -- parameter to `vim.filetype.add`
+---  extension = {
+---    foo = "fooscript"
+---  },
+---  filename = {
+---    [".foorc"] = "fooscript"
+---  },
+---  pattern = {
+---    [".*/etc/foo/.*"] = "fooscript",
+---  }
+---}
+---```
+---@field filetypes vim.filetype.add.filetypes?
 ---Configuration of vim mappings to create.
 ---The first key into the table is the vim map mode (`:h map-modes`), and the value is a table of entries to be passed to `vim.keymap.set` (`:h vim.keymap.set`):
 ---  - The key is the first parameter or the vim mode (only a single mode supported) and the value is a table of keymaps within that mode:
@@ -260,6 +280,7 @@
 ---@type AstroCoreOpts
 local M = {
   autocmds = {},
+  filetypes = {},
   commands = {},
   mappings = {},
   on_keys = {},
