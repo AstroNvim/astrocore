@@ -14,6 +14,9 @@ M.config = require "astrocore.config"
 --- A table to manage ToggleTerm terminals created by the user, indexed by the command run and then the instance number
 ---@type table<string,table<integer,table>>
 M.user_terminals = {}
+--- A table of settings for different levels of diagnostics
+---@type table<integer,vim.diagnostic.Opts>
+M.diagnostics = { [0] = {}, {}, {}, {} }
 
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
@@ -389,13 +392,52 @@ function M.setup(opts)
     end
   end
 
+  -- sign definition
+  -- TODO: Remove when dropping support for Neovim v0.9
+  -- Backwards compatibility of new diagnostic sign API to Neovim v0.9
+  if vim.fn.has "nvim-0.10" ~= 1 then
+    local signs = vim.tbl_get(M.config, "diagnostics", "signs") or {}
+    if not M.config.signs then M.config.signs = {} end
+    for _, type in ipairs { "Error", "Hint", "Info", "Warn" } do
+      local name, severity = "DiagnosticSign" .. type, vim.diagnostic.severity[type:upper()]
+      if M.config.signs[name] == nil then M.config.signs[name] = { text = "" } end
+      if M.config.signs[name] then
+        if not M.config.signs[name].texthl then M.config.signs[name].texthl = name end
+        for attribute, severities in pairs(signs) do
+          if severities[severity] then M.config.signs[name][attribute] = severities[severity] end
+        end
+      end
+    end
+  end
+  for name, dict in pairs(M.config.signs or {}) do
+    if dict then vim.fn.sign_define(name, dict) end
+  end
+
+  -- setup diagnostics
+  M.diagnostics = {
+    -- diagnostics off
+    [0] = vim.tbl_deep_extend(
+      "force",
+      M.config.diagnostics,
+      { underline = false, virtual_text = false, signs = false, update_in_insert = false }
+    ) --[[@as vim.diagnostic.Opts]],
+    -- status only
+    vim.tbl_deep_extend("force", M.config.diagnostics, { virtual_text = false, signs = false }),
+    -- virtual text off, signs on
+    vim.tbl_deep_extend("force", M.config.diagnostics, { virtual_text = false }),
+    -- all diagnostics on
+    M.config.diagnostics,
+  }
+  vim.diagnostic.config(M.diagnostics[M.config.features.diagnostics_mode])
+
   local large_buf = M.config.features.large_buf
   if large_buf then
     vim.api.nvim_create_autocmd("BufRead", {
       group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
       desc = "Root detection when entering a buffer",
       callback = function(args)
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(args.buf))
+        -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
+        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(args.buf))
         if
           (ok and stats and stats.size > large_buf.size) or vim.api.nvim_buf_line_count(args.buf) > large_buf.lines
         then

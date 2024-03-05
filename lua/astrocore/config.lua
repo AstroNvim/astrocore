@@ -75,6 +75,7 @@
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
 ---@field cmp boolean? enable or disable cmp on start (boolean; default = true)
+---@field diagnostics_mode integer? diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = off; default = 3)
 ---@field highlighturl boolean? enable or disable highlighting of urls on start (boolean; default = true)
 ---table for defining the size of the max file for all features, above these limits we disable features like treesitter.
 ---value can also be `false` to disable large buffer detection.
@@ -128,6 +129,13 @@
 ---}
 ---```
 ---@field commands table<string,AstroCoreCommand|false>?
+---Configure diagnostics options (`:h vim.diagnostic.config()`)
+---Example:
+--
+---```lua
+---diagnostics = { update_in_insert = false },
+---```
+---@field diagnostics vim.diagnostic.Opts?
 ---Configuration of filetypes, simply runs `vim.filetype.add`
 ---
 ---See `:h vim.filetype.add` for details on usage
@@ -217,6 +225,15 @@
 ---}
 ---```
 ---@field options table<string,table<string,any>>?
+---Configure signs (`:h sign_define()`)
+---Example:
+--
+---```lua
+---signs = {
+---  { name = "DapBreakPoint", text = "", texthl = "DiagnosticInfo" },
+---},
+---```
+---@field signs table<string,vim.fn.sign_define.dict|false>?
 ---Configuration table of features provided by AstroCore
 ---Example:
 --
@@ -224,6 +241,7 @@
 ---features = {
 ---  autopairs = true,
 ---  cmp = true,
+---  diagnostics_mode = 3,
 ---  highlighturl = true,
 ---  notiifcations = true,
 ---  large_buf = { size = 1024 * 100, lines = 10000 },
@@ -280,14 +298,17 @@
 ---@type AstroCoreOpts
 local M = {
   autocmds = {},
-  filetypes = {},
   commands = {},
+  diagnostics = {},
+  filetypes = {},
   mappings = {},
   on_keys = {},
   options = {},
+  signs = {},
   features = {
     autopairs = true,
     cmp = true,
+    diagnostics_mode = 3,
     highlighturl = true,
     large_buf = { size = 1024 * 100, lines = 10000 },
     notifications = true,
