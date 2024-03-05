@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 01
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 05
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -104,6 +104,10 @@ usages:
           desc = "Reload AstroNvim (Experimental)",
         },
       },
+      -- Configure diagnostics options (`:h vim.diagnostic.config()`)
+      diagnostics = {
+        update_in_insert = false,
+      },
       -- passed to `vim.filetype.add`
       filetypes = {
         -- see `:h vim.filetype.add` for usage
@@ -165,6 +169,7 @@ usages:
       features = {
         autopairs = true, -- enable or disable autopairs on start
         cmp = true, -- enable or disable cmp on start
+        diagnostics_mode = 3, -- diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = off)
         highlighturl = true, -- enable or disable highlighting of urls on start
         -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
         large_buf = { size = 1024 * 100, lines = 10000 },
@@ -294,6 +299,15 @@ DELETE_URL_MATCH ~
 <
 
 Delete the syntax matching rules for URLs/URIs if set
+
+
+DIAGNOSTICS ~
+
+>lua
+    { [integer]: vim.diagnostic.Opts }
+<
+
+A table of settings for different levels of diagnostics
 
 
 EMPTY_MAP_TABLE ~
@@ -1134,6 +1148,17 @@ CONCEAL ~
 <
 
 Toggle conceal=2|0
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+DIAGNOSTICS ~
+
+>lua
+    function astrocore.toggles.diagnostics(silent?: boolean)
+<
+
+Toggle diagnostics
 
 _param_ `silent` — if true then don’t sent a notification
 

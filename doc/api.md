@@ -63,6 +63,15 @@ function astrocore.delete_url_match()
 
  Delete the syntax matching rules for URLs/URIs if set
 
+### diagnostics
+
+
+```lua
+{ [integer]: vim.diagnostic.Opts }
+```
+
+ A table of settings for different levels of diagnostics
+
 ### empty_map_table
 
 
@@ -867,6 +876,17 @@ function astrocore.toggles.conceal(silent?: boolean)
 ```
 
  Toggle conceal=2|0
+
+*param* `silent` — if true then don't sent a notification
+
+### diagnostics
+
+
+```lua
+function astrocore.toggles.diagnostics(silent?: boolean)
+```
+
+ Toggle diagnostics
 
 *param* `silent` — if true then don't sent a notification
 
