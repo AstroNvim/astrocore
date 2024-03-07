@@ -702,6 +702,20 @@ function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
 
 *return* `detected` — roots
 
+### exists
+
+
+```lua
+function astrocore.rooter.exists(path: string)
+  -> exists: boolean
+```
+
+ Check if a path exists
+
+*param* `path` — the path
+
+*return* `exists` — whether or not the path exists
+
 ### info
 
 

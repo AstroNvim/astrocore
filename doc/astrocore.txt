@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 05
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 07
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -973,6 +973,20 @@ _param_ `bufnr` — the buffer to detect
 _param_ `all` — whether to return all roots or just one
 
 _return_ `detected` — roots
+
+
+EXISTS ~
+
+>lua
+    function astrocore.rooter.exists(path: string)
+      -> exists: boolean
+<
+
+Check if a path exists
+
+_param_ `path` — the path
+
+_return_ `exists` — whether or not the path exists
 
 
 INFO ~
