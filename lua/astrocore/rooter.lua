@@ -51,7 +51,7 @@ end
 function M.detectors.pattern(bufnr, patterns)
   if type(patterns) == "string" then patterns = { patterns } end
   local path = M.bufpath(bufnr) or vim.loop.cwd()
-  local pattern = vim.fs.find(patterns, { path = path, upward = true })[1]
+  local pattern = M.exists(path) and vim.fs.find(patterns, { path = path, upward = true })[1]
   return pattern and { vim.fs.dirname(pattern) } or {}
 end
 
@@ -67,6 +67,11 @@ function M.realpath(path)
   if not path or path == "" then return nil end
   return M.normpath((vim.uv or vim.loop).fs_realpath(path) or path)
 end
+
+--- Check if a path exists
+---@param path string the path
+---@return boolean exists whether or not the path exists
+function M.exists(path) return vim.fn.empty(vim.fn.glob(path)) == 0 end
 
 --- Normalize path
 ---@param path string
