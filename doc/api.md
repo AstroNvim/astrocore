@@ -530,6 +530,19 @@ function astrocore.buffer.sort(compare_func: string|function, skip_autocmd: bool
 
 *return* — Whether or not the buffers were sorted
 
+### wipe
+
+
+```lua
+function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
+```
+
+ Fully wipeout a given buffer
+
+*param* `bufnr` — The buffer to wipe or the current buffer if not provided
+
+*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+
 
 ## astrocore.buffer.comparator
 

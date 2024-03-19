@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 07
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 March 19
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -793,6 +793,20 @@ _param_ `skip_autocmd` — whether or not to skip triggering AstroBufsUpdated
 autocmd event
 
 _return_ — Whether or not the buffers were sorted
+
+
+WIPE ~
+
+>lua
+    function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
+<
+
+Fully wipeout a given buffer
+
+_param_ `bufnr` — The buffer to wipe or the current buffer if not provided
+
+_param_ `force` — Whether or not to foce close the buffers or confirm changes
+(default: false)
 
 
 ASTROCORE.BUFFER.COMPARATOR    *astrocore-lua-api-astrocore.buffer.comparator*
