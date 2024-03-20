@@ -130,6 +130,7 @@ function M.toggle_term_cmd(opts)
   local terms = M.user_terminals
   -- if a command string is provided, create a basic table for Terminal:new() options
   if type(opts) == "string" then opts = { cmd = opts } end
+  opts = M.extend_tbl({ hidden = true }, opts)
   local num = vim.v.count > 0 and vim.v.count or 1
   -- if terminal doesn't exist yet, create it
   if not terms[opts.cmd] then terms[opts.cmd] = {} end
@@ -298,7 +299,7 @@ end
 --- Add syntax matching rules for highlighting URLs/URIs
 function M.set_url_match()
   M.delete_url_match()
-  if require("astrocore").config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15) end
+  if M.config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15) end
 end
 
 --- Run a shell command and capture the output and if the command succeeded or failed
@@ -321,7 +322,7 @@ end
 ---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
 ---@return table<string, string>|nil # a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 function M.file_worktree(file, worktrees)
-  worktrees = worktrees or require("astrocore").config.git_worktrees
+  worktrees = worktrees or M.config.git_worktrees
   if not worktrees then return end
   file = file or vim.fn.expand "%" --[[@as string]]
   for _, worktree in ipairs(worktrees) do
