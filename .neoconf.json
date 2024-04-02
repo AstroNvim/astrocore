@@ -2,10 +2,7 @@
   "neodev": {
     "library": {
       "enabled": true,
-      "plugins": [
-        "lazy.nvim",
-        "astroui"
-      ]
+      "plugins": ["lazy.nvim", "astroui", "resession.nvim"]
     }
   },
   "neoconf": {
@@ -18,9 +15,7 @@
   "lspconfig": {
     "lua_ls": {
       "Lua.format.enable": false,
-      "Lua.diagnostics.globals": [
-        "astronvim"
-      ]
+      "Lua.diagnostics.globals": ["astronvim"]
     }
   }
 }
