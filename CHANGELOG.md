@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/AstroNvim/astrocore/compare/v1.0.0...v1.0.1) (2024-04-02)
+
+
+### Bug Fixes
+
+* **resession:** fix restoration of single tabpages ([8de07ce](https://github.com/AstroNvim/astrocore/commit/8de07ce5403d291be4434e7ca333b61cfc9c74f9))
+
 ## 1.0.0 (2024-03-20)
 
 
