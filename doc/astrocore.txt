@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 April 02
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 April 03
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -129,11 +129,11 @@ usages:
           ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
           -- navigate buffer tabs with `H` and `L`
           L = {
-            function() require("astronvim.utils.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
+            function() require("astrocore.buffer").nav(vim.v.count1) end,
             desc = "Next buffer",
           },
           H = {
-            function() require("astronvim.utils.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+            function() require("astrocore.buffer").nav(-vim.v.count1) end,
             desc = "Previous buffer",
           },
           -- tables with just a `desc` key will be registered with which-key if it's installed
