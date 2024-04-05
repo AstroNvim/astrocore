@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/AstroNvim/astrocore/compare/v1.1.0...v1.1.1) (2024-04-05)
+
+
+### Bug Fixes
+
+* hide `nvim_exec_autocmds` errors with `pcall` ([1736458](https://github.com/AstroNvim/astrocore/commit/1736458b321c59c6e57c456f0f39c0665b301591))
+
 ## [1.1.0](https://github.com/AstroNvim/astrocore/compare/v1.0.1...v1.1.0) (2024-04-05)
 
 
