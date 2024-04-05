@@ -94,6 +94,21 @@ function M.event(event, instant)
   end
 end
 
+--- Execute autocommand across all valid buffers
+---@param event string|string[] the event or events to execute
+---@param opts vim.api.keyset.exec_autocmds Dictionary of autocommnd options
+function M.exec_buffer_autocmds(event, opts)
+  opts = M.extend_tbl(opts, { modeline = false })
+  for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+    for _, bufnr in ipairs(vim.t[tabpage].bufs or {}) do
+      if vim.bo[bufnr].filetype then
+        opts.buffer = bufnr
+        vim.api.nvim_exec_autocmds(event, opts)
+      end
+    end
+  end
+end
+
 --- Open a URL under the cursor with the current operating system
 ---@param path string The path of the file to open with the system opener
 function M.system_open(path)
