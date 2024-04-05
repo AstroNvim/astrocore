@@ -97,6 +97,19 @@ function astrocore.event(event: string|vim.api.keyset_exec_autocmds, instant?: b
 
 *param* `instant` — Whether or not to execute instantly or schedule
 
+### exec_buffer_autocmds
+
+
+```lua
+function astrocore.exec_buffer_autocmds(event: string|string[], opts: vim.api.keyset.exec_autocmds)
+```
+
+ Execute autocommand across all valid buffers
+
+*param* `event` — the event or events to execute
+
+*param* `opts` — Dictionary of autocommnd options
+
 ### extend_tbl
 
 

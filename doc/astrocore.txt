@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 April 03
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 April 05
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -334,6 +334,19 @@ _param_ `event` — The event pattern or full autocmd options (pattern always
 prepended with "Astro")
 
 _param_ `instant` — Whether or not to execute instantly or schedule
+
+
+EXEC_BUFFER_AUTOCMDS ~
+
+>lua
+    function astrocore.exec_buffer_autocmds(event: string|string[], opts: vim.api.keyset.exec_autocmds)
+<
+
+Execute autocommand across all valid buffers
+
+_param_ `event` — the event or events to execute
+
+_param_ `opts` — Dictionary of autocommnd options
 
 
 EXTEND_TBL ~
