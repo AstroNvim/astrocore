@@ -103,7 +103,7 @@ function M.exec_buffer_autocmds(event, opts)
     for _, bufnr in ipairs(vim.t[tabpage].bufs or {}) do
       if vim.bo[bufnr].filetype then
         opts.buffer = bufnr
-        vim.api.nvim_exec_autocmds(event, opts)
+        pcall(vim.api.nvim_exec_autocmds, event, opts)
       end
     end
   end
