@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/AstroNvim/astrocore/compare/v1.0.1...v1.1.0) (2024-04-05)
+
+
+### Features
+
+* add `exec_buffer_autocmds` to execute autocommands in each file buffer ([f2088d2](https://github.com/AstroNvim/astrocore/commit/f2088d2afc5d19e51ca363156bfbbb9f89093fa0))
+
 ## [1.0.1](https://github.com/AstroNvim/astrocore/compare/v1.0.0...v1.0.1) (2024-04-02)
 
 
