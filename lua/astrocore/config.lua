@@ -7,11 +7,13 @@
 -- copyright 2023
 -- GNU General Public License v3.0
 
+---@alias AstroCoreMappingCmd string|function
+
 ---@class AstroCoreMapping: vim.api.keyset.keymap
----@field [1] string|function rhs of keymap
+---@field [1] AstroCoreMappingCmd rhs of keymap
 ---@field name string? optional which-key mapping name
 
----@alias AstroCoreMappings table<string,table<string,(AstroCoreMapping|string|false)?>?>
+---@alias AstroCoreMappings table<string,table<string,(AstroCoreMapping|AstroCoreMappingCmd|false)?>?>
 
 ---@class AstroCoreCommand: vim.api.keyset.user_command
 ---@field [1] string|function the command to execute

@@ -279,7 +279,7 @@ function M.set_mappings(map_table, base)
       if options then
         local cmd
         local keymap_opts = base
-        if type(options) == "string" then
+        if type(options) == "string" or type(options) == "function" then
           cmd = options
         else
           cmd = options[1]
