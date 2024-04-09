@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/AstroNvim/astrocore/compare/v1.1.1...v1.1.2) (2024-04-09)
+
+
+### Bug Fixes
+
+* add missing function mapping type ([1d2b396](https://github.com/AstroNvim/astrocore/commit/1d2b396fcf07008b771b923aaca724d0b8dcf8f9))
+
 ## [1.1.1](https://github.com/AstroNvim/astrocore/compare/v1.1.0...v1.1.1) (2024-04-05)
 
 
