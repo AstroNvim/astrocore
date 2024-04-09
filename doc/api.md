@@ -256,7 +256,7 @@ function astrocore.reload()
 
 
 ```lua
-function astrocore.set_mappings(map_table: table<string, table<string, (string|AstroCoreMapping|false)?>?>, base?: vim.api.keyset.keymap)
+function astrocore.set_mappings(map_table: table<string, table<string, (string|function|AstroCoreMapping|false)?>?>, base?: vim.api.keyset.keymap)
 ```
 
  Table based API for setting keybindings
