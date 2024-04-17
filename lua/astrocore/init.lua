@@ -101,7 +101,7 @@ function M.exec_buffer_autocmds(event, opts)
   opts = M.extend_tbl(opts, { modeline = false })
   for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
     for _, bufnr in ipairs(vim.t[tabpage].bufs or {}) do
-      if vim.bo[bufnr].filetype then
+      if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].filetype then
         opts.buffer = bufnr
         pcall(vim.api.nvim_exec_autocmds, event, opts)
       end
