@@ -311,6 +311,7 @@ function M.delete_url_match(win)
   for _, match in ipairs(vim.fn.getmatches(win)) do
     if match.group == "HighlightURL" then vim.fn.matchdelete(match.id, win) end
   end
+  vim.w[win].highlighturl_enabled = false
 end
 
 --- Add syntax matching rules for highlighting URLs/URIs
@@ -318,7 +319,10 @@ end
 function M.set_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   M.delete_url_match(win)
-  if M.config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15, -1, { window = win }) end
+  if M.config.features.highlighturl then
+    vim.fn.matchadd("HighlightURL", M.url_matcher, 15, -1, { window = win })
+    vim.w[win].highlighturl_enabled = true
+  end
 end
 
 --- Run a shell command and capture the output and if the command succeeded or failed
