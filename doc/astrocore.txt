@@ -295,10 +295,13 @@ The configuration as set by the user through the `setup()` function
 DELETE_URL_MATCH ~
 
 >lua
-    function astrocore.delete_url_match()
+    function astrocore.delete_url_match(win?: integer)
 <
 
 Delete the syntax matching rules for URLs/URIs if set
+
+_param_ `win` — the window id to remove url highlighting in (default: current
+window)
 
 
 DIAGNOSTICS ~
@@ -521,10 +524,13 @@ _param_ `base` — A base set of options to set on every keybinding
 SET_URL_MATCH ~
 
 >lua
-    function astrocore.set_url_match()
+    function astrocore.set_url_match(win?: integer)
 <
 
 Add syntax matching rules for highlighting URLs/URIs
+
+_param_ `win` — the window id to remove url highlighting in (default: current
+window)
 
 
 SETUP ~

@@ -58,10 +58,12 @@ AstroCoreOpts
 
 
 ```lua
-function astrocore.delete_url_match()
+function astrocore.delete_url_match(win?: integer)
 ```
 
  Delete the syntax matching rules for URLs/URIs if set
+
+*param* `win` — the window id to remove url highlighting in (default: current window)
 
 ### diagnostics
 
@@ -269,10 +271,12 @@ function astrocore.set_mappings(map_table: table<string, table<string, (string|f
 
 
 ```lua
-function astrocore.set_url_match()
+function astrocore.set_url_match(win?: integer)
 ```
 
  Add syntax matching rules for highlighting URLs/URIs
+
+*param* `win` — the window id to remove url highlighting in (default: current window)
 
 ### setup
 
