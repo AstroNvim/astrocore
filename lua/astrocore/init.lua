@@ -305,16 +305,20 @@ M.url_matcher =
   "\\v\\c%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)%([&:#*@~%_\\-=?!+;/0-9a-z]+%(%([.;/?]|[.][.]+)[&:#*@~%_\\-=?!+/0-9a-z]+|:\\d+|,%(%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)@![0-9a-z]+))*|\\([&:#*@~%_\\-=?!+;/.0-9a-z]*\\)|\\[[&:#*@~%_\\-=?!+;/.0-9a-z]*\\]|\\{%([&:#*@~%_\\-=?!+;/.0-9a-z]*|\\{[&:#*@~%_\\-=?!+;/.0-9a-z]*})\\})+"
 
 --- Delete the syntax matching rules for URLs/URIs if set
-function M.delete_url_match()
-  for _, match in ipairs(vim.fn.getmatches()) do
-    if match.group == "HighlightURL" then vim.fn.matchdelete(match.id) end
+---@param win integer? the window id to remove url highlighting in (default: current window)
+function M.delete_url_match(win)
+  if not win then win = vim.api.nvim_get_current_win() end
+  for _, match in ipairs(vim.fn.getmatches(win)) do
+    if match.group == "HighlightURL" then vim.fn.matchdelete(match.id, win) end
   end
 end
 
 --- Add syntax matching rules for highlighting URLs/URIs
-function M.set_url_match()
-  M.delete_url_match()
-  if M.config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15) end
+---@param win integer? the window id to remove url highlighting in (default: current window)
+function M.set_url_match(win)
+  if not win then win = vim.api.nvim_get_current_win() end
+  M.delete_url_match(win)
+  if M.config.features.highlighturl then vim.fn.matchadd("HighlightURL", M.url_matcher, 15, -1, { window = win }) end
 end
 
 --- Run a shell command and capture the output and if the command succeeded or failed
