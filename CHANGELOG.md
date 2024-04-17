@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/AstroNvim/astrocore/compare/v1.1.3...v1.2.0) (2024-04-17)
+
+
+### Features
+
+* allow specific window to be provided to `delete_url_match` and `set_url_match` ([2a77fdc](https://github.com/AstroNvim/astrocore/commit/2a77fdc69dc04afe917dd5fac68a01fab1bea806))
+* store current window `highlighturl` state ([abe1ce8](https://github.com/AstroNvim/astrocore/commit/abe1ce821876a836f7576bc75c97f6f6ae8f415f))
+
+
+### Bug Fixes
+
+* **toggles:** toggle all windows when toggling url matching ([417f798](https://github.com/AstroNvim/astrocore/commit/417f79836bb6ae9ae249b7ca11258939a07f598a))
+
 ## [1.1.3](https://github.com/AstroNvim/astrocore/compare/v1.1.2...v1.1.3) (2024-04-17)
 
 
