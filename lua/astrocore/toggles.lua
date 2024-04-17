@@ -204,7 +204,7 @@ end
 function M.url_match(silent)
   local features = assert(require("astrocore").config.features)
   features.highlighturl = not features.highlighturl
-  require("astrocore").set_url_match()
+  vim.tbl_map(require("astrocore").set_url_match, vim.api.nvim_list_wins())
   ui_notify(silent, ("URL highlighting %s"):format(bool2str(features.highlighturl)))
 end
 
