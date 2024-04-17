@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/AstroNvim/astrocore/compare/v1.1.2...v1.1.3) (2024-04-17)
+
+
+### Bug Fixes
+
+* make sure buffers are valid before checking for filetype ([83e5425](https://github.com/AstroNvim/astrocore/commit/83e5425c89887eb616e8dc6530d97f7b9c19e942))
+
 ## [1.1.2](https://github.com/AstroNvim/astrocore/compare/v1.1.1...v1.1.2) (2024-04-09)
 
 
