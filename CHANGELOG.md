@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/AstroNvim/astrocore/compare/v1.2.0...v1.2.1) (2024-04-22)
+
+
+### Bug Fixes
+
+* add check for new `islist` function ([248e38a](https://github.com/AstroNvim/astrocore/commit/248e38a3e2e8d4316705403644dcda8ec63a31f6))
+
 ## [1.2.0](https://github.com/AstroNvim/astrocore/compare/v1.1.3...v1.2.0) (2024-04-17)
 
 
