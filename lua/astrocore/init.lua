@@ -49,7 +49,8 @@ end
 ---@return any[] # The modified list like table
 function M.list_insert_unique(dst, src)
   if not dst then dst = {} end
-  assert(vim.tbl_islist(dst), "Provided table is not a list like table")
+  -- TODO: remove check after dropping support for Neovim v0.9
+  assert((vim.islist or vim.tbl_islist)(dst), "Provided table is not a list like table")
   local added = {}
   for _, val in ipairs(dst) do
     added[val] = true
