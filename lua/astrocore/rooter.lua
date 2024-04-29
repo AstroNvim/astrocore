@@ -83,7 +83,7 @@ function M.normpath(path)
     path = home .. path:sub(2)
   end
   path = path:gsub("\\", "/"):gsub("/+", "/")
-  return path:sub(-1) == "/" and path:sub(1, -2) or path
+  return (path:sub(-1) == "/" and path ~= "/") and path:sub(1, -2) or path
 end
 
 --- Resolve the root detection function for a given spec
