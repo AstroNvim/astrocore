@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.2](https://github.com/AstroNvim/astrocore/compare/v1.2.1...v1.2.2) (2024-04-29)
+
+
+### Bug Fixes
+
+* **rooter:** normalization of path "/" should be "/" ([60db5cc](https://github.com/AstroNvim/astrocore/commit/60db5cce71685330bb275a89224847d20fffd62f))
+
+
+### Reverts
+
+* use `vim.keymap.set` defaults ([cbd996e](https://github.com/AstroNvim/astrocore/commit/cbd996ef7b1c949bb1b89c3dbfe0857042ef5625))
+
 ## [1.2.1](https://github.com/AstroNvim/astrocore/compare/v1.2.0...v1.2.1) (2024-04-22)
 
 
