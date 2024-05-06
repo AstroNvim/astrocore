@@ -245,6 +245,20 @@ function astrocore.plugin_opts(plugin: string)
 
 *return* `opts` — The plugin options
 
+### read_file
+
+
+```lua
+function astrocore.read_file(path: string)
+  -> content: string
+```
+
+ Helper function to read a file and return it's content
+
+*param* `path` — the path to the file to read
+
+*return* `content` — the contents of the file
+
 ### reload
 
 

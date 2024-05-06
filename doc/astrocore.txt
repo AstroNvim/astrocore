@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2024 April 29
+*astrocore.txt*          For Neovim >= 0.9.0          Last change: 2024 May 06
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -493,6 +493,20 @@ Resolve the options table for a given plugin with lazy
 _param_ `plugin` — The plugin to search for
 
 _return_ `opts` — The plugin options
+
+
+READ_FILE ~
+
+>lua
+    function astrocore.read_file(path: string)
+      -> content: string
+<
+
+Helper function to read a file and return it’s content
+
+_param_ `path` — the path to the file to read
+
+_return_ `content` — the contents of the file
 
 
 RELOAD ~
