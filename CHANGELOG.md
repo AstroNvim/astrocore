@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/AstroNvim/astrocore/compare/v1.3.0...v1.3.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* don't trim content by default when reading a file ([c637f51](https://github.com/AstroNvim/astrocore/commit/c637f51cb83786fc50d0b8075175e7a3e27db2ef))
+
 ## [1.3.0](https://github.com/AstroNvim/astrocore/compare/v1.2.2...v1.3.0) (2024-05-06)
 
 
