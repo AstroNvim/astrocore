@@ -140,6 +140,19 @@ function M.system_open(path)
   vim.fn.jobstart(vim.list_extend(cmd, { path }), { detach = true })
 end
 
+--- Helper function to read a file and return it's content
+---@param path string the path to the file to read
+---@return string content the contents of the file
+function M.read_file(path)
+  local uv = vim.uv or vim.loop
+
+  local fd = assert(uv.fs_open(path, "r", 420))
+  local stat = assert(uv.fs_fstat(fd))
+  local content = assert(uv.fs_read(fd, stat.size)):gsub("%s", "")
+  assert(uv.fs_close(fd))
+  return content
+end
+
 --- Toggle a user terminal if it exists, if not then create a new one and save it
 ---@param opts string|table A terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
 function M.toggle_term_cmd(opts)
