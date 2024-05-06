@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/AstroNvim/astrocore/compare/v1.2.2...v1.3.0) (2024-05-06)
+
+
+### Features
+
+* add `read_file` utility ([d9b2a47](https://github.com/AstroNvim/astrocore/commit/d9b2a47fb358e903712e4b94e539dbcf38900629))
+
 ## [1.2.2](https://github.com/AstroNvim/astrocore/compare/v1.2.1...v1.2.2) (2024-04-29)
 
 
