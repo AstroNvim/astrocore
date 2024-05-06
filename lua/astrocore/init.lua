@@ -148,7 +148,7 @@ function M.read_file(path)
 
   local fd = assert(uv.fs_open(path, "r", 420))
   local stat = assert(uv.fs_fstat(fd))
-  local content = assert(uv.fs_read(fd, stat.size)):gsub("%s", "")
+  local content = assert(uv.fs_read(fd, stat.size))
   assert(uv.fs_close(fd))
   return content
 end
