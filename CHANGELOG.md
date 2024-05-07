@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/AstroNvim/astrocore/compare/v1.3.1...v1.3.2) (2024-05-07)
+
+
+### Bug Fixes
+
+* don't schedule functions when loading plugins ([70b9a20](https://github.com/AstroNvim/astrocore/commit/70b9a209bade26bde4256b9d8abfb2a6e67ef723))
+
 ## [1.3.1](https://github.com/AstroNvim/astrocore/compare/v1.3.0...v1.3.1) (2024-05-06)
 
 
