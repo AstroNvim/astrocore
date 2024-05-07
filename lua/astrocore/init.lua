@@ -207,11 +207,8 @@ function M.load_plugin_with_func(plugin, module, funcs)
     local old_func = module[func]
     module[func] = function(...)
       module[func] = old_func
-      local vars = vim.F.pack_len(...)
-      vim.schedule(function()
-        require("lazy").load { plugins = { plugin } }
-        module[func](vim.F.unpack_len(vars))
-      end)
+      require("lazy").load { plugins = { plugin } }
+      module[func](...)
     end
   end
 end
