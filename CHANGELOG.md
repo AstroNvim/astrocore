@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/AstroNvim/astrocore/compare/v1.3.2...v1.3.3) (2024-05-13)
+
+
+### Bug Fixes
+
+* **rooter:** detect unique LSP roots in the case of multiple language servers ([c15cfb2](https://github.com/AstroNvim/astrocore/commit/c15cfb23352a0f09b79551286dc8c59cc5876423))
+
 ## [1.3.2](https://github.com/AstroNvim/astrocore/compare/v1.3.1...v1.3.2) (2024-05-07)
 
 
