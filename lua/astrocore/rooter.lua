@@ -38,9 +38,15 @@ function M.detectors.lsp(bufnr)
       vim.tbl_map(function(ws) table.insert(roots, vim.uri_to_fname(ws.uri)) end, client.config.workspace_folders or {})
     end
   end
+  local found_lsp_roots = {}
   return vim.tbl_filter(function(path)
     path = M.normpath(path)
-    return path and bufpath:find(path, 1, true) == 1
+    if path and bufpath:find(path, 1, true) == 1 then
+      if not found_lsp_roots[path] then
+        found_lsp_roots[path] = true
+        return true
+      end
+    end
   end, roots)
 end
 
