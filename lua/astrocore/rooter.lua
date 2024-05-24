@@ -33,13 +33,19 @@ local resolve_config = function() return require("astrocore").config.rooter or {
 ---@return AstroCoreRooterDetectorFunc
 function M.detectors.lsp(config)
   if not config then config = resolve_config() end
+  ---@type (string[]|fun(client:vim.lsp.Client):boolean)?
+  local server_filter = vim.tbl_get(config, "ignore", "servers")
+  if server_filter and type(server_filter) ~= "function" then
+    local ignore_servers = server_filter
+    server_filter = function(lsp_client) return vim.tbl_contains(ignore_servers, lsp_client.name) end
+  end
   return function(bufnr)
     local bufpath = M.bufpath(bufnr)
     if not bufpath then return {} end
     local roots = {} ---@type string[]
     -- TODO: remove when dropping support for Neovim v0.9
     for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
-      if not vim.tbl_contains(vim.tbl_get(config, "ignore", "servers") or {}, client.name) then
+      if not server_filter or not server_filter(client) then
         vim.tbl_map(
           function(ws) table.insert(roots, vim.uri_to_fname(ws.uri)) end,
           client.config.workspace_folders or {}
@@ -61,10 +67,8 @@ function M.detectors.lsp(config)
 end
 
 --- Create a detect folders matching patterns
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
 ---@return AstroCoreRooterDetectorFunc
-function M.detectors.pattern(config)
-  if not config then config = resolve_config() end
+function M.detectors.pattern()
   return function(bufnr, patterns)
     if type(patterns) == "string" then patterns = { patterns } end
     local path = M.bufpath(bufnr) or vim.loop.cwd()

@@ -25,7 +25,7 @@
 
 ---@class AstroCoreRooterIgnore
 ---@field dirs string[]? a list of patterns that match directories to exclude from root detection
----@field servers string[]? a list of language servers to exclude from root detection
+---@field servers string[]|fun(client:vim.lsp.Client):boolean? a list of language servers to exclude from root detection or a filter function to return if a client should be ignored or not
 
 ---@class AstroCoreRooterOpts
 ---@field detector AstroCoreRooterSpec[]? a list of specifications for the rooter detection
