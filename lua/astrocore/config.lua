@@ -32,6 +32,7 @@
 ---@field ignore AstroCoreRooterIgnore? configure things to ignore from root detection
 ---@field scope "global"|"tab"|"win"? what scope to change the working directory
 ---@field autochdir boolean? whether or not to change working directory automatically
+---@field enabled boolean? whether or not to enable the rooter user command and autocommands
 ---@field notify boolean? whether or not to notify on working directory change
 
 ---@class AstroCoreGitWorktree
@@ -312,7 +313,7 @@ local M = {
     notifications = true,
   },
   git_worktrees = nil,
-  rooter = false,
+  rooter = { enabled = true },
   sessions = {
     autosave = { last = true, cwd = true },
     ignore = {

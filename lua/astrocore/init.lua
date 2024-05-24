@@ -487,7 +487,7 @@ function M.setup(opts)
   end
 
   -- initialize rooter
-  if M.config.rooter then
+  if vim.tbl_get(M.config, "rooter", "enabled") then
     local root_config = M.config.rooter --[[@as AstroCoreRooterOpts]]
     vim.api.nvim_create_user_command(
       "AstroRootInfo",

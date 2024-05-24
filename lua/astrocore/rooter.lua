@@ -13,53 +13,70 @@
 ---@class astrocore.rooter
 local M = { detectors = {} }
 
----@type AstroCoreRooterOpts
-local config = require("astrocore").config.rooter
+---@alias AstroCoreRooterDetectorFunc fun(bufnr: integer,...): string[]
+---@alias AstroCoreRooterDetector fun(config:AstroCoreRooterOpts?):AstroCoreRooterDetectorFunc
+
+---@class AstroCoreRooterDetectors
+---@type table<string, AstroCoreRooterDetector>
+M.detectors = {}
+
 local vim_autochdir
 
 local notify = function(msg, level)
   require("astrocore").notify(msg, level or vim.log.levels.INFO, { title = "AstroNvim Rooter" })
 end
 
+local resolve_config = function() return require("astrocore").config.rooter or {} end
+
+--- Create a detect workspace folders from active language servers
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@return AstroCoreRooterDetectorFunc
+function M.detectors.lsp(config)
+  if not config then config = resolve_config() end
+  return function(bufnr)
+    local bufpath = M.bufpath(bufnr)
+    if not bufpath then return {} end
+    local roots = {} ---@type string[]
+    -- TODO: remove when dropping support for Neovim v0.9
+    for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
+      if not vim.tbl_contains(vim.tbl_get(config, "ignore", "servers") or {}, client.name) then
+        vim.tbl_map(
+          function(ws) table.insert(roots, vim.uri_to_fname(ws.uri)) end,
+          client.config.workspace_folders or {}
+        )
+      end
+    end
+    local found_lsp_roots = {}
+    return vim.tbl_filter(function(path)
+      path = M.normpath(path)
+      if path and bufpath:find(path, 1, true) == 1 then
+        if not found_lsp_roots[path] then
+          found_lsp_roots[path] = true
+          return true
+        end
+      end
+      return false
+    end, roots)
+  end
+end
+
+--- Create a detect folders matching patterns
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@return AstroCoreRooterDetectorFunc
+function M.detectors.pattern(config)
+  if not config then config = resolve_config() end
+  return function(bufnr, patterns)
+    if type(patterns) == "string" then patterns = { patterns } end
+    local path = M.bufpath(bufnr) or vim.loop.cwd()
+    if not path then return {} end
+    local pattern = M.exists(path) and vim.fs.find(patterns, { path = path, upward = true })[1]
+    return pattern and { vim.fs.dirname(pattern) } or {}
+  end
+end
+
 ---@class AstroCoreRooterRoot
 ---@field paths string[]
 ---@field spec AstroCoreRooterSpec
-
---- Detect workspace folders from active language servers
----@param bufnr integer the buffer to detect language servers on
----@return string[] paths the detected workspace folders
-function M.detectors.lsp(bufnr)
-  local bufpath = M.bufpath(bufnr)
-  if not bufpath then return {} end
-  local roots = {} ---@type string[]
-  -- TODO: remove when dropping support for Neovim v0.9
-  for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
-    if not vim.tbl_contains(vim.tbl_get(config, "ignore", "servers") or {}, client.name) then
-      vim.tbl_map(function(ws) table.insert(roots, vim.uri_to_fname(ws.uri)) end, client.config.workspace_folders or {})
-    end
-  end
-  local found_lsp_roots = {}
-  return vim.tbl_filter(function(path)
-    path = M.normpath(path)
-    if path and bufpath:find(path, 1, true) == 1 then
-      if not found_lsp_roots[path] then
-        found_lsp_roots[path] = true
-        return true
-      end
-    end
-  end, roots)
-end
-
---- Detect parent folders matching patterns
----@param bufnr integer the buffer to detect parent dirs for
----@param patterns string|string[] the pattern(s) to detect
----@return string[] paths the detected folders
-function M.detectors.pattern(bufnr, patterns)
-  if type(patterns) == "string" then patterns = { patterns } end
-  local path = M.bufpath(bufnr) or vim.loop.cwd()
-  local pattern = M.exists(path) and vim.fs.find(patterns, { path = path, upward = true })[1]
-  return pattern and { vim.fs.dirname(pattern) } or {}
-end
 
 --- Get the real path of a buffer
 ---@param bufnr integer the buffer
@@ -94,21 +111,25 @@ end
 
 --- Resolve the root detection function for a given spec
 ---@param spec AstroCoreRooterSpec the root detector specification
+---@param config AstroCoreRooterOpts? the root configuration
 ---@return function
-function M.resolve(spec)
+function M.resolve(spec, config)
   if M.detectors[spec] then
-    return M.detectors[spec]
+    return M.detectors[spec](config)
   elseif type(spec) == "function" then
     return spec
   end
-  return function(bufnr) return M.detectors.pattern(bufnr, spec) end
+  local pattern_detector = M.detectors.pattern(config)
+  return function(bufnr) return pattern_detector(bufnr, spec) end
 end
 
 --- Detect roots in a given buffer
----@param bufnr? integer the buffer to detect
----@param all? boolean whether to return all roots or just one
+---@param bufnr integer? the buffer to detect
+---@param all boolean? whether to return all roots or just one
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
 ---@return AstroCoreRooterRoot[] detected roots
-function M.detect(bufnr, all)
+function M.detect(bufnr, all, config)
+  if not config then config = resolve_config() end
   local ret = {}
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
 
@@ -118,7 +139,7 @@ function M.detect(bufnr, all)
   if path and M.is_excluded(path) then return ret end
 
   for _, spec in ipairs(config.detector or {}) do
-    local paths = M.resolve(spec)(bufnr)
+    local paths = M.resolve(spec, config)(bufnr)
     if not paths then
       paths = {}
     elseif type(paths) ~= "table" then
@@ -139,12 +160,14 @@ function M.detect(bufnr, all)
 end
 
 --- Get information information about the current root
-function M.info()
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+function M.info(config)
+  if not config then config = resolve_config() end
   local lines = {}
   if vim_autochdir then
     table.insert(lines, "Rooting disabled when `autochdir` is set")
   else
-    local roots = M.detect(0, true)
+    local roots = M.detect(0, true, config)
     local first = true
     for _, root in ipairs(roots) do
       for _, path in ipairs(root.paths) do
@@ -180,8 +203,10 @@ end
 
 --- Set the current directory to a given root
 ---@param root AstroCoreRooterRoot the root to set the pwd to
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
 ---@return boolean success whether or not the pwd was successfully set
-function M.set_pwd(root)
+function M.set_pwd(root, config)
+  if not config then config = resolve_config() end
   local path = root.paths[1]
   if path ~= nil then
     if vim.fn.has "win32" > 0 then path = path:gsub("\\", "/") end
@@ -206,8 +231,10 @@ end
 
 --- Check if a path is excluded
 ---@param path string the path
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
 ---@return boolean excluded whether or not the path is excluded
-function M.is_excluded(path)
+function M.is_excluded(path, config)
+  if not config then config = resolve_config() end
   for _, path_pattern in ipairs(vim.tbl_get(config, "ignore", "dirs") or {}) do
     if path:match(M.normpath(path_pattern)) then return true end
   end
@@ -216,7 +243,8 @@ end
 
 --- Run the root detection and set the current working directory if a new root is detected
 ---@param bufnr integer? the buffer to detect
-function M.root(bufnr)
+---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+function M.root(bufnr, config)
   -- add `autochdir` protection
   local autochdir = vim.opt.autochdir:get()
   if not vim_autochdir and autochdir then
@@ -229,8 +257,9 @@ function M.root(bufnr)
   if vim_autochdir or vim.v.vim_did_enter == 0 then return end
 
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-  local root = M.detect(bufnr)[1]
-  if root then M.set_pwd(root) end
+  if not config then config = resolve_config() end
+  local root = M.detect(bufnr, false, config)[1]
+  if root then M.set_pwd(root, config) end
 end
 
 return M
