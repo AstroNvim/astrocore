@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/AstroNvim/astrocore/compare/v1.3.3...v1.4.0) (2024-05-24)
+
+
+### Features
+
+* **rooter:** allow `rooter.ignore.servers` to be an arbitrary filter function ([0283868](https://github.com/AstroNvim/astrocore/commit/028386800779b29a1cea238897d0ff4b8f45599e))
+* **rooter:** allow passing rooter configurations to rooting functions for API execution ([0707cb4](https://github.com/AstroNvim/astrocore/commit/0707cb4b91d899975d79d0c57ae1feee3c684e00))
+
 ## [1.3.3](https://github.com/AstroNvim/astrocore/compare/v1.3.2...v1.3.3) (2024-05-13)
 
 
