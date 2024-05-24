@@ -734,7 +734,7 @@ function astrocore.rooter.bufpath(bufnr: integer)
 
 
 ```lua
-function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
+function astrocore.rooter.detect(bufnr?: integer, all?: boolean, config?: AstroCoreRooterOpts)
   -> detected: AstroCoreRooterRoot[]
 ```
 
@@ -743,6 +743,8 @@ function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
 *param* `bufnr` — the buffer to detect
 
 *param* `all` — whether to return all roots or just one
+
+*param* `config` — a rooter configuration (defaults to global configuration)
 
 *return* `detected` — roots
 
@@ -764,22 +766,26 @@ function astrocore.rooter.exists(path: string)
 
 
 ```lua
-function astrocore.rooter.info()
+function astrocore.rooter.info(config?: AstroCoreRooterOpts)
 ```
 
  Get information information about the current root
+
+*param* `config` — a rooter configuration (defaults to global configuration)
 
 ### is_excluded
 
 
 ```lua
-function astrocore.rooter.is_excluded(path: string)
+function astrocore.rooter.is_excluded(path: string, config?: AstroCoreRooterOpts)
   -> excluded: boolean
 ```
 
  Check if a path is excluded
 
 *param* `path` — the path
+
+*param* `config` — a rooter configuration (defaults to global configuration)
 
 *return* `excluded` — whether or not the path is excluded
 
@@ -811,7 +817,7 @@ function astrocore.rooter.realpath(path?: string)
 
 
 ```lua
-function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[])
+function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[], config?: AstroCoreRooterOpts)
   -> function
 ```
 
@@ -819,28 +825,34 @@ function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string
 
 *param* `spec` — the root detector specification
 
+*param* `config` — the root configuration
+
 ### root
 
 
 ```lua
-function astrocore.rooter.root(bufnr?: integer)
+function astrocore.rooter.root(bufnr?: integer, config?: AstroCoreRooterOpts)
 ```
 
  Run the root detection and set the current working directory if a new root is detected
 
 *param* `bufnr` — the buffer to detect
 
+*param* `config` — a rooter configuration (defaults to global configuration)
+
 ### set_pwd
 
 
 ```lua
-function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot)
+function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot, config?: AstroCoreRooterOpts)
   -> success: boolean
 ```
 
  Set the current directory to a given root
 
 *param* `root` — the root to set the pwd to
+
+*param* `config` — a rooter configuration (defaults to global configuration)
 
 *return* `success` — whether or not the pwd was successfully set
 

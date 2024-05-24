@@ -1,4 +1,4 @@
-*astrocore.txt*          For Neovim >= 0.9.0          Last change: 2024 May 13
+*astrocore.txt*          For Neovim >= 0.9.0          Last change: 2024 May 24
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -1009,7 +1009,7 @@ _return_ `path` — the real path
 DETECT ~
 
 >lua
-    function astrocore.rooter.detect(bufnr?: integer, all?: boolean)
+    function astrocore.rooter.detect(bufnr?: integer, all?: boolean, config?: AstroCoreRooterOpts)
       -> detected: AstroCoreRooterRoot[]
 <
 
@@ -1018,6 +1018,8 @@ Detect roots in a given buffer
 _param_ `bufnr` — the buffer to detect
 
 _param_ `all` — whether to return all roots or just one
+
+_param_ `config` — a rooter configuration (defaults to global configuration)
 
 _return_ `detected` — roots
 
@@ -1039,22 +1041,26 @@ _return_ `exists` — whether or not the path exists
 INFO ~
 
 >lua
-    function astrocore.rooter.info()
+    function astrocore.rooter.info(config?: AstroCoreRooterOpts)
 <
 
 Get information information about the current root
+
+_param_ `config` — a rooter configuration (defaults to global configuration)
 
 
 IS_EXCLUDED ~
 
 >lua
-    function astrocore.rooter.is_excluded(path: string)
+    function astrocore.rooter.is_excluded(path: string, config?: AstroCoreRooterOpts)
       -> excluded: boolean
 <
 
 Check if a path is excluded
 
 _param_ `path` — the path
+
+_param_ `config` — a rooter configuration (defaults to global configuration)
 
 _return_ `excluded` — whether or not the path is excluded
 
@@ -1086,7 +1092,7 @@ _return_ `the` — resolved path
 RESOLVE ~
 
 >lua
-    function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[])
+    function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[], config?: AstroCoreRooterOpts)
       -> function
 <
 
@@ -1094,11 +1100,13 @@ Resolve the root detection function for a given spec
 
 _param_ `spec` — the root detector specification
 
+_param_ `config` — the root configuration
+
 
 ROOT ~
 
 >lua
-    function astrocore.rooter.root(bufnr?: integer)
+    function astrocore.rooter.root(bufnr?: integer, config?: AstroCoreRooterOpts)
 <
 
 Run the root detection and set the current working directory if a new root is
@@ -1106,17 +1114,21 @@ detected
 
 _param_ `bufnr` — the buffer to detect
 
+_param_ `config` — a rooter configuration (defaults to global configuration)
+
 
 SET_PWD ~
 
 >lua
-    function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot)
+    function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot, config?: AstroCoreRooterOpts)
       -> success: boolean
 <
 
 Set the current directory to a given root
 
 _param_ `root` — the root to set the pwd to
+
+_param_ `config` — a rooter configuration (defaults to global configuration)
 
 _return_ `success` — whether or not the pwd was successfully set
 
