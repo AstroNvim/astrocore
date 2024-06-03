@@ -229,7 +229,7 @@
 --
 ---```lua
 ---signs = {
----  { name = "DapBreakPoint", text = "", texthl = "DiagnosticInfo" },
+---  DapBreakPoint" = { text = "", texthl = "DiagnosticInfo" },
 ---},
 ---```
 ---@field signs table<string,vim.fn.sign_define.dict|false>?
