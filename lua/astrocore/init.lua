@@ -113,6 +113,11 @@ end
 --- Open a URL under the cursor with the current operating system
 ---@param path string The path of the file to open with the system opener
 function M.system_open(path)
+  if not path then
+    path = vim.fn.expand "<cfile>"
+  elseif not path:match "%w+:" then
+    path = vim.fn.expand(path)
+  end
   -- TODO: remove deprecated method check after dropping support for neovim v0.9
   if vim.ui.open then return vim.ui.open(path) end
   local cmd
@@ -132,11 +137,6 @@ function M.system_open(path)
     end
   end
   if not cmd then M.notify("Available system opening tool not found!", vim.log.levels.ERROR) end
-  if not path then
-    path = vim.fn.expand "<cfile>"
-  elseif not path:match "%w+:" then
-    path = vim.fn.expand(path)
-  end
   vim.fn.jobstart(vim.list_extend(cmd, { path }), { detach = true })
 end
 
