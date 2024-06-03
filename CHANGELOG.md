@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/AstroNvim/astrocore/compare/v1.4.0...v1.5.0) (2024-06-03)
+
+
+### Features
+
+* setup `highlighturl` capabilities on setup ([3bf9e36](https://github.com/AstroNvim/astrocore/commit/3bf9e36b71f931646a1d264cf8076d7214fb2f86))
+
+
+### Bug Fixes
+
+* resolve `path` before running `vim.ui.open` ([879b67b](https://github.com/AstroNvim/astrocore/commit/879b67b8f32561419b01d3d9f31ac774b6b741fe))
+
 ## [1.4.0](https://github.com/AstroNvim/astrocore/compare/v1.3.3...v1.4.0) (2024-05-24)
 
 
