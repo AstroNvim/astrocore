@@ -486,6 +486,30 @@ function M.setup(opts)
     })
   end
 
+  -- set up highlighturl
+  local highlighturl_group = vim.api.nvim_create_augroup("highlighturl", { clear = true })
+  vim.api.nvim_set_hl(0, "HighlightURL", { default = true, underline = true })
+  vim.api.nvim_create_autocmd("ColorScheme", {
+    group = highlighturl_group,
+    desc = "Set up HighlightURL hlgroup",
+    callback = function() vim.api.nvim_set_hl(0, "HighlightURL", { default = true, underline = true }) end,
+  })
+  vim.api.nvim_create_autocmd({ "VimEnter", "FileType", "BufEnter", "WinEnter" }, {
+    group = highlighturl_group,
+    desc = "Highlight URLs",
+    callback = function(args)
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if
+          vim.api.nvim_win_get_buf(win) == args.buf
+          and vim.tbl_get(require "astrocore", "config", "features", "highlighturl")
+          and not vim.w[win].highlighturl_enabled
+        then
+          M.set_url_match(win)
+        end
+      end
+    end,
+  })
+
   -- initialize rooter
   if vim.tbl_get(M.config, "rooter", "enabled") then
     local root_config = M.config.rooter --[[@as AstroCoreRooterOpts]]
