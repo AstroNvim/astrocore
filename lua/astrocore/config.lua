@@ -309,7 +309,7 @@ local M = {
     cmp = true,
     diagnostics_mode = 3,
     highlighturl = true,
-    large_buf = { size = 1024 * 100, lines = 10000 },
+    large_buf = { size = 1024 * 256, lines = 10000 },
     notifications = true,
   },
   git_worktrees = nil,
