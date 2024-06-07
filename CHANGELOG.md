@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/AstroNvim/astrocore/compare/v1.5.0...v1.6.0) (2024-06-07)
+
+
+### Features
+
+* add `unique_list` which gets unique values from list ([70e0682](https://github.com/AstroNvim/astrocore/commit/70e068219c6012e9a2287aa75db906d5c505e998))
+
 ## [1.5.0](https://github.com/AstroNvim/astrocore/compare/v1.4.0...v1.5.0) (2024-06-03)
 
 
