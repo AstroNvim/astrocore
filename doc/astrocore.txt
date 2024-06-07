@@ -1,4 +1,4 @@
-*astrocore.txt*          For Neovim >= 0.9.0         Last change: 2024 June 06
+*astrocore.txt*          For Neovim >= 0.9.0         Last change: 2024 June 07
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -578,6 +578,20 @@ Toggle a user terminal if it exists, if not then create a new one and save it
 
 _param_ `opts` — A terminal command string or a table of options for
 Terminal:new() (Check toggleterm.nvim documentation for table format)
+
+
+UNIQUE_LIST ~
+
+>lua
+    function astrocore.unique_list(list: any[])
+      -> any[]
+<
+
+Remove duplicate entries from a given list (does not mutate the original list)
+
+_param_ `list` — The list like table that you want to remove duplicates from
+
+_return_ — The list like table of unique values
 
 
 UPDATE_PACKAGES ~

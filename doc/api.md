@@ -324,6 +324,20 @@ function astrocore.toggle_term_cmd(opts: string|table)
 
 *param* `opts` — A terminal command string or a table of options for Terminal:new() (Check toggleterm.nvim documentation for table format)
 
+### unique_list
+
+
+```lua
+function astrocore.unique_list(list: any[])
+  -> any[]
+```
+
+ Remove duplicate entries from a given list (does not mutate the  original list)
+
+*param* `list` — The list like table that you want to remove duplicates from
+
+*return* — The list like table of unique values
+
 ### update_packages
 
 
