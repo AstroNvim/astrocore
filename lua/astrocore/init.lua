@@ -64,6 +64,22 @@ function M.list_insert_unique(dst, src)
   return dst
 end
 
+--- Remove duplicate entries from a given list (does not mutate the  original list)
+---@param list any[] The list like table that you want to remove duplicates from
+---@return any[] # The list like table of unique values
+function M.unique_list(list)
+  local out, cache = {}, {}
+  -- TODO: remove check after dropping support for Neovim v0.9
+  assert((vim.islist or vim.tbl_islist)(list), "Provided table is not a list like table")
+  for _, val in ipairs(list) do
+    if not cache[val] then
+      table.insert(out, val)
+      cache[val] = true
+    end
+  end
+  return out
+end
+
 --- Call function if a condition is met
 ---@param func function The function to run
 ---@param condition boolean # Whether to run the function or not
