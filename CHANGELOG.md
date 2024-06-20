@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/AstroNvim/astrocore/compare/v1.6.0...v1.6.1) (2024-06-20)
+
+
+### Bug Fixes
+
+* **rooter:** add LSP client `root_dir` to roots ([c8de780](https://github.com/AstroNvim/astrocore/commit/c8de7803a02cc69f084b23a8c63141b98b70f56a))
+
 ## [1.6.0](https://github.com/AstroNvim/astrocore/compare/v1.5.0...v1.6.0) (2024-06-07)
 
 
