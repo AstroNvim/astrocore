@@ -1,4 +1,4 @@
-*astrocore.txt*          For Neovim >= 0.9.0         Last change: 2024 June 20
+*astrocore.txt*          For Neovim >= 0.9.0         Last change: 2024 July 09
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -523,7 +523,7 @@ until restart.
 SET_MAPPINGS ~
 
 >lua
-    function astrocore.set_mappings(map_table: table<string, table<string, (string|function|AstroCoreMapping|false)?>?>, base?: vim.api.keyset.keymap)
+    function astrocore.set_mappings(map_table: table<string, table<string, (string|function|AstroCoreMapping|false)?>?>, base?: vim.keymap.set.Opts)
 <
 
 Table based API for setting keybindings
