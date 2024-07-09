@@ -294,7 +294,7 @@ end
 
 --- Table based API for setting keybindings
 ---@param map_table AstroCoreMappings A nested table where the first key is the vim mode, the second key is the key to map, and the value is the function to set the mapping to
----@param base? vim.api.keyset.keymap A base set of options to set on every keybinding
+---@param base? vim.keymap.set.Opts A base set of options to set on every keybinding
 function M.set_mappings(map_table, base)
   local was_no_which_key_queue = not M.which_key_queue
   -- iterate over the first keys for each mode
