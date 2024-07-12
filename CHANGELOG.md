@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/AstroNvim/astrocore/compare/v1.6.1...v1.6.2) (2024-07-12)
+
+
+### Bug Fixes
+
+* update to `which-key` v3 ([a7a909b](https://github.com/AstroNvim/astrocore/commit/a7a909bf27f1147e05998af8c00a987ddc25943d))
+
 ## [1.6.1](https://github.com/AstroNvim/astrocore/compare/v1.6.0...v1.6.1) (2024-06-20)
 
 
