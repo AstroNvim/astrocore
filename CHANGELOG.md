@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/AstroNvim/astrocore/compare/v1.6.2...v1.6.3) (2024-07-12)
+
+
+### Bug Fixes
+
+* **buffer:** add extra check in `is_valid` that `bufnr` is a number ([d1e3941](https://github.com/AstroNvim/astrocore/commit/d1e394199cf3ad0662f85eaf1297f0b276d3f3ce))
+
 ## [1.6.2](https://github.com/AstroNvim/astrocore/compare/v1.6.1...v1.6.2) (2024-07-12)
 
 
