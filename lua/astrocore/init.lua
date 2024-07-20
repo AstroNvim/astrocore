@@ -399,6 +399,18 @@ function M.setup(opts)
 
   -- options
   if vim.bo.filetype == "lazy" then vim.cmd.bw() end
+  if M.config.options.opt then
+    -- defer built-in clipboard handling: "xsel" and "pbcopy" can be slow
+    local opt = M.config.options.opt
+    if opt.clipboard then
+      local lazy_clipboard = opt.clipboard
+      opt.clipboard = nil -- clear setting
+      vim.schedule(function() -- runs after UiEnter
+        opt.clipboard = lazy_clipboard -- restore setting
+        vim.opt.clipboard = opt.clipboard
+      end)
+    end
+  end
   for scope, settings in pairs(M.config.options) do
     for setting, value in pairs(settings) do
       vim[scope][setting] = value
