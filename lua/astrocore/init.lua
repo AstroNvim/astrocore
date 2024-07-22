@@ -399,6 +399,15 @@ function M.setup(opts)
 
   -- options
   if vim.bo.filetype == "lazy" then vim.cmd.bw() end
+  if vim.tbl_get(M.config, "options", "opt", "clipboard") then
+    local opt = M.config.options.opt
+    local lazy_clipboard = opt.clipboard
+    opt.clipboard = nil
+    vim.schedule(function() -- defer setting clipboard
+      opt.clipboard = lazy_clipboard
+      vim.opt.clipboard = opt.clipboard
+    end)
+  end
   for scope, settings in pairs(M.config.options) do
     for setting, value in pairs(settings) do
       vim[scope][setting] = value
