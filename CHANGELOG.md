@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/AstroNvim/astrocore/compare/v1.6.2...v1.6.3) (2024-07-22)
+
+
+### Bug Fixes
+
+* defer clipboard because xsel and pbcopy can be slow ([3bc1868](https://github.com/AstroNvim/astrocore/commit/3bc186846084b42fd76618cd15fbe121ac5c0585))
+
 ## [1.6.2](https://github.com/AstroNvim/astrocore/compare/v1.6.1...v1.6.2) (2024-07-12)
 
 
