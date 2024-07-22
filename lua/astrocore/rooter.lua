@@ -22,11 +22,11 @@ M.detectors = {}
 
 local vim_autochdir
 
-local notify = function(msg, level)
+local function notify(msg, level)
   require("astrocore").notify(msg, level or vim.log.levels.INFO, { title = "AstroNvim Rooter" })
 end
 
-local resolve_config = function() return require("astrocore").config.rooter or {} end
+local function resolve_config() return require("astrocore").config.rooter or {} end
 
 --- Create a detect workspace folders from active language servers
 ---@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)

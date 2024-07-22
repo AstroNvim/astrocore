@@ -1,7 +1,7 @@
 local M = {}
 
 ---@param opts resession.Extension.OnSaveOpts
-M.on_save = function(opts)
+function M.on_save(opts)
   -- initiate astronvim data
   local data = { bufnrs = {}, tabs = {} }
 
@@ -22,7 +22,7 @@ M.on_save = function(opts)
   return data
 end
 
-M.on_post_load = function(data)
+function M.on_post_load(data)
   -- create map from old buffer numbers to new buffer numbers
   local new_bufnrs = {}
   local new_tabpages = vim.api.nvim_list_tabpages()
