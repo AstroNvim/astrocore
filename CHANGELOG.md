@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/AstroNvim/astrocore/compare/v1.6.3...v1.7.0) (2024-08-04)
+
+
+### Features
+
+* add `json` module for cleaning up json ([ee7b8bd](https://github.com/AstroNvim/astrocore/commit/ee7b8bd1ac1b66949b3edfb95c58db766483d706))
+
 ## [1.6.3](https://github.com/AstroNvim/astrocore/compare/v1.6.2...v1.6.3) (2024-07-22)
 
 
