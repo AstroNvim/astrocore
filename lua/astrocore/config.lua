@@ -10,8 +10,7 @@
 ---@alias AstroCoreMappingCmd string|function
 
 ---@class AstroCoreMapping: vim.api.keyset.keymap
----@field [1] AstroCoreMappingCmd rhs of keymap
----@field name string? optional which-key mapping name
+---@field [1] AstroCoreMappingCmd? rhs of keymap
 
 ---@alias AstroCoreMappings table<string,table<string,(AstroCoreMapping|AstroCoreMappingCmd|false)?>?>
 
