@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/AstroNvim/astrocore/compare/v1.7.0...v1.7.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* the right hand side is not mandatory when setting a mapping ([47a7b83](https://github.com/AstroNvim/astrocore/commit/47a7b834c547f4bb84072309f41d11687ccccd20))
+
 ## [1.7.0](https://github.com/AstroNvim/astrocore/compare/v1.6.3...v1.7.0) (2024-08-04)
 
 
