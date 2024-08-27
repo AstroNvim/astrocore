@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/AstroNvim/astrocore/compare/v1.7.1...v1.7.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* **buffer:** make sure previous buffer is valid ([1087dc4](https://github.com/AstroNvim/astrocore/commit/1087dc4645724bc28bb6c82d0a2ac73377e68411))
+
 ## [1.7.1](https://github.com/AstroNvim/astrocore/compare/v1.7.0...v1.7.1) (2024-08-08)
 
 
