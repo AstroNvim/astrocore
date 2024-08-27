@@ -111,10 +111,10 @@ end
 --- Navigate to the previously used buffer
 function M.prev()
   if vim.fn.bufnr() == M.current_buf then
-    if M.last_buf then
+    if M.last_buf and M.is_valid(M.last_buf) then
       vim.cmd.b(M.last_buf)
     else
-      astro.notify("No previous buffer found", vim.log.levels.WARN)
+      astro.notify("Previous buffer not found", vim.log.levels.WARN)
     end
   else
     astro.notify("Must be in a main editor window to switch the window buffer", vim.log.levels.ERROR)
