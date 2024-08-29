@@ -24,6 +24,15 @@ function M.is_valid(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
 end
 
+--- Check if a buffer has a filetype
+---@param bufnr integer? The buffer to check, default to current buffer
+---@return boolean # Whether the buffer has a filetype or not
+function M.has_filetype(bufnr)
+  if not bufnr then bufnr = 0 end
+  local filetype = vim.bo[bufnr].filetype
+  return filetype ~= nil and filetype ~= ""
+end
+
 --- Check if a buffer can be restored
 ---@param bufnr integer The buffer to check
 ---@return boolean # Whether the buffer is restorable or not
