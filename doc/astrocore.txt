@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2024 August 27
+*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2024 August 29
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -724,6 +724,20 @@ CURRENT_BUF ~
 <
 
 Placeholders for keeping track of most recent and previous buffer
+
+
+HAS_FILETYPE ~
+
+>lua
+    function astrocore.buffer.has_filetype(bufnr?: integer)
+      -> boolean
+<
+
+Check if a buffer has a filetype
+
+_param_ `bufnr` — The buffer to check, default to current buffer
+
+_return_ — Whether the buffer has a filetype or not
 
 
 IS_RESTORABLE ~

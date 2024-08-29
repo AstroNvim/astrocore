@@ -463,6 +463,20 @@ nil
 
  Placeholders for keeping track of most recent and previous buffer
 
+### has_filetype
+
+
+```lua
+function astrocore.buffer.has_filetype(bufnr?: integer)
+  -> boolean
+```
+
+ Check if a buffer has a filetype
+
+*param* `bufnr` — The buffer to check, default to current buffer
+
+*return* — Whether the buffer has a filetype or not
+
 ### is_restorable
 
 
