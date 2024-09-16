@@ -49,8 +49,7 @@ end
 ---@return any[] # The modified list like table
 function M.list_insert_unique(dst, src)
   if not dst then dst = {} end
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(dst), "Provided table is not a list like table")
+  assert(vim.islist(dst), "Provided table is not a list like table")
   local added = {}
   for _, val in ipairs(dst) do
     added[val] = true
@@ -69,8 +68,7 @@ end
 ---@return any[] # The list like table of unique values
 function M.unique_list(list)
   local out, cache = {}, {}
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(list), "Provided table is not a list like table")
+  assert(vim.islist(list), "Provided table is not a list like table")
   for _, val in ipairs(list) do
     if not cache[val] then
       table.insert(out, val)
@@ -491,22 +489,6 @@ function M.setup(opts)
   end
 
   -- sign definition
-  -- TODO: Remove when dropping support for Neovim v0.9
-  -- Backwards compatibility of new diagnostic sign API to Neovim v0.9
-  if vim.fn.has "nvim-0.10" ~= 1 then
-    local signs = vim.tbl_get(M.config, "diagnostics", "signs") or {}
-    if not M.config.signs then M.config.signs = {} end
-    for _, type in ipairs { "Error", "Hint", "Info", "Warn" } do
-      local name, severity = "DiagnosticSign" .. type, vim.diagnostic.severity[type:upper()]
-      if M.config.signs[name] == nil then M.config.signs[name] = { text = "" } end
-      if M.config.signs[name] then
-        if not M.config.signs[name].texthl then M.config.signs[name].texthl = name end
-        for attribute, severities in pairs(signs) do
-          if severities[severity] then M.config.signs[name][attribute] = severities[severity] end
-        end
-      end
-    end
-  end
   for name, dict in pairs(M.config.signs or {}) do
     if dict then vim.fn.sign_define(name, dict) end
   end
@@ -534,8 +516,7 @@ function M.setup(opts)
       group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
       desc = "Root detection when entering a buffer",
       callback = function(args)
-        -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
-        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(args.buf))
+        local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(args.buf))
         if
           (ok and stats and stats.size > large_buf.size) or vim.api.nvim_buf_line_count(args.buf) > large_buf.lines
         then

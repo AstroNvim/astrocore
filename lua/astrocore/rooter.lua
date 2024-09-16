@@ -43,8 +43,7 @@ function M.detectors.lsp(config)
     local bufpath = M.bufpath(bufnr)
     if not bufpath then return {} end
     local roots = {} ---@type string[]
-    -- TODO: remove when dropping support for Neovim v0.9
-    for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
+    for _, client in ipairs(vim.lsp.get_clients { buffer = bufnr }) do
       if not server_filter or not server_filter(client) then
         if client.root_dir then table.insert(roots, client.root_dir) end
         vim.tbl_map(
