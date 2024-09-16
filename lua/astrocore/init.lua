@@ -97,7 +97,7 @@ end
 
 --- Trigger an AstroNvim user event
 ---@param event string|vim.api.keyset_exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
----@param instant boolean? Whether or not to execute instantly or schedule
+---@param instant? boolean Whether or not to execute instantly or schedule
 function M.event(event, instant)
   if type(event) == "string" then event = { pattern = event } end
   event = M.extend_tbl({ modeline = false }, event)
@@ -303,7 +303,7 @@ M.url_matcher =
   "\\v\\c%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)%([&:#*@~%_\\-=?!+;/0-9a-z]+%(%([.;/?]|[.][.]+)[&:#*@~%_\\-=?!+/0-9a-z]+|:\\d+|,%(%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)@![0-9a-z]+))*|\\([&:#*@~%_\\-=?!+;/.0-9a-z]*\\)|\\[[&:#*@~%_\\-=?!+;/.0-9a-z]*\\]|\\{%([&:#*@~%_\\-=?!+;/.0-9a-z]*|\\{[&:#*@~%_\\-=?!+;/.0-9a-z]*})\\})+"
 
 --- Delete the syntax matching rules for URLs/URIs if set
----@param win integer? the window id to remove url highlighting in (default: current window)
+---@param win? integer the window id to remove url highlighting in (default: current window)
 function M.delete_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   for _, match in ipairs(vim.fn.getmatches(win)) do
@@ -313,7 +313,7 @@ function M.delete_url_match(win)
 end
 
 --- Add syntax matching rules for highlighting URLs/URIs
----@param win integer? the window id to remove url highlighting in (default: current window)
+---@param win? integer the window id to remove url highlighting in (default: current window)
 function M.set_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   M.delete_url_match(win)
@@ -339,7 +339,7 @@ function M.cmd(cmd, show_error)
 end
 
 --- Get the first worktree that a file belongs to
----@param file string? the file to check, defaults to the current file
+---@param file? string the file to check, defaults to the current file
 ---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
 ---@return table<string, string>|nil worktree a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 function M.file_worktree(file, worktrees)
