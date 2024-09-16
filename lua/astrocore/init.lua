@@ -49,8 +49,7 @@ end
 ---@return any[] result The modified list like table
 function M.list_insert_unique(dst, src)
   if not dst then dst = {} end
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(dst), "Provided table is not a list like table")
+  assert(vim.islist(dst), "Provided table is not a list like table")
   local added = {}
   for _, val in ipairs(dst) do
     added[val] = true
@@ -69,8 +68,7 @@ end
 ---@return any[] result The list like table of unique values
 function M.unique_list(list)
   local out, cache = {}, {}
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(list), "Provided table is not a list like table")
+  assert(vim.islist(list), "Provided table is not a list like table")
   for _, val in ipairs(list) do
     if not cache[val] then
       table.insert(out, val)
@@ -128,44 +126,24 @@ end
 
 --- Open a URL under the cursor with the current operating system
 ---@param path string The path of the file to open with the system opener
+---@return vim.SystemObj? err any errors if encountered
 function M.system_open(path)
   if not path then
     path = vim.fn.expand "<cfile>"
   elseif not path:match "%w+:" then
     path = vim.fn.expand(path)
   end
-  -- TODO: remove deprecated method check after dropping support for neovim v0.9
-  if vim.ui.open then return vim.ui.open(path) end
-  local cmd
-  if vim.fn.has "mac" == 1 then
-    cmd = { "open" }
-  elseif vim.fn.has "win32" == 1 then
-    if vim.fn.executable "rundll32" then
-      cmd = { "rundll32", "url.dll,FileProtocolHandler" }
-    else
-      cmd = { "cmd.exe", "/K", "explorer" }
-    end
-  elseif vim.fn.has "unix" == 1 then
-    if vim.fn.executable "explorer.exe" == 1 then
-      cmd = { "explorer.exe" }
-    elseif vim.fn.executable "xdg-open" == 1 then
-      cmd = { "xdg-open" }
-    end
-  end
-  if not cmd then M.notify("Available system opening tool not found!", vim.log.levels.ERROR) end
-  vim.fn.jobstart(vim.list_extend(cmd, { path }), { detach = true })
+  return vim.ui.open(path)
 end
 
 --- Helper function to read a file and return it's content
 ---@param path string the path to the file to read
 ---@return string content the contents of the file
 function M.read_file(path)
-  local uv = vim.uv or vim.loop
-
-  local fd = assert(uv.fs_open(path, "r", 420))
-  local stat = assert(uv.fs_fstat(fd))
-  local content = assert(uv.fs_read(fd, stat.size))
-  assert(uv.fs_close(fd))
+  local fd = assert(vim.uv.fs_open(path, "r", 420))
+  local stat = assert(vim.uv.fs_fstat(fd))
+  local content = assert(vim.uv.fs_read(fd, stat.size))
+  assert(vim.uv.fs_close(fd))
   return content
 end
 
@@ -440,9 +418,8 @@ end
 function M.rename_file(file, on_rename)
   local buf = file and vim.fn.bufadd(file) or vim.api.nvim_get_current_buf()
   local from = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":p")
-  local uv = vim.uv or vim.loop
-  local root = uv.cwd() or "."
-  root = vim.fs.normalize(uv.fs_realpath(root) or root)
+  local root = vim.uv.cwd() or "."
+  root = vim.fs.normalize(vim.uv.fs_realpath(root) or root)
 
   if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
 
@@ -531,22 +508,6 @@ function M.setup(opts)
   end
 
   -- sign definition
-  -- TODO: Remove when dropping support for Neovim v0.9
-  -- Backwards compatibility of new diagnostic sign API to Neovim v0.9
-  if vim.fn.has "nvim-0.10" ~= 1 then
-    local signs = vim.tbl_get(M.config, "diagnostics", "signs") or {}
-    if not M.config.signs then M.config.signs = {} end
-    for _, type in ipairs { "Error", "Hint", "Info", "Warn" } do
-      local name, severity = "DiagnosticSign" .. type, vim.diagnostic.severity[type:upper()]
-      if M.config.signs[name] == nil then M.config.signs[name] = { text = "" } end
-      if M.config.signs[name] then
-        if not M.config.signs[name].texthl then M.config.signs[name].texthl = name end
-        for attribute, severities in pairs(signs) do
-          if severities[severity] then M.config.signs[name][attribute] = severities[severity] end
-        end
-      end
-    end
-  end
   for name, dict in pairs(M.config.signs or {}) do
     if dict then vim.fn.sign_define(name, dict) end
   end
