@@ -43,8 +43,7 @@ function M.detectors.lsp(config)
     local bufpath = M.bufpath(bufnr)
     if not bufpath then return {} end
     local roots = {} ---@type string[]
-    -- TODO: remove when dropping support for Neovim v0.9
-    for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
+    for _, client in ipairs(vim.lsp.get_clients { buffer = bufnr }) do
       if not server_filter or not server_filter(client) then
         if client.root_dir then table.insert(roots, client.root_dir) end
         vim.tbl_map(
@@ -93,7 +92,7 @@ function M.bufpath(bufnr) return M.realpath(vim.api.nvim_buf_get_name(bufnr)) en
 ---@return string? the resolved path
 function M.realpath(path)
   if not path or path == "" then return nil end
-  return M.normpath((vim.uv or vim.loop).fs_realpath(path) or path)
+  return M.normpath(vim.uv.fs_realpath(path) or path)
 end
 
 --- Check if a path exists
