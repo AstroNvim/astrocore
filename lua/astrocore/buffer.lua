@@ -17,7 +17,7 @@ M.sessions = astro.config.sessions
 M.current_buf, M.last_buf = nil, nil
 
 --- Check if a buffer is valid
----@param bufnr integer? The buffer to check, default to current buffer
+---@param bufnr? integer The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer is valid or not
 function M.is_valid(bufnr)
   if not bufnr then bufnr = 0 end
@@ -54,7 +54,7 @@ function M.is_large(bufnr, large_buf_opts)
 end
 
 --- Check if a buffer has a filetype
----@param bufnr integer? The buffer to check, default to current buffer
+---@param bufnr? integer The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer has a filetype or not
 function M.has_filetype(bufnr)
   if not bufnr then bufnr = 0 end
