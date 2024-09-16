@@ -124,36 +124,6 @@ function M.exec_buffer_autocmds(event, opts)
   end
 end
 
---- Open a URL under the cursor with the current operating system
----@param path string The path of the file to open with the system opener
-function M.system_open(path)
-  if not path then
-    path = vim.fn.expand "<cfile>"
-  elseif not path:match "%w+:" then
-    path = vim.fn.expand(path)
-  end
-  -- TODO: remove deprecated method check after dropping support for neovim v0.9
-  if vim.ui.open then return vim.ui.open(path) end
-  local cmd
-  if vim.fn.has "mac" == 1 then
-    cmd = { "open" }
-  elseif vim.fn.has "win32" == 1 then
-    if vim.fn.executable "rundll32" then
-      cmd = { "rundll32", "url.dll,FileProtocolHandler" }
-    else
-      cmd = { "cmd.exe", "/K", "explorer" }
-    end
-  elseif vim.fn.has "unix" == 1 then
-    if vim.fn.executable "explorer.exe" == 1 then
-      cmd = { "explorer.exe" }
-    elseif vim.fn.executable "xdg-open" == 1 then
-      cmd = { "xdg-open" }
-    end
-  end
-  if not cmd then M.notify("Available system opening tool not found!", vim.log.levels.ERROR) end
-  vim.fn.jobstart(vim.list_extend(cmd, { path }), { detach = true })
-end
-
 --- Helper function to read a file and return it's content
 ---@param path string the path to the file to read
 ---@return string content the contents of the file
