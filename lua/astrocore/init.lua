@@ -124,18 +124,6 @@ function M.exec_buffer_autocmds(event, opts)
   end
 end
 
---- Open a URL under the cursor with the current operating system
----@param path string The path of the file to open with the system opener
----@return vim.SystemObj? err any errors if encountered
-function M.system_open(path)
-  if not path then
-    path = vim.fn.expand "<cfile>"
-  elseif not path:match "%w+:" then
-    path = vim.fn.expand(path)
-  end
-  return vim.ui.open(path)
-end
-
 --- Helper function to read a file and return it's content
 ---@param path string the path to the file to read
 ---@return string content the contents of the file
