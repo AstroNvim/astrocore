@@ -4,15 +4,6 @@ astrocore API documentation
 
 ## astrocore
 
-AstroNvim Core Utilities
-
-Various utility functions to use within AstroNvim and user configurations.
-
-This module can be loaded with `local astro = require "astrocore"`
-
-copyright 2023
-license GNU General Public License v3.0
-
 ### cmd
 
 
@@ -386,15 +377,6 @@ function astrocore.which_key_register()
 
 ## astrocore.buffer
 
-AstroNvim Buffer Utilities
-
-Buffer management related utility functions
-
-This module can be loaded with `local buffer_utils = require "astrocore.buffer"`
-
-copyright 2023
-license GNU General Public License v3.0
-
 ### close
 
 
@@ -605,15 +587,6 @@ function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
 
 ## astrocore.buffer.comparator
 
-AstroNvim Buffer Comparators
-
-Buffer comparator functions for sorting buffers
-
-This module can be loaded with `local buffer_comparators = require "astrocore.buffer.comparator"`
-
-copyright 2023
-license GNU General Public License v3.0
-
 ### bufnr
 
 
@@ -697,15 +670,6 @@ function astrocore.buffer.comparator.unique_path(bufnr_a: integer, bufnr_b: inte
 
 ## astrocore.mason
 
-Mason Utilities
-
-Mason related utility functions to use within AstroNvim and user configurations.
-
-This module can be loaded with `local mason_utils = require("astrocore.mason")`
-
-copyright 2023
-license GNU General Public License v3.0
-
 ### update
 
 
@@ -730,19 +694,6 @@ function astrocore.mason.update_all()
 
 
 ## astrocore.rooter
-
-AstroNvim Rooter
-
-Utilities necessary for automatic root detectoin
-
-This module is heavily inspired by LazyVim and project.nvim
-https://github.com/ahmedkhalf/project.nvim
-https://github.com/LazyVim/LazyVim/blob/98db7ec0d287adcd8eaf6a93c4a392f588b5615a/lua/lazyvim/util/root.lua
-
-This module can be loaded with `local rooter = require "astrocore.rooter"`
-
-copyright 2023
-license GNU General Public License v3.0
 
 ### bufpath
 
@@ -886,15 +837,6 @@ function astrocore.rooter.set_pwd(root: AstroCoreRooterRoot, config?: AstroCoreR
 
 
 ## astrocore.toggles
-
-AstroNvim UI/UX Toggles
-
- Utility functions for easy UI toggles.
-
-This module can be loaded with `local ui = require("astrocore.toggles")`
-
-copyright 2023
-license GNU General Public License v3.0
 
 ### autochdir
 

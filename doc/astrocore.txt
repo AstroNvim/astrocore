@@ -1,4 +1,4 @@
-*astrocore.txt*         For Neovim >= 0.9.0        Last change: 2024 August 29
+*astrocore.txt*       For Neovim >= 0.9.0       Last change: 2024 September 17
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -239,14 +239,6 @@ astrocore API documentation
 
 
 ASTROCORE                                        *astrocore-lua-api-astrocore*
-
-AstroNvim Core Utilities
-
-Various utility functions to use within AstroNvim and user configurations.
-
-This module can be loaded with `local astro = require "astrocore"`
-
-copyright 2023 license GNU General Public License v3.0
 
 
 CMD ~
@@ -643,15 +635,6 @@ Register queued which-key mappings
 
 ASTROCORE.BUFFER                          *astrocore-lua-api-astrocore.buffer*
 
-AstroNvim Buffer Utilities
-
-Buffer management related utility functions
-
-This module can be loaded with `local buffer_utils = require
-"astrocore.buffer"`
-
-copyright 2023 license GNU General Public License v3.0
-
 
 CLOSE ~
 
@@ -872,15 +855,6 @@ _param_ `force` — Whether or not to foce close the buffers or confirm changes
 
 ASTROCORE.BUFFER.COMPARATOR    *astrocore-lua-api-astrocore.buffer.comparator*
 
-AstroNvim Buffer Comparators
-
-Buffer comparator functions for sorting buffers
-
-This module can be loaded with `local buffer_comparators = require
-"astrocore.buffer.comparator"`
-
-copyright 2023 license GNU General Public License v3.0
-
 
 BUFNR ~
 
@@ -969,15 +943,6 @@ sorted before A
 
 ASTROCORE.MASON                            *astrocore-lua-api-astrocore.mason*
 
-Mason Utilities
-
-Mason related utility functions to use within AstroNvim and user
-configurations.
-
-This module can be loaded with `local mason_utils = require("astrocore.mason")`
-
-copyright 2023 license GNU General Public License v3.0
-
 
 UPDATE ~
 
@@ -1006,18 +971,6 @@ Update all packages in Mason
 
 
 ASTROCORE.ROOTER                          *astrocore-lua-api-astrocore.rooter*
-
-AstroNvim Rooter
-
-Utilities necessary for automatic root detectoin
-
-This module is heavily inspired by LazyVim and project.nvim
-https://github.com/ahmedkhalf/project.nvim
-https://github.com/LazyVim/LazyVim/blob/98db7ec0d287adcd8eaf6a93c4a392f588b5615a/lua/lazyvim/util/root.lua
-
-This module can be loaded with `local rooter = require "astrocore.rooter"`
-
-copyright 2023 license GNU General Public License v3.0
 
 
 BUFPATH ~
@@ -1162,14 +1115,6 @@ _return_ `success` — whether or not the pwd was successfully set
 
 
 ASTROCORE.TOGGLES                        *astrocore-lua-api-astrocore.toggles*
-
-AstroNvim UI/UX Toggles
-
-Utility functions for easy UI toggles.
-
-This module can be loaded with `local ui = require("astrocore.toggles")`
-
-copyright 2023 license GNU General Public License v3.0
 
 
 AUTOCHDIR ~
