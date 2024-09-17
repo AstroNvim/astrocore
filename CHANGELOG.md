@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/AstroNvim/astrocore/compare/v1.8.0...v1.8.1) (2024-09-17)
+
+
+### Bug Fixes
+
+* remove non-public facing `json` module as it was merged upstream ([2d19ef3](https://github.com/AstroNvim/astrocore/commit/2d19ef3f8b97418b31bbf665cd6a2f68a4c95782))
+
 ## [1.8.0](https://github.com/AstroNvim/astrocore/compare/v1.7.2...v1.8.0) (2024-08-29)
 
 
