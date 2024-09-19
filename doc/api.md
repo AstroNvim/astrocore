@@ -222,6 +222,34 @@ function astrocore.on_load(plugins: string|string[], load_op: string|fun()|strin
 
 *param* `load_op` — the function to execute when the plugin is loaded, a plugin name to load, or a list of plugin names to load
 
+### patch_func
+
+
+```lua
+function astrocore.patch_func(orig?: function, override: fun(orig: function, ...any):...unknown)
+  -> the: function
+```
+
+ Monkey patch into an existing function
+
+ Example from `:h vim.paste()`
+ ```lua
+ local patch_func = require("astrocore").patch_func
+ vim.paste = patch_func(vim.paste, function(orig, lines, phase)
+   for i, line in ipairs(lines) do
+     -- Scrub ANSI color codes from paste input.
+     lines[i] = line:gsub('\27%[[0-9;mK]+', '')
+   end
+   return orig(lines, phase)
+ end)
+ ```
+
+*param* `orig` — the original function to override, if `nil` is provided then an empty function is passed
+
+*param* `override` — the override function
+
+*return* `the` — new function with the patch applied
+
 ### plugin_opts
 
 
