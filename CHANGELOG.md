@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/AstroNvim/astrocore/compare/v1.8.1...v1.9.0) (2024-09-19)
+
+
+### Features
+
+* add `patch_func` to monkey patch into an existing function ([e7d7a35](https://github.com/AstroNvim/astrocore/commit/e7d7a35c490b4e1f15252f36c198d35e21490f4d))
+
 ## [1.8.1](https://github.com/AstroNvim/astrocore/compare/v1.8.0...v1.8.1) (2024-09-17)
 
 
