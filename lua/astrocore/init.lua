@@ -391,6 +391,27 @@ function M.file_worktree(file, worktrees)
   end
 end
 
+--- Monkey patch into an existing function
+---
+--- Example from `:h vim.paste()`
+--- ```lua
+--- local patch_func = require("astrocore").patch_func
+--- vim.paste = patch_func(vim.paste, function(orig, lines, phase)
+---   for i, line in ipairs(lines) do
+---     -- Scrub ANSI color codes from paste input.
+---     lines[i] = line:gsub('\27%[[0-9;mK]+', '')
+---   end
+---   return orig(lines, phase)
+--- end)
+--- ```
+---@param orig? function the original function to override, if `nil` is provided then an empty function is passed
+---@param override fun(orig:function, ...):... the override function
+---@return function the new function with the patch applied
+function M.patch_func(orig, override)
+  if not orig then orig = function() end end
+  return function(...) return override(orig, ...) end
+end
+
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
