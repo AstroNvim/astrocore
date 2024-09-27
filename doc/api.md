@@ -402,6 +402,39 @@ function astrocore.which_key_register()
 
  Register queued which-key mappings
 
+### with_file
+
+
+```lua
+function astrocore.with_file(filename: string, mode?: "a"|"a+"|"a+b"|"ab"|"r"...(+7), callback?: fun(file: file*), on_error?: fun(err: string))
+```
+
+ Execute function with open file
+
+*param* `filename` — path to file to interact with
+
+*param* `mode` — the mode in which to open the file
+
+*param* `callback` — the callback to execute with the opened file
+
+*param* `on_error` — the callback to execute if unable to open the file
+
+```lua
+mode:
+   -> "r" -- Read mode.
+    | "w" -- Write mode.
+    | "a" -- Append mode.
+    | "r+" -- Update mode, all previous data is preserved.
+    | "w+" -- Update mode, all previous data is erased.
+    | "a+" -- Append update mode, previous data is preserved, writing is only allowed at the end of file.
+    | "rb" -- Read mode. (in binary mode.)
+    | "wb" -- Write mode. (in binary mode.)
+    | "ab" -- Append mode. (in binary mode.)
+    | "r+b" -- Update mode, all previous data is preserved. (in binary mode.)
+    | "w+b" -- Update mode, all previous data is erased. (in binary mode.)
+    | "a+b" -- Append update mode, previous data is preserved, writing is only allowed at the end of file. (in binary mode.)
+```
+
 
 ## astrocore.buffer
 

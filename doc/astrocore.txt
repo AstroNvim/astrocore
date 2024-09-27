@@ -1,4 +1,4 @@
-*astrocore.txt*       For Neovim >= 0.9.0       Last change: 2024 September 19
+*astrocore.txt*       For Neovim >= 0.9.0       Last change: 2024 September 27
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -654,6 +654,39 @@ WHICH_KEY_REGISTER ~
 <
 
 Register queued which-key mappings
+
+
+WITH_FILE ~
+
+>lua
+    function astrocore.with_file(filename: string, mode?: "a"|"a+"|"a+b"|"ab"|"r"...(+7), callback?: fun(file: file*), on_error?: fun(err: string))
+<
+
+Execute function with open file
+
+_param_ `filename` — path to file to interact with
+
+_param_ `mode` — the mode in which to open the file
+
+_param_ `callback` — the callback to execute with the opened file
+
+_param_ `on_error` — the callback to execute if unable to open the file
+
+>lua
+    mode:
+       -> "r" -- Read mode.
+        | "w" -- Write mode.
+        | "a" -- Append mode.
+        | "r+" -- Update mode, all previous data is preserved.
+        | "w+" -- Update mode, all previous data is erased.
+        | "a+" -- Append update mode, previous data is preserved, writing is only allowed at the end of file.
+        | "rb" -- Read mode. (in binary mode.)
+        | "wb" -- Write mode. (in binary mode.)
+        | "ab" -- Append mode. (in binary mode.)
+        | "r+b" -- Update mode, all previous data is preserved. (in binary mode.)
+        | "w+b" -- Update mode, all previous data is erased. (in binary mode.)
+        | "a+b" -- Append update mode, previous data is preserved, writing is only allowed at the end of file. (in binary mode.)
+<
 
 
 ASTROCORE.BUFFER                          *astrocore-lua-api-astrocore.buffer*
