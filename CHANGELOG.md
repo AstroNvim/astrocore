@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/AstroNvim/astrocore/compare/v1.9.0...v1.10.0) (2024-09-27)
+
+
+### Features
+
+* add `with_file` helper to run a function on an opened file ([ca2a852](https://github.com/AstroNvim/astrocore/commit/ca2a852831ad113606b8a16c40ff1ac44644b2a3))
+
 ## [1.9.0](https://github.com/AstroNvim/astrocore/compare/v1.8.1...v1.9.0) (2024-09-19)
 
 
