@@ -29,7 +29,7 @@ end
 local function resolve_config() return require("astrocore").config.rooter or {} end
 
 --- Create a detect workspace folders from active language servers
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 ---@return AstroCoreRooterDetectorFunc
 function M.detectors.lsp(config)
   if not config then config = resolve_config() end
@@ -43,8 +43,7 @@ function M.detectors.lsp(config)
     local bufpath = M.bufpath(bufnr)
     if not bufpath then return {} end
     local roots = {} ---@type string[]
-    -- TODO: remove when dropping support for Neovim v0.9
-    for _, client in ipairs((vim.lsp.get_clients or vim.lsp.get_active_clients) { buffer = bufnr }) do
+    for _, client in ipairs(vim.lsp.get_clients { buffer = bufnr }) do
       if not server_filter or not server_filter(client) then
         if client.root_dir then table.insert(roots, client.root_dir) end
         vim.tbl_map(
@@ -89,7 +88,7 @@ end
 function M.bufpath(bufnr) return M.realpath(vim.api.nvim_buf_get_name(bufnr)) end
 
 --- Resolve a given path
----@param path string? the path to resolve
+---@param path? string the path to resolve
 ---@return string? the resolved path
 function M.realpath(path)
   if not path or path == "" then return nil end
@@ -116,7 +115,7 @@ end
 
 --- Resolve the root detection function for a given spec
 ---@param spec AstroCoreRooterSpec the root detector specification
----@param config AstroCoreRooterOpts? the root configuration
+---@param config? AstroCoreRooterOpts the root configuration
 ---@return function
 function M.resolve(spec, config)
   if M.detectors[spec] then
@@ -129,9 +128,9 @@ function M.resolve(spec, config)
 end
 
 --- Detect roots in a given buffer
----@param bufnr integer? the buffer to detect
----@param all boolean? whether to return all roots or just one
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param bufnr? integer the buffer to detect
+---@param all? boolean whether to return all roots or just one
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 ---@return AstroCoreRooterRoot[] detected roots
 function M.detect(bufnr, all, config)
   if not config then config = resolve_config() end
@@ -165,7 +164,7 @@ function M.detect(bufnr, all, config)
 end
 
 --- Get information information about the current root
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 function M.info(config)
   if not config then config = resolve_config() end
   local lines = {}
@@ -208,7 +207,7 @@ end
 
 --- Set the current directory to a given root
 ---@param root AstroCoreRooterRoot the root to set the pwd to
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 ---@return boolean success whether or not the pwd was successfully set
 function M.set_pwd(root, config)
   if not config then config = resolve_config() end
@@ -236,7 +235,7 @@ end
 
 --- Check if a path is excluded
 ---@param path string the path
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 ---@return boolean excluded whether or not the path is excluded
 function M.is_excluded(path, config)
   if not config then config = resolve_config() end
@@ -247,8 +246,8 @@ function M.is_excluded(path, config)
 end
 
 --- Run the root detection and set the current working directory if a new root is detected
----@param bufnr integer? the buffer to detect
----@param config AstroCoreRooterOpts? a rooter configuration (defaults to global configuration)
+---@param bufnr? integer the buffer to detect
+---@param config? AstroCoreRooterOpts a rooter configuration (defaults to global configuration)
 function M.root(bufnr, config)
   -- add `autochdir` protection
   local autochdir = vim.opt.autochdir:get()
