@@ -412,6 +412,21 @@ function M.patch_func(orig, override)
   return function(...) return override(orig, ...) end
 end
 
+--- Execute function with open file
+---@param filename string path to file to interact with
+---@param mode? openmode the mode in which to open the file
+---@param callback? fun(file:file*) the callback to execute with the opened file
+---@param on_error? fun(err:string) the callback to execute if unable to open the file
+function M.with_file(filename, mode, callback, on_error)
+  local file, errmsg = io.open(filename, mode)
+  if file then
+    if callback then callback(file) end
+    file:close()
+  elseif errmsg and on_error then
+    on_error(errmsg)
+  end
+end
+
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
