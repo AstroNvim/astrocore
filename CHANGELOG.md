@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.0](https://github.com/AstroNvim/astrocore/compare/v1.10.0...v1.11.0) (2024-10-28)
+
+
+### Features
+
+* **health:** add health check for conflicting mappings ([1040947](https://github.com/AstroNvim/astrocore/commit/1040947440b44d1d79ec575b30ba05c7091d6dff))
+
 ## [1.10.0](https://github.com/AstroNvim/astrocore/compare/v1.9.0...v1.10.0) (2024-09-27)
 
 
