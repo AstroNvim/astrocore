@@ -432,10 +432,30 @@ function M.rename_file(file, on_rename)
   end)
 end
 
+local key_cache = {} ---@type { [string]: string }
+--- Normalize a mappings table to use official keycode casing
+---@param mappings AstroCoreMappings?
+function M.normalize_mappings(mappings)
+  if not mappings then return end
+  for _, mode_maps in pairs(mappings) do
+    for key, _ in pairs(mode_maps) do
+      if not key_cache[key] then
+        key_cache[key] = vim.fn.keytrans(vim.api.nvim_replace_termcodes(key, true, true, true))
+      end
+      local normkey = key_cache[key]
+      if key ~= normkey then
+        mode_maps[normkey], mode_maps[key] = mode_maps[key], nil
+      end
+    end
+  end
+end
+
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
 function M.setup(opts)
+  M.normalize_mappings(M.config.mappings)
+  M.normalize_mappings(opts.mappings)
   M.config = vim.tbl_deep_extend("force", M.config, opts)
 
   -- options
