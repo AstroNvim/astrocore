@@ -41,6 +41,7 @@
 ---@class AstroCoreMaxFile
 ---@field size integer? the number of bytes in a file
 ---@field lines integer? the number of lines in a file
+---@field line_length integer? the average line length in a file
 
 ---@class AstroCoreSessionAutosave
 ---@field last boolean? whether or not to save the last session
@@ -308,7 +309,7 @@ local M = {
     cmp = true,
     diagnostics_mode = 3,
     highlighturl = true,
-    large_buf = { size = 1024 * 256, lines = 10000 },
+    large_buf = { size = 1024 * 256, lines = 10000, line_length = 1000 },
     notifications = true,
   },
   git_worktrees = nil,

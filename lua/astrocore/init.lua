@@ -536,8 +536,12 @@ function M.setup(opts)
       callback = function(args)
         -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
         local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(args.buf))
+        local file_size = ok and stats and stats.size or 0
+        local line_count = vim.api.nvim_buf_line_count(args.buf)
         if
-          (ok and stats and stats.size > large_buf.size) or vim.api.nvim_buf_line_count(args.buf) > large_buf.lines
+          file_size > large_buf.size
+          or line_count > large_buf.lines
+          or (file_size / line_count) - 1 > large_buf.line_length
         then
           vim.b[args.buf].large_buf = true
           M.event("LargeBuf", true)
