@@ -39,9 +39,9 @@
 ---@field gitdir string the location of the git directory
 
 ---@class AstroCoreMaxFile
----@field size integer? the number of bytes in a file
----@field lines integer? the number of lines in a file
----@field line_length integer? the average line length in a file
+---@field size integer|false? the number of bytes in a file or false to disable check
+---@field lines integer|false? the number of lines in a file or false to disable check
+---@field line_length integer|false? the average line length in a file or false to disable check
 
 ---@class AstroCoreSessionAutosave
 ---@field last boolean? whether or not to save the last session

@@ -439,9 +439,10 @@ function M.is_large_buf(bufnr)
       local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
       local file_size = ok and stats and stats.size or 0
       local line_count = vim.api.nvim_buf_line_count(bufnr)
-      large_buf_cache[bufnr] = file_size > large_buf.size
-        or line_count > large_buf.lines
-        or (file_size / line_count) - 1 > large_buf.line_length
+      local too_large = large_buf.size and file_size > large_buf.size
+      local too_long = large_buf.lines and line_count > large_buf.lines
+      local too_wide = large_buf.line_length and (file_size / line_count) - 1 > large_buf.line_length
+      large_buf_cache[bufnr] = too_large or too_long or too_wide
     end
     return large_buf_cache[bufnr]
   end
