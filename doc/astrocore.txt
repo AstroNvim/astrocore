@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 07
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 12
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -245,7 +245,7 @@ CMD ~
 
 >lua
     function astrocore.cmd(cmd: string|string[], show_error?: boolean)
-      -> string|nil
+      -> result: string|nil
 <
 
 Run a shell command and capture the output and if the command succeeded or
@@ -256,7 +256,7 @@ _param_ `cmd` — The terminal command to execute
 _param_ `show_error` — Whether or not to show an unsuccessful command as an
 error to the user
 
-_return_ — The result of a successfully executed command or nil
+_return_ `result` — The result of a successfully executed command or nil
 
 
 CONDITIONAL_FUNC ~
@@ -309,12 +309,12 @@ EMPTY_MAP_TABLE ~
 
 >lua
     function astrocore.empty_map_table()
-      -> table<string, table>
+      -> mappings: table<string, table>
 <
 
 Get an empty table of mappings with a key for each map mode
 
-_return_ — a table with entries for each map mode
+_return_ `mappings` — a table with entries for each map mode
 
 
 EVENT ~
@@ -348,7 +348,7 @@ EXTEND_TBL ~
 
 >lua
     function astrocore.extend_tbl(default?: table, opts?: table)
-      -> table
+      -> extended: table
 <
 
 Merge extended options with a default table of options
@@ -357,14 +357,14 @@ _param_ `default` — The default table that you want to merge into
 
 _param_ `opts` — The new options that should be merged with the default table
 
-_return_ — The merged table
+_return_ `extended` — The extended table
 
 
 FILE_WORKTREE ~
 
 >lua
     function astrocore.file_worktree(file?: string, worktrees?: table<string, string>[])
-      -> table<string, string>|nil
+      -> worktree: table<string, string>|nil
 <
 
 Get the first worktree that a file belongs to
@@ -374,22 +374,22 @@ _param_ `file` — the file to check, defaults to the current file
 _param_ `worktrees` — an array like table of worktrees with entries
 `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
 
-_return_ — a table specifying the `toplevel` and `gitdir` of a worktree or
-nil if not found
+_return_ `worktree` — a table specifying the `toplevel` and `gitdir` of a
+worktree or nil if not found
 
 
 GET_PLUGIN ~
 
 >lua
     function astrocore.get_plugin(plugin: string)
-      -> available: LazyPlugin?
+      -> spec: LazyPlugin?
 <
 
 Get a plugin spec from lazy
 
 _param_ `plugin` — The plugin to search for
 
-_return_ `available` — The found plugin spec from Lazy
+_return_ `spec` — The found plugin spec from Lazy
 
 
 IS_AVAILABLE ~
@@ -407,11 +407,26 @@ _param_ `plugin` — The plugin to search for
 _return_ `available` — Whether the plugin is available
 
 
+IS_LARGE_BUF ~
+
+>lua
+    function astrocore.is_large_buf(bufnr: integer)
+      -> is_large: boolean
+<
+
+Check if a buffer is a large buffer (always returns false if large buffer
+detection is disabled)
+
+_param_ `bufnr` — the buffer to check the size of
+
+_return_ `is_large` — whether the buffer is detected as large or not
+
+
 LIST_INSERT_UNIQUE ~
 
 >lua
     function astrocore.list_insert_unique(dst: any[]|nil, src: any[])
-      -> any[]
+      -> result: any[]
 <
 
 Insert one or more values into a list like table and maintain that you do not
@@ -421,7 +436,7 @@ _param_ `dst` — The list like table that you want to insert into
 
 _param_ `src` — Values to be inserted
 
-_return_ — The modified list like table
+_return_ `result` — The modified list like table
 
 
 LOAD_PLUGIN_WITH_FUNC ~
@@ -477,7 +492,7 @@ PATCH_FUNC ~
 
 >lua
     function astrocore.patch_func(orig?: function, override: fun(orig: function, ...any):...unknown)
-      -> the: function
+      -> patched: function
 <
 
 Monkey patch into an existing function
@@ -493,7 +508,7 @@ an empty function is passed
 
 _param_ `override` — the override function
 
-_return_ `the` — new function with the patch applied
+_return_ `patched` — the new function with the patch applied
 
 
 PLUGIN_OPTS ~
@@ -599,14 +614,14 @@ UNIQUE_LIST ~
 
 >lua
     function astrocore.unique_list(list: any[])
-      -> any[]
+      -> result: any[]
 <
 
 Remove duplicate entries from a given list (does not mutate the original list)
 
 _param_ `list` — The list like table that you want to remove duplicates from
 
-_return_ — The list like table of unique values
+_return_ `result` — The list like table of unique values
 
 
 UPDATE_PACKAGES ~
