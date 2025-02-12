@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.12.0](https://github.com/AstroNvim/astrocore/compare/v1.11.0...v1.12.0) (2025-02-12)
+
+
+### Features
+
+* add `is_large_buf` to interactively check if buffer is large ([7a80ad7](https://github.com/AstroNvim/astrocore/commit/7a80ad74ee42884cbd3086be02053c773bc36a6e))
+* add `line_length` to large buffer detection ([aa76560](https://github.com/AstroNvim/astrocore/commit/aa76560f144bc0de128d6bd9d5024d335ca51ecc))
+* allow disabling individual large file metrics ([5463a98](https://github.com/AstroNvim/astrocore/commit/5463a98314168116f2d62f15bbd5e8761071f310))
+
+
+### Bug Fixes
+
+* improve typos detection ([025274c](https://github.com/AstroNvim/astrocore/commit/025274c5db248320c6f0d079d15b2e5fe6447b4a))
+
 ## [1.11.0](https://github.com/AstroNvim/astrocore/compare/v1.10.0...v1.11.0) (2024-10-28)
 
 
