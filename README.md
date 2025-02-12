@@ -141,7 +141,11 @@ local opts = {
     diagnostics_mode = 3, -- diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = off)
     highlighturl = true, -- enable or disable highlighting of urls on start
     -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
-    large_buf = { size = 1024 * 100, lines = 10000 },
+    large_buf = {
+      size = 1024 * 100, -- max file size (or false to disable check)
+      lines = 10000, -- max number of lines (or false to disable check)
+      line_length = 1000, -- average line length (or false to disable check)
+    },
     notifications = true, -- enable or disable notifications on start
   },
   -- Enable git integration for detached worktrees
