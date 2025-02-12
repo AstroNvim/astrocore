@@ -427,6 +427,27 @@ function M.with_file(filename, mode, callback, on_error)
   end
 end
 
+local large_buf_cache = {}
+--- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
+---@param bufnr integer the buffer to check the size of
+---@return boolean # whether the buffer is detected as large or not
+function M.is_large_buf(bufnr)
+  local large_buf = M.config.features.large_buf
+  if large_buf then
+    if not large_buf_cache[bufnr] then
+      -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
+      local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
+      local file_size = ok and stats and stats.size or 0
+      local line_count = vim.api.nvim_buf_line_count(bufnr)
+      large_buf_cache[bufnr] = file_size > large_buf.size
+        or line_count > large_buf.lines
+        or (file_size / line_count) - 1 > large_buf.line_length
+    end
+    return large_buf_cache[bufnr]
+  end
+  return false
+end
+
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
@@ -528,27 +549,16 @@ function M.setup(opts)
   }
   vim.diagnostic.config(M.diagnostics[M.config.features.diagnostics_mode])
 
-  local large_buf = M.config.features.large_buf
-  if large_buf then
-    vim.api.nvim_create_autocmd("BufRead", {
-      group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
-      desc = "Root detection when entering a buffer",
-      callback = function(args)
-        -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
-        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(args.buf))
-        local file_size = ok and stats and stats.size or 0
-        local line_count = vim.api.nvim_buf_line_count(args.buf)
-        if
-          file_size > large_buf.size
-          or line_count > large_buf.lines
-          or (file_size / line_count) - 1 > large_buf.line_length
-        then
-          vim.b[args.buf].large_buf = true
-          M.event("LargeBuf", true)
-        end
-      end,
-    })
-  end
+  vim.api.nvim_create_autocmd("BufRead", {
+    group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
+    desc = "Root detection when entering a buffer",
+    callback = function(args)
+      if M.is_large_buf(args.buf) then
+        vim.b[args.buf].large_buf = true
+        M.event("LargeBuf", true)
+      end
+    end,
+  })
 
   -- set up highlighturl
   local highlighturl_group = vim.api.nvim_create_augroup("highlighturl", { clear = true })
