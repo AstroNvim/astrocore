@@ -21,7 +21,7 @@ M.diagnostics = { [0] = {}, {}, {}, {} }
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table
----@return table # The merged table
+---@return table extended The extended table
 function M.extend_tbl(default, opts)
   opts = opts or {}
   return default and vim.tbl_deep_extend("force", default, opts) or opts
@@ -46,7 +46,7 @@ end
 --- Insert one or more values into a list like table and maintain that you do not insert non-unique values (THIS MODIFIES `dst`)
 ---@param dst any[]|nil The list like table that you want to insert into
 ---@param src any[] Values to be inserted
----@return any[] # The modified list like table
+---@return any[] result The modified list like table
 function M.list_insert_unique(dst, src)
   if not dst then dst = {} end
   -- TODO: remove check after dropping support for Neovim v0.9
@@ -66,7 +66,7 @@ end
 
 --- Remove duplicate entries from a given list (does not mutate the  original list)
 ---@param list any[] The list like table that you want to remove duplicates from
----@return any[] # The list like table of unique values
+---@return any[] result The list like table of unique values
 function M.unique_list(list)
   local out, cache = {}, {}
   -- TODO: remove check after dropping support for Neovim v0.9
@@ -83,7 +83,7 @@ end
 --- Call function if a condition is met
 ---@param func function The function to run
 ---@param condition boolean # Whether to run the function or not
----@return any|nil result # the result of the function running or nil
+---@return any|nil result the result of the function running or nil
 function M.conditional_func(func, condition, ...)
   -- if the condition is true or no condition is provided, evaluate the function with the rest of the parameters and return the result
   if condition and type(func) == "function" then return func(...) end
@@ -194,7 +194,7 @@ end
 
 --- Get a plugin spec from lazy
 ---@param plugin string The plugin to search for
----@return LazyPlugin? available # The found plugin spec from Lazy
+---@return LazyPlugin? spec The found plugin spec from Lazy
 function M.get_plugin(plugin)
   local lazy_config_avail, lazy_config = pcall(require, "lazy.core.config")
   return lazy_config_avail and lazy_config.spec.plugins[plugin] or nil
@@ -202,12 +202,12 @@ end
 
 --- Check if a plugin is defined in lazy. Useful with lazy loading when a plugin is not necessarily loaded yet
 ---@param plugin string The plugin to search for
----@return boolean available # Whether the plugin is available
+---@return boolean available Whether the plugin is available
 function M.is_available(plugin) return M.get_plugin(plugin) ~= nil end
 
 --- Resolve the options table for a given plugin with lazy
 ---@param plugin string The plugin to search for
----@return table opts # The plugin options
+---@return table opts The plugin options
 function M.plugin_opts(plugin)
   local spec = M.get_plugin(plugin)
   return spec and require("lazy.core.plugin").values(spec, "opts") or {}
@@ -276,7 +276,7 @@ function M.which_key_register()
 end
 
 --- Get an empty table of mappings with a key for each map mode
----@return table<string,table> # a table with entries for each map mode
+---@return table<string,table> mappings a table with entries for each map mode
 function M.empty_map_table()
   local maps = {}
   for _, mode in ipairs { "", "n", "v", "x", "s", "o", "!", "i", "l", "c", "t" } do
@@ -353,7 +353,7 @@ end
 --- Run a shell command and capture the output and if the command succeeded or failed
 ---@param cmd string|string[] The terminal command to execute
 ---@param show_error? boolean Whether or not to show an unsuccessful command as an error to the user
----@return string|nil # The result of a successfully executed command or nil
+---@return string|nil result The result of a successfully executed command or nil
 function M.cmd(cmd, show_error)
   if type(cmd) == "string" then cmd = { cmd } end
   if vim.fn.has "win32" == 1 then cmd = vim.list_extend({ "cmd.exe", "/C" }, cmd) end
@@ -368,7 +368,7 @@ end
 --- Get the first worktree that a file belongs to
 ---@param file string? the file to check, defaults to the current file
 ---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
----@return table<string, string>|nil # a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
+---@return table<string, string>|nil worktree a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 function M.file_worktree(file, worktrees)
   worktrees = worktrees or M.config.git_worktrees
   if not worktrees then return end
@@ -406,7 +406,7 @@ end
 --- ```
 ---@param orig? function the original function to override, if `nil` is provided then an empty function is passed
 ---@param override fun(orig:function, ...):... the override function
----@return function the new function with the patch applied
+---@return function patched the new function with the patch applied
 function M.patch_func(orig, override)
   if not orig then orig = function() end end
   return function(...) return override(orig, ...) end
@@ -430,7 +430,7 @@ end
 local large_buf_cache = {}
 --- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
 ---@param bufnr integer the buffer to check the size of
----@return boolean # whether the buffer is detected as large or not
+---@return boolean is_large whether the buffer is detected as large or not
 function M.is_large_buf(bufnr)
   local large_buf = M.config.features.large_buf
   if large_buf then
