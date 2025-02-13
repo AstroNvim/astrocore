@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/AstroNvim/astrocore/compare/v1.12.1...v1.12.2) (2025-02-13)
+
+
+### Bug Fixes
+
+* incorrect autocommand description ([d356cc5](https://github.com/AstroNvim/astrocore/commit/d356cc5119a5b5f0dc43a6261b4c150af2c9cf2f))
+
 ## [1.12.1](https://github.com/AstroNvim/astrocore/compare/v1.12.0...v1.12.1) (2025-02-13)
 
 
