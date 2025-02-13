@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.0](https://github.com/AstroNvim/astrocore/compare/v1.12.2...v1.13.0) (2025-02-13)
+
+
+### Features
+
+* **large_buf:** improve `is_large` API and add configurable notification on detection ([e3085ab](https://github.com/AstroNvim/astrocore/commit/e3085abb370f3a556676707c103d33223560f084))
+
 ## [1.12.2](https://github.com/AstroNvim/astrocore/compare/v1.12.1...v1.12.2) (2025-02-13)
 
 
