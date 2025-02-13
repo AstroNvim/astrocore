@@ -524,13 +524,15 @@ function astrocore.buffer.has_filetype(bufnr?: integer)
 
 
 ```lua
-function astrocore.buffer.is_large(bufnr: integer)
+function astrocore.buffer.is_large(bufnr?: integer, large_buf_opts?: AstroCoreMaxFile)
   -> is_large: boolean
 ```
 
  Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
 
-*param* `bufnr` — the buffer to check the size of
+*param* `bufnr` — the buffer to check the size of, default to current buffer
+
+*param* `large_buf_opts` — large buffer parameters, default to AstroCore configuration
 
 *return* `is_large` — whether the buffer is detected as large or not
 

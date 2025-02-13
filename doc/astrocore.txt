@@ -173,6 +173,7 @@ usages:
         highlighturl = true, -- enable or disable highlighting of urls on start
         -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
         large_buf = {
+          notify = true, -- whether or not to display a notification when a large file is detected
           size = 1024 * 100, -- max file size (or false to disable check)
           lines = 10000, -- max number of lines (or false to disable check)
           line_length = 1000, -- average line length (or false to disable check)
@@ -786,14 +787,17 @@ _return_ — Whether the buffer has a filetype or not
 IS_LARGE ~
 
 >lua
-    function astrocore.buffer.is_large(bufnr: integer)
+    function astrocore.buffer.is_large(bufnr?: integer, large_buf_opts?: AstroCoreMaxFile)
       -> is_large: boolean
 <
 
 Check if a buffer is a large buffer (always returns false if large buffer
 detection is disabled)
 
-_param_ `bufnr` — the buffer to check the size of
+_param_ `bufnr` — the buffer to check the size of, default to current buffer
+
+_param_ `large_buf_opts` — large buffer parameters, default to AstroCore
+configuration
 
 _return_ `is_large` — whether the buffer is detected as large or not
 
