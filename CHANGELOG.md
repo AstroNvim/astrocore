@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/AstroNvim/astrocore/compare/v1.13.1...v1.13.2) (2025-02-13)
+
+
+### Bug Fixes
+
+* **buffer:** improve type safety for `is_large` ([9a6ed00](https://github.com/AstroNvim/astrocore/commit/9a6ed00103ed02ce10c769b104749ff5fba50e52))
+
 ## [1.13.1](https://github.com/AstroNvim/astrocore/compare/v1.13.0...v1.13.1) (2025-02-13)
 
 
