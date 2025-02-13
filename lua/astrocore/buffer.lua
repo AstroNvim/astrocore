@@ -24,6 +24,28 @@ function M.is_valid(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
 end
 
+local large_buf_cache = {}
+--- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
+---@param bufnr integer the buffer to check the size of
+---@return boolean is_large whether the buffer is detected as large or not
+function M.is_large(bufnr)
+  local large_buf = astro.config.features.large_buf
+  if large_buf then
+    if not large_buf_cache[bufnr] then
+      -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
+      local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
+      local file_size = ok and stats and stats.size or 0
+      local line_count = vim.api.nvim_buf_line_count(bufnr)
+      local too_large = large_buf.size and file_size > large_buf.size
+      local too_long = large_buf.lines and line_count > large_buf.lines
+      local too_wide = large_buf.line_length and (file_size / line_count) - 1 > large_buf.line_length
+      large_buf_cache[bufnr] = too_large or too_long or too_wide
+    end
+    return large_buf_cache[bufnr]
+  end
+  return false
+end
+
 --- Check if a buffer has a filetype
 ---@param bufnr integer? The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer has a filetype or not

@@ -427,28 +427,6 @@ function M.with_file(filename, mode, callback, on_error)
   end
 end
 
-local large_buf_cache = {}
---- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
----@param bufnr integer the buffer to check the size of
----@return boolean is_large whether the buffer is detected as large or not
-function M.is_large_buf(bufnr)
-  local large_buf = M.config.features.large_buf
-  if large_buf then
-    if not large_buf_cache[bufnr] then
-      -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
-      local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
-      local file_size = ok and stats and stats.size or 0
-      local line_count = vim.api.nvim_buf_line_count(bufnr)
-      local too_large = large_buf.size and file_size > large_buf.size
-      local too_long = large_buf.lines and line_count > large_buf.lines
-      local too_wide = large_buf.line_length and (file_size / line_count) - 1 > large_buf.line_length
-      large_buf_cache[bufnr] = too_large or too_long or too_wide
-    end
-    return large_buf_cache[bufnr]
-  end
-  return false
-end
-
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
@@ -554,7 +532,7 @@ function M.setup(opts)
     group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
     desc = "Root detection when entering a buffer",
     callback = function(args)
-      if M.is_large_buf(args.buf) then
+      if require("astrocore.buffer").is_large(args.buf) then
         vim.b[args.buf].large_buf = true
         M.event("LargeBuf", true)
       end
