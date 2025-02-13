@@ -528,13 +528,26 @@ function M.setup(opts)
   }
   vim.diagnostic.config(M.diagnostics[M.config.features.diagnostics_mode])
 
-  vim.api.nvim_create_autocmd("BufRead", {
+  vim.api.nvim_create_autocmd({ "BufReadPre", "BufReadPost" }, {
     group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
     desc = "Large buffer detection loading a file into a buffer",
     callback = function(args)
+      vim.b[args.buf].pre_buf_read = args.event == "BufReadPre"
       if require("astrocore.buffer").is_large(args.buf) then
         vim.b[args.buf].large_buf = true
-        M.event("LargeBuf", true)
+        local event = { pattern = "LargeBuf", data = { bufnr = args.buf } }
+        if vim.b[args.buf].pre_buf_read then
+          event.pattern = event.pattern .. "Pre"
+        else
+          if vim.tbl_get(M.config, "features", "large_buf", "notify") then
+            M.notify(
+              ("Large file detected `%s`\nSome Neovim features may be **disabled**"):format(
+                vim.fn.fnamemodify(vim.api.nvim_buf_get_name(args.buf), ":p:~:.")
+              )
+            )
+          end
+        end
+        M.event(event, true)
       end
     end,
   })

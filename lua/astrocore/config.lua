@@ -39,6 +39,7 @@
 ---@field gitdir string the location of the git directory
 
 ---@class AstroCoreMaxFile
+---@field notify boolean? whether or not to display a notification when a large file is detected
 ---@field size integer|false? the number of bytes in a file or false to disable check
 ---@field lines integer|false? the number of lines in a file or false to disable check
 ---@field line_length integer|false? the average line length in a file or false to disable check
@@ -309,7 +310,7 @@ local M = {
     cmp = true,
     diagnostics_mode = 3,
     highlighturl = true,
-    large_buf = { size = 1024 * 256, lines = 10000, line_length = 1000 },
+    large_buf = { notify = true, size = 1.5 * 1024 * 1024, lines = 100000, line_length = 1000 },
     notifications = true,
   },
   git_worktrees = nil,

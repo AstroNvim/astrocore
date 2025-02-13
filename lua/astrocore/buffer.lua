@@ -24,21 +24,29 @@ function M.is_valid(bufnr)
   return vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].buflisted
 end
 
-local large_buf_cache = {}
+local large_buf_cache, buf_size_cache = {}, {} -- cache large buffer detection results and buffer sizes
 --- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
----@param bufnr integer the buffer to check the size of
+---@param bufnr? integer the buffer to check the size of, default to current buffer
+---@param large_buf_opts? AstroCoreMaxFile large buffer parameters, default to AstroCore configuration
 ---@return boolean is_large whether the buffer is detected as large or not
-function M.is_large(bufnr)
-  local large_buf = astro.config.features.large_buf
-  if large_buf then
+function M.is_large(bufnr, large_buf_opts)
+  if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  if not large_buf_opts then large_buf_opts = vim.tbl_get(astro.config, "features", "large_buf") end
+  if large_buf_opts then
     if not large_buf_cache[bufnr] then
-      -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
-      local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
-      local file_size = ok and stats and stats.size or 0
-      local line_count = vim.api.nvim_buf_line_count(bufnr)
-      local too_large = large_buf.size and file_size > large_buf.size
-      local too_long = large_buf.lines and line_count > large_buf.lines
-      local too_wide = large_buf.line_length and (file_size / line_count) - 1 > large_buf.line_length
+      if not buf_size_cache[bufnr] then
+        -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
+        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
+        buf_size_cache[bufnr] = ok and stats and stats.size or 0
+      end
+      local file_size = buf_size_cache[bufnr]
+      local too_large = large_buf_opts.size and file_size > large_buf_opts.size
+      local too_long, too_wide
+      if not vim.b[bufnr].pre_buf_read then -- if the buffer hasn't been read yet, line count is unknown
+        local line_count = vim.api.nvim_buf_line_count(bufnr)
+        too_long = large_buf_opts.lines and line_count > large_buf_opts.lines
+        too_wide = large_buf_opts.line_length and (file_size / line_count) - 1 > large_buf_opts.line_length
+      end
       large_buf_cache[bufnr] = too_large or too_long or too_wide
     end
     return large_buf_cache[bufnr]
