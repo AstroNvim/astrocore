@@ -530,7 +530,7 @@ function M.setup(opts)
 
   vim.api.nvim_create_autocmd("BufRead", {
     group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
-    desc = "Root detection when entering a buffer",
+    desc = "Large buffer detection loading a file into a buffer",
     callback = function(args)
       if require("astrocore.buffer").is_large(args.buf) then
         vim.b[args.buf].large_buf = true
