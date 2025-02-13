@@ -41,11 +41,11 @@ function M.is_large(bufnr, large_buf_opts)
       end
       local file_size = buf_size_cache[bufnr]
       local too_large = large_buf_opts.size and file_size > large_buf_opts.size
-      local too_long, too_wide
+      local too_long, too_wide = false, false
       if not vim.b[bufnr].pre_buf_read then -- if the buffer hasn't been read yet, line count is unknown
         local line_count = vim.api.nvim_buf_line_count(bufnr)
-        too_long = large_buf_opts.lines and line_count > large_buf_opts.lines
-        too_wide = large_buf_opts.line_length and (file_size / line_count) - 1 > large_buf_opts.line_length
+        if large_buf_opts.lines then too_long = line_count > large_buf_opts.lines end
+        if large_buf_opts.line_length then too_wide = (file_size / line_count) - 1 > large_buf_opts.line_length end
       end
       large_buf_cache[bufnr] = too_large or too_long or too_wide
     end
