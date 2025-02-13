@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/AstroNvim/astrocore/compare/v1.13.0...v1.13.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* **large_buf:** no need to pass in `bufnr` data ([ca7c59c](https://github.com/AstroNvim/astrocore/commit/ca7c59ce094b98ab540b3d59ebc0fe80ec374553))
+
 ## [1.13.0](https://github.com/AstroNvim/astrocore/compare/v1.12.2...v1.13.0) (2025-02-13)
 
 
