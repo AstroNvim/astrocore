@@ -535,9 +535,9 @@ function M.setup(opts)
       vim.b[args.buf].pre_buf_read = args.event == "BufReadPre"
       if require("astrocore.buffer").is_large(args.buf) then
         vim.b[args.buf].large_buf = true
-        local event = { pattern = "LargeBuf", data = { bufnr = args.buf } }
+        local event = "LargeBuf"
         if vim.b[args.buf].pre_buf_read then
-          event.pattern = event.pattern .. "Pre"
+          event = event .. "Pre"
         else
           if vim.tbl_get(M.config, "features", "large_buf", "notify") then
             M.notify(
