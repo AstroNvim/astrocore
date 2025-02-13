@@ -163,20 +163,6 @@ function astrocore.is_available(plugin: string)
 
 *return* `available` — Whether the plugin is available
 
-### is_large_buf
-
-
-```lua
-function astrocore.is_large_buf(bufnr: integer)
-  -> is_large: boolean
-```
-
- Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
-
-*param* `bufnr` — the buffer to check the size of
-
-*return* `is_large` — whether the buffer is detected as large or not
-
 ### list_insert_unique
 
 
@@ -533,6 +519,20 @@ function astrocore.buffer.has_filetype(bufnr?: integer)
 *param* `bufnr` — The buffer to check, default to current buffer
 
 *return* — Whether the buffer has a filetype or not
+
+### is_large
+
+
+```lua
+function astrocore.buffer.is_large(bufnr: integer)
+  -> is_large: boolean
+```
+
+ Check if a buffer is a large buffer (always returns false if large buffer detection is disabled)
+
+*param* `bufnr` — the buffer to check the size of
+
+*return* `is_large` — whether the buffer is detected as large or not
 
 ### is_restorable
 

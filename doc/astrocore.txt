@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 12
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 13
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -411,21 +411,6 @@ _param_ `plugin` — The plugin to search for
 _return_ `available` — Whether the plugin is available
 
 
-IS_LARGE_BUF ~
-
->lua
-    function astrocore.is_large_buf(bufnr: integer)
-      -> is_large: boolean
-<
-
-Check if a buffer is a large buffer (always returns false if large buffer
-detection is disabled)
-
-_param_ `bufnr` — the buffer to check the size of
-
-_return_ `is_large` — whether the buffer is detected as large or not
-
-
 LIST_INSERT_UNIQUE ~
 
 >lua
@@ -796,6 +781,21 @@ Check if a buffer has a filetype
 _param_ `bufnr` — The buffer to check, default to current buffer
 
 _return_ — Whether the buffer has a filetype or not
+
+
+IS_LARGE ~
+
+>lua
+    function astrocore.buffer.is_large(bufnr: integer)
+      -> is_large: boolean
+<
+
+Check if a buffer is a large buffer (always returns false if large buffer
+detection is disabled)
+
+_param_ `bufnr` — the buffer to check the size of
+
+_return_ `is_large` — whether the buffer is detected as large or not
 
 
 IS_RESTORABLE ~
