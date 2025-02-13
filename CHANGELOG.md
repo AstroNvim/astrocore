@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/AstroNvim/astrocore/compare/v1.12.0...v1.12.1) (2025-02-13)
+
+
+### Bug Fixes
+
+* resolve incorrect function location (not considered breaking because bug and new) ([1b72dfe](https://github.com/AstroNvim/astrocore/commit/1b72dfe382d4815aadab6df91d90b1fcf23b4c75))
+
 ## [1.12.0](https://github.com/AstroNvim/astrocore/compare/v1.11.0...v1.12.0) (2025-02-12)
 
 
