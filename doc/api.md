@@ -443,6 +443,7 @@ mode:
 
 ```lua
 function astrocore.buffer.close(bufnr?: integer, force?: boolean)
+  -> boolean|unknown
 ```
 
  Close a given buffer
@@ -653,6 +654,7 @@ function astrocore.buffer.sort(compare_func: string|function, skip_autocmd: bool
 
 ```lua
 function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
+  -> boolean|unknown
 ```
 
  Fully wipeout a given buffer
