@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/AstroNvim/astrocore/compare/v1.13.2...v1.14.0) (2025-02-14)
+
+
+### Features
+
+* add support for `snacks.bufdelete` to buffer utilities ([5e26ac1](https://github.com/AstroNvim/astrocore/commit/5e26ac1f45fd2b0307bf6c6c04be1b4d33532505))
+
 ## [1.13.2](https://github.com/AstroNvim/astrocore/compare/v1.13.1...v1.13.2) (2025-02-13)
 
 
