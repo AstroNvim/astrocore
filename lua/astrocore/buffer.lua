@@ -188,12 +188,13 @@ end
 ---@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
 function M.close(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-  if astro.is_available "mini.bufremove" and M.is_valid(bufnr) and #vim.t.bufs > 1 then
-    mini_confirm(require("mini.bufremove").delete, bufnr, force)
-  else
-    local buftype = vim.bo[bufnr].buftype
-    vim.cmd(("silent! %s %d"):format((force or buftype == "terminal") and "bdelete!" or "confirm bdelete", bufnr))
+  if M.is_valid(bufnr) and #vim.t.bufs > 1 then
+    if astro.is_available "snacks.nvim" then return require("snacks").bufdelete { buf = bufnr, force = force } end
+    if astro.is_available "mini.bufremove" then return mini_confirm(require("mini.bufremove").delete, bufnr, force) end
   end
+  -- fallback
+  local buftype = vim.bo[bufnr].buftype
+  vim.cmd(("silent! %s %d"):format((force or buftype == "terminal") and "bdelete!" or "confirm bdelete", bufnr))
 end
 
 --- Fully wipeout a given buffer
@@ -201,12 +202,15 @@ end
 ---@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
 function M.wipe(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
-  if astro.is_available "mini.bufremove" and M.is_valid(bufnr) and #vim.t.bufs > 1 then
-    mini_confirm(require("mini.bufremove").wipeout, bufnr, force)
-  else
-    local buftype = vim.bo[bufnr].buftype
-    vim.cmd(("silent! %s %d"):format((force or buftype == "terminal") and "bwipeout!" or "confirm bwipeout", bufnr))
+  if M.is_valid(bufnr) and #vim.t.bufs > 1 then
+    if astro.is_available "snacks.nvim" then
+      return require("snacks").bufdelete { buf = bufnr, force = force, wipe = true }
+    end
+    if astro.is_available "mini.bufremove" then return mini_confirm(require("mini.bufremove").wipeout, bufnr, force) end
   end
+  -- fallback
+  local buftype = vim.bo[bufnr].buftype
+  vim.cmd(("silent! %s %d"):format((force or buftype == "terminal") and "bwipeout!" or "confirm bwipeout", bufnr))
 end
 
 --- Close all buffers
