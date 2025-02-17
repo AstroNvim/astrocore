@@ -287,6 +287,19 @@ function astrocore.reload()
 
  Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
 
+### rename_file
+
+
+```lua
+function astrocore.rename_file(file?: string, on_rename?: fun(new: string, old: string))
+```
+
+ Prompt the user to rename a file
+
+*param* `file` — the file to be renamed (defaults to name of current buffer)
+
+*param* `on_rename` — a function to execute after the file is renamed
+
 ### set_mappings
 
 
