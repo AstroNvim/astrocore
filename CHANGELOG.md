@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.0](https://github.com/AstroNvim/astrocore/compare/v1.14.0...v1.15.0) (2025-02-17)
+
+
+### Features
+
+* add `rename_file` method for prompting the user to rename a file ([633a260](https://github.com/AstroNvim/astrocore/commit/633a2606050f678d0393fc1feb2b9af28fe9a657))
+
 ## [1.14.0](https://github.com/AstroNvim/astrocore/compare/v1.13.2...v1.14.0) (2025-02-14)
 
 
