@@ -427,6 +427,39 @@ function M.with_file(filename, mode, callback, on_error)
   end
 end
 
+--- Prompt the user to rename a file
+---@param file? string the file to be renamed (defaults to name of current buffer)
+---@param on_rename? fun(new: string, old: string) a function to execute after the file is renamed
+function M.rename_file(file, on_rename)
+  local buf = file and vim.fn.bufadd(file) or vim.api.nvim_get_current_buf()
+  local from = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":p")
+  local uv = vim.uv or vim.loop
+  local root = uv.cwd() or "."
+  root = vim.fs.normalize(uv.fs_realpath(root) or root)
+
+  if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
+
+  local extra = from:sub(#root + 2)
+
+  vim.ui.input({
+    prompt = "New File Name: ",
+    default = extra,
+    completion = "file",
+  }, function(to)
+    if not to or to == "" or to == extra then return end
+    to = vim.fs.normalize(root .. "/" .. to)
+    vim.fn.mkdir(vim.fs.dirname(to), "p")
+    local rename_data = { from = from, to = to }
+    M.event({ pattern = "RenameFilePre", data = rename_data }, true)
+    vim.fn.rename(from, to)
+    if not on_rename then vim.cmd.edit(to) end
+    vim.api.nvim_buf_delete(buf, { force = true })
+    vim.fn.delete(from)
+    if on_rename then on_rename(to, from) end
+    M.event({ pattern = "RenameFilePost", data = rename_data }, true)
+  end)
+end
+
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
