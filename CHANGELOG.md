@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/AstroNvim/astrocore/compare/v1.15.0...v1.16.0) (2025-02-18)
+
+
+### Features
+
+* add `set_diagnostics` helper function to easily change diagnostics mode ([a073c79](https://github.com/AstroNvim/astrocore/commit/a073c79e27e3dabf50243daa6b764789b1da76cb))
+
 ## [1.15.0](https://github.com/AstroNvim/astrocore/compare/v1.14.0...v1.15.0) (2025-02-17)
 
 
