@@ -192,6 +192,13 @@ function M.toggle_term_cmd(opts)
   terms[opts.cmd][num]:toggle()
 end
 
+--- Configure diagnostics to a diagnostics mode
+---@param diagnostics_mode? integer diagnostic mode (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = on; default = refresh current diagnostic mode configuration)
+function M.set_diagnostics(diagnostics_mode)
+  if diagnostics_mode then M.config.features.diagnostics_mode = diagnostics_mode end
+  vim.diagnostic.config(M.diagnostics[M.config.features.diagnostics_mode])
+end
+
 --- Get a plugin spec from lazy
 ---@param plugin string The plugin to search for
 ---@return LazyPlugin? spec The found plugin spec from Lazy
@@ -559,7 +566,7 @@ function M.setup(opts)
     -- all diagnostics on
     M.config.diagnostics,
   }
-  vim.diagnostic.config(M.diagnostics[M.config.features.diagnostics_mode])
+  M.set_diagnostics()
 
   vim.api.nvim_create_autocmd({ "BufReadPre", "BufReadPost" }, {
     group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
