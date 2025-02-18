@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 17
+*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 18
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -551,6 +551,19 @@ Prompt the user to rename a file
 _param_ `file` — the file to be renamed (defaults to name of current buffer)
 
 _param_ `on_rename` — a function to execute after the file is renamed
+
+
+SET_DIAGNOSTICS ~
+
+>lua
+    function astrocore.set_diagnostics(diagnostics_mode?: integer)
+<
+
+Configure diagnostics to a diagnostics mode
+
+_param_ `diagnostics_mode` — diagnostic mode (0 = off, 1 = no signs/virtual
+text, 2 = no virtual text, 3 = on; default = refresh current diagnostic mode
+configuration)
 
 
 SET_MAPPINGS ~

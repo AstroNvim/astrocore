@@ -300,6 +300,17 @@ function astrocore.rename_file(file?: string, on_rename?: fun(new: string, old: 
 
 *param* `on_rename` — a function to execute after the file is renamed
 
+### set_diagnostics
+
+
+```lua
+function astrocore.set_diagnostics(diagnostics_mode?: integer)
+```
+
+ Configure diagnostics to a diagnostics mode
+
+*param* `diagnostics_mode` — diagnostic mode (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = on; default = refresh current diagnostic mode configuration)
+
 ### set_mappings
 
 
