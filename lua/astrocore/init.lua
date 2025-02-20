@@ -400,36 +400,69 @@ function M.with_file(filename, mode, callback, on_error)
   end
 end
 
+---@class AstroCoreRenameFileOpts
+---@field from string? the file to be renamed (defaults to name of current buffer)
+---@field to string? the new filename relative to the original directory (defaults to prompting the user)
+---@field on_rename fun(from: string, to: string, success: boolean)? optional function to execute after the file is renamed
+---@field overwrite boolean? set to true to overwrite existing files
+
 --- Prompt the user to rename a file
----@param file? string the file to be renamed (defaults to name of current buffer)
----@param on_rename? fun(new: string, old: string) a function to execute after the file is renamed
-function M.rename_file(file, on_rename)
-  local buf = file and vim.fn.bufadd(file) or vim.api.nvim_get_current_buf()
-  local from = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":p")
-  local root = vim.uv.cwd() or "."
-  root = vim.fs.normalize(vim.uv.fs_realpath(root) or root)
+---@param opts? AstroCoreRenameFileOpts optional fields for file renaming
+function M.rename_file(opts)
+  if not opts then opts = {} end
+  local from = opts.from
+  if not from then
+    if require("astrocore.buffer").is_valid() then
+      from = vim.api.nvim_buf_get_name(0)
+    else
+      M.notify("Only renaming real file buffers is supported", vim.log.levels.ERROR)
+      return
+    end
+  end
+  from = vim.fn.fnamemodify(from, ":p")
 
-  if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
-
-  local extra = from:sub(#root + 2)
-
-  vim.ui.input({
-    prompt = "New File Name: ",
-    default = extra,
-    completion = "file",
-  }, function(to)
-    if not to or to == "" or to == extra then return end
-    to = vim.fs.normalize(root .. "/" .. to)
+  local _rename_file = function(to)
+    to = vim.fn.fnamemodify(to, ":p")
+    if not opts.force and vim.uv.fs_stat(to) then
+      M.notify(("File already exists:\n`%s`"):format(vim.fn.fnamemodify(to, ":.")), vim.log.levels.ERROR)
+      return
+    end
     vim.fn.mkdir(vim.fs.dirname(to), "p")
     local rename_data = { from = from, to = to }
     M.event({ pattern = "RenameFilePre", data = rename_data }, true)
-    vim.fn.rename(from, to)
-    if not on_rename then vim.cmd.edit(to) end
-    vim.api.nvim_buf_delete(buf, { force = true })
-    vim.fn.delete(from)
-    if on_rename then on_rename(to, from) end
+    local success = vim.fn.rename(from, to) == 0
+    rename_data.success = success
+    if success then
+      local from_bufnr = vim.fn.bufnr(from)
+      if from_bufnr >= 0 then
+        local to_bufnr = vim.fn.bufadd(to)
+        vim.bo[to_bufnr].buflisted = true
+        for _, win in ipairs(vim.fn.win_findbuf(from_bufnr)) do
+          vim.api.nvim_win_call(win, function() vim.cmd.buffer(to_bufnr) end)
+        end
+        vim.api.nvim_buf_delete(from_bufnr, { force = true })
+      end
+    else
+      M.notify(("Error renaming file:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
+    end
+    if opts.on_rename then opts.on_rename(from, to, success) end
     M.event({ pattern = "RenameFilePost", data = rename_data }, true)
-  end)
+  end
+
+  if opts.to then
+    _rename_file(opts.to)
+  else
+    local root = vim.fn.getcwd()
+    if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
+    local prefix = from:sub(#root + 2)
+    vim.ui.input({
+      prompt = "New File Name: ",
+      default = prefix,
+      completion = "file",
+    }, function(input)
+      if input and input ~= "" and input ~= prefix then _rename_file(vim.fs.normalize(root .. "/" .. input)) end
+    end)
+  end
 end
 
 local key_cache = {} ---@type { [string]: string }
