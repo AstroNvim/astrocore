@@ -30,7 +30,7 @@ end
 --- Sync Lazy and then update Mason
 function M.update_packages()
   require("lazy").sync { wait = true }
-  require("astrocore.mason").update_all()
+  if vim.fn.exists ":MasonToolsUpdate" > 0 then vim.cmd.MasonToolsUpdate() end
 end
 
 --- Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
@@ -49,8 +49,7 @@ end
 ---@return any[] result The modified list like table
 function M.list_insert_unique(dst, src)
   if not dst then dst = {} end
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(dst), "Provided table is not a list like table")
+  assert(vim.islist(dst), "Provided table is not a list like table")
   local added = {}
   for _, val in ipairs(dst) do
     added[val] = true
@@ -69,8 +68,7 @@ end
 ---@return any[] result The list like table of unique values
 function M.unique_list(list)
   local out, cache = {}, {}
-  -- TODO: remove check after dropping support for Neovim v0.9
-  assert((vim.islist or vim.tbl_islist)(list), "Provided table is not a list like table")
+  assert(vim.islist(list), "Provided table is not a list like table")
   for _, val in ipairs(list) do
     if not cache[val] then
       table.insert(out, val)
@@ -99,7 +97,7 @@ end
 
 --- Trigger an AstroNvim user event
 ---@param event string|vim.api.keyset_exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
----@param instant boolean? Whether or not to execute instantly or schedule
+---@param instant? boolean Whether or not to execute instantly or schedule
 function M.event(event, instant)
   if type(event) == "string" then event = { pattern = event } end
   event = M.extend_tbl({ modeline = false }, event)
@@ -126,46 +124,14 @@ function M.exec_buffer_autocmds(event, opts)
   end
 end
 
---- Open a URL under the cursor with the current operating system
----@param path string The path of the file to open with the system opener
-function M.system_open(path)
-  if not path then
-    path = vim.fn.expand "<cfile>"
-  elseif not path:match "%w+:" then
-    path = vim.fn.expand(path)
-  end
-  -- TODO: remove deprecated method check after dropping support for neovim v0.9
-  if vim.ui.open then return vim.ui.open(path) end
-  local cmd
-  if vim.fn.has "mac" == 1 then
-    cmd = { "open" }
-  elseif vim.fn.has "win32" == 1 then
-    if vim.fn.executable "rundll32" then
-      cmd = { "rundll32", "url.dll,FileProtocolHandler" }
-    else
-      cmd = { "cmd.exe", "/K", "explorer" }
-    end
-  elseif vim.fn.has "unix" == 1 then
-    if vim.fn.executable "explorer.exe" == 1 then
-      cmd = { "explorer.exe" }
-    elseif vim.fn.executable "xdg-open" == 1 then
-      cmd = { "xdg-open" }
-    end
-  end
-  if not cmd then M.notify("Available system opening tool not found!", vim.log.levels.ERROR) end
-  vim.fn.jobstart(vim.list_extend(cmd, { path }), { detach = true })
-end
-
 --- Helper function to read a file and return it's content
 ---@param path string the path to the file to read
 ---@return string content the contents of the file
 function M.read_file(path)
-  local uv = vim.uv or vim.loop
-
-  local fd = assert(uv.fs_open(path, "r", 420))
-  local stat = assert(uv.fs_fstat(fd))
-  local content = assert(uv.fs_read(fd, stat.size))
-  assert(uv.fs_close(fd))
+  local fd = assert(vim.uv.fs_open(path, "r", 420))
+  local stat = assert(vim.uv.fs_fstat(fd))
+  local content = assert(vim.uv.fs_read(fd, stat.size))
+  assert(vim.uv.fs_close(fd))
   return content
 end
 
@@ -337,7 +303,7 @@ M.url_matcher =
   "\\v\\c%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)%([&:#*@~%_\\-=?!+;/0-9a-z]+%(%([.;/?]|[.][.]+)[&:#*@~%_\\-=?!+/0-9a-z]+|:\\d+|,%(%(%(h?ttps?|ftp|file|ssh|git)://|[a-z]+[@][a-z]+[.][a-z]+:)@![0-9a-z]+))*|\\([&:#*@~%_\\-=?!+;/.0-9a-z]*\\)|\\[[&:#*@~%_\\-=?!+;/.0-9a-z]*\\]|\\{%([&:#*@~%_\\-=?!+;/.0-9a-z]*|\\{[&:#*@~%_\\-=?!+;/.0-9a-z]*})\\})+"
 
 --- Delete the syntax matching rules for URLs/URIs if set
----@param win integer? the window id to remove url highlighting in (default: current window)
+---@param win? integer the window id to remove url highlighting in (default: current window)
 function M.delete_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   for _, match in ipairs(vim.fn.getmatches(win)) do
@@ -347,7 +313,7 @@ function M.delete_url_match(win)
 end
 
 --- Add syntax matching rules for highlighting URLs/URIs
----@param win integer? the window id to remove url highlighting in (default: current window)
+---@param win? integer the window id to remove url highlighting in (default: current window)
 function M.set_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   M.delete_url_match(win)
@@ -373,7 +339,7 @@ function M.cmd(cmd, show_error)
 end
 
 --- Get the first worktree that a file belongs to
----@param file string? the file to check, defaults to the current file
+---@param file? string the file to check, defaults to the current file
 ---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
 ---@return table<string, string>|nil worktree a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 function M.file_worktree(file, worktrees)
@@ -434,43 +400,95 @@ function M.with_file(filename, mode, callback, on_error)
   end
 end
 
+---@class AstroCoreRenameFileOpts
+---@field from string? the file to be renamed (defaults to name of current buffer)
+---@field to string? the new filename relative to the original directory (defaults to prompting the user)
+---@field on_rename fun(from: string, to: string, success: boolean)? optional function to execute after the file is renamed
+---@field overwrite boolean? set to true to overwrite existing files
+
 --- Prompt the user to rename a file
----@param file? string the file to be renamed (defaults to name of current buffer)
----@param on_rename? fun(new: string, old: string) a function to execute after the file is renamed
-function M.rename_file(file, on_rename)
-  local buf = file and vim.fn.bufadd(file) or vim.api.nvim_get_current_buf()
-  local from = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":p")
-  local uv = vim.uv or vim.loop
-  local root = uv.cwd() or "."
-  root = vim.fs.normalize(uv.fs_realpath(root) or root)
+---@param opts? AstroCoreRenameFileOpts optional fields for file renaming
+function M.rename_file(opts)
+  if not opts then opts = {} end
+  local from = opts.from
+  if not from then
+    if require("astrocore.buffer").is_valid() then
+      from = vim.api.nvim_buf_get_name(0)
+    else
+      M.notify("Only renaming real file buffers is supported", vim.log.levels.ERROR)
+      return
+    end
+  end
+  from = vim.fn.fnamemodify(from, ":p")
 
-  if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
-
-  local extra = from:sub(#root + 2)
-
-  vim.ui.input({
-    prompt = "New File Name: ",
-    default = extra,
-    completion = "file",
-  }, function(to)
-    if not to or to == "" or to == extra then return end
-    to = vim.fs.normalize(root .. "/" .. to)
+  local _rename_file = function(to)
+    to = vim.fn.fnamemodify(to, ":p")
+    if not opts.force and vim.uv.fs_stat(to) then
+      M.notify(("File already exists:\n`%s`"):format(vim.fn.fnamemodify(to, ":.")), vim.log.levels.ERROR)
+      return
+    end
     vim.fn.mkdir(vim.fs.dirname(to), "p")
     local rename_data = { from = from, to = to }
     M.event({ pattern = "RenameFilePre", data = rename_data }, true)
-    vim.fn.rename(from, to)
-    if not on_rename then vim.cmd.edit(to) end
-    vim.api.nvim_buf_delete(buf, { force = true })
-    vim.fn.delete(from)
-    if on_rename then on_rename(to, from) end
+    local success = vim.fn.rename(from, to) == 0
+    rename_data.success = success
+    if success then
+      local from_bufnr = vim.fn.bufnr(from)
+      if from_bufnr >= 0 then
+        local to_bufnr = vim.fn.bufadd(to)
+        vim.bo[to_bufnr].buflisted = true
+        for _, win in ipairs(vim.fn.win_findbuf(from_bufnr)) do
+          vim.api.nvim_win_call(win, function() vim.cmd.buffer(to_bufnr) end)
+        end
+        vim.api.nvim_buf_delete(from_bufnr, { force = true })
+      end
+    else
+      M.notify(("Error renaming file:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
+    end
+    if opts.on_rename then opts.on_rename(from, to, success) end
     M.event({ pattern = "RenameFilePost", data = rename_data }, true)
-  end)
+  end
+
+  if opts.to then
+    _rename_file(opts.to)
+  else
+    local root = vim.fn.getcwd()
+    if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
+    local prefix = from:sub(#root + 2)
+    vim.ui.input({
+      prompt = "New File Name: ",
+      default = prefix,
+      completion = "file",
+    }, function(input)
+      if input and input ~= "" and input ~= prefix then _rename_file(vim.fs.normalize(root .. "/" .. input)) end
+    end)
+  end
+end
+
+local key_cache = {} ---@type { [string]: string }
+--- Normalize a mappings table to use official keycode casing
+---@param mappings AstroCoreMappings?
+function M.normalize_mappings(mappings)
+  if not mappings then return end
+  for _, mode_maps in pairs(mappings) do
+    for key, _ in pairs(mode_maps) do
+      if not key_cache[key] then
+        key_cache[key] = vim.fn.keytrans(vim.api.nvim_replace_termcodes(key, true, true, true))
+      end
+      local normkey = key_cache[key]
+      if key ~= normkey then
+        mode_maps[normkey], mode_maps[key] = mode_maps[key], nil
+      end
+    end
+  end
 end
 
 --- Setup and configure AstroCore
 ---@param opts AstroCoreOpts
 ---@see astrocore.config
 function M.setup(opts)
+  M.normalize_mappings(M.config.mappings)
+  M.normalize_mappings(opts.mappings)
   M.config = vim.tbl_deep_extend("force", M.config, opts)
 
   -- options
@@ -531,22 +549,6 @@ function M.setup(opts)
   end
 
   -- sign definition
-  -- TODO: Remove when dropping support for Neovim v0.9
-  -- Backwards compatibility of new diagnostic sign API to Neovim v0.9
-  if vim.fn.has "nvim-0.10" ~= 1 then
-    local signs = vim.tbl_get(M.config, "diagnostics", "signs") or {}
-    if not M.config.signs then M.config.signs = {} end
-    for _, type in ipairs { "Error", "Hint", "Info", "Warn" } do
-      local name, severity = "DiagnosticSign" .. type, vim.diagnostic.severity[type:upper()]
-      if M.config.signs[name] == nil then M.config.signs[name] = { text = "" } end
-      if M.config.signs[name] then
-        if not M.config.signs[name].texthl then M.config.signs[name].texthl = name end
-        for attribute, severities in pairs(signs) do
-          if severities[severity] then M.config.signs[name][attribute] = severities[severity] end
-        end
-      end
-    end
-  end
   for name, dict in pairs(M.config.signs or {}) do
     if dict then vim.fn.sign_define(name, dict) end
   end

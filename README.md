@@ -13,7 +13,7 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 
 ## ⚡️ Requirements
 
-- Neovim >= 0.9
+- Neovim >= 0.10
 - [lazy.nvim](https://github.com/folke/lazy.nvim)
 - [resession.nvim][resession] (_optional_)
 
