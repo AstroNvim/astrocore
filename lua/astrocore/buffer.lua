@@ -17,7 +17,7 @@ M.sessions = astro.config.sessions
 M.current_buf, M.last_buf = nil, nil
 
 --- Check if a buffer is valid
----@param bufnr integer? The buffer to check, default to current buffer
+---@param bufnr? integer The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer is valid or not
 function M.is_valid(bufnr)
   if not bufnr then bufnr = 0 end
@@ -35,8 +35,7 @@ function M.is_large(bufnr, large_buf_opts)
   if large_buf_opts then
     if not large_buf_cache[bufnr] then
       if not buf_size_cache[bufnr] then
-        -- TODO: remove `vim.loop` when dropping support for Neovim v0.9
-        local ok, stats = pcall((vim.uv or vim.loop).fs_stat, vim.api.nvim_buf_get_name(bufnr))
+        local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
         buf_size_cache[bufnr] = ok and stats and stats.size or 0
       end
       local file_size = buf_size_cache[bufnr]
@@ -55,7 +54,7 @@ function M.is_large(bufnr, large_buf_opts)
 end
 
 --- Check if a buffer has a filetype
----@param bufnr integer? The buffer to check, default to current buffer
+---@param bufnr? integer The buffer to check, default to current buffer
 ---@return boolean # Whether the buffer has a filetype or not
 function M.has_filetype(bufnr)
   if not bufnr then bufnr = 0 end
