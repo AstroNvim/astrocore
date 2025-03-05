@@ -224,9 +224,37 @@ function M.diagnostics(silent)
   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
   ui_notify(silent, ("Diagnostics %s"):format(bool2str(vim.diagnostic.is_enabled())))
 end
+
+local previous_virtual_text
+--- Toggle diagnostics virtual text
+---@param silent? boolean if true then don't sent a notification
+function M.virtual_text(silent)
+  local virtual_text = vim.diagnostic.config().virtual_text
+  local new_virtual_text = false
+  if virtual_text then
+    previous_virtual_text = virtual_text
   else
-    ui_notify(silent, "all diagnostics on")
+    new_virtual_text = previous_virtual_text or true
   end
+  vim.diagnostic.config { virtual_text = new_virtual_text }
+  ui_notify(silent, ("Virtual text %s"):format(bool2str(new_virtual_text)))
+end
+
+local previous_virtual_lines
+--- Toggle diagnostics virtual lines
+---@param silent? boolean if true then don't sent a notification
+function M.virtual_lines(silent)
+  local virtual_lines = vim.diagnostic.config().virtual_lines
+  -- TODO: remove check when dropping support for Neovim v0.10
+  if virtual_lines == nil then ui_notify(silent, "Virtual lines not available") end
+  local new_virtual_lines = false
+  if virtual_lines then
+    previous_virtual_lines = virtual_lines
+  else
+    new_virtual_lines = previous_virtual_lines or true
+  end
+  vim.diagnostic.config { virtual_lines = new_virtual_lines }
+  ui_notify(silent, ("Virtual lines %s"):format(bool2str(new_virtual_lines)))
 end
 
 return M
