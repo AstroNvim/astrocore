@@ -79,7 +79,7 @@
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
 ---@field cmp boolean? enable or disable cmp on start (boolean; default = true)
----@field diagnostics_mode integer? diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = on; default = 3)
+---@field diagnostics boolean? diagnostic enabled on start
 ---@field highlighturl boolean? enable or disable highlighting of urls on start (boolean; default = true)
 ---table for defining the size of the max file for all features, above these limits we disable features like treesitter.
 ---value can also be `false` to disable large buffer detection.
@@ -241,7 +241,7 @@
 ---features = {
 ---  autopairs = true,
 ---  cmp = true,
----  diagnostics_mode = 3,
+---  diagnostics = true,
 ---  highlighturl = true,
 ---  notiifcations = true,
 ---  large_buf = { size = 1024 * 100, lines = 10000 },
@@ -308,7 +308,7 @@ local M = {
   features = {
     autopairs = true,
     cmp = true,
-    diagnostics_mode = 3,
+    diagnostics = true,
     highlighturl = true,
     large_buf = { notify = true, size = 1.5 * 1024 * 1024, lines = 100000, line_length = 1000 },
     notifications = true,
