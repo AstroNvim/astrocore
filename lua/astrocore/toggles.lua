@@ -221,14 +221,9 @@ end
 --- Toggle diagnostics
 ---@param silent? boolean if true then don't sent a notification
 function M.diagnostics(silent)
-  local features = require("astrocore").config.features --[[@as AstroCoreFeatureOpts]]
-  require("astrocore").set_diagnostics((features.diagnostics_mode - 1) % 4)
-  if features.diagnostics_mode == 0 then
-    ui_notify(silent, "diagnostics off")
-  elseif features.diagnostics_mode == 1 then
-    ui_notify(silent, "only status diagnostics")
-  elseif features.diagnostics_mode == 2 then
-    ui_notify(silent, "virtual text off")
+  vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+  ui_notify(silent, ("Diagnostics %s"):format(bool2str(vim.diagnostic.is_enabled())))
+end
   else
     ui_notify(silent, "all diagnostics on")
   end

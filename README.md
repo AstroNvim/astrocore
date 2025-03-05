@@ -138,7 +138,7 @@ local opts = {
   features = {
     autopairs = true, -- enable or disable autopairs on start
     cmp = true, -- enable or disable cmp on start
-    diagnostics_mode = 3, -- diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = off)
+    diagnostics = true, -- enable or disable diagnostics on start
     highlighturl = true, -- enable or disable highlighting of urls on start
     -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
     large_buf = {
