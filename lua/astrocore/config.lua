@@ -53,6 +53,12 @@
 ---@field filetypes string[]? filetypes to ignore
 ---@field buftypes string[]? buffer types to ignore
 
+-- TODO: remove note about version after dropping support for Neovim v0.10
+
+---@class AstroCoreDiagnosticsFeature
+---@field virtual_text boolean? show virtual text on startup
+---@field virtual_lines boolean? show virtual lines on startup (Neovim v0.11+ only)
+---
 ---@class AstroCoreSessionOpts
 ---Session autosaving options
 ---Example:
@@ -79,7 +85,7 @@
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
 ---@field cmp boolean? enable or disable cmp on start (boolean; default = true)
----@field diagnostics boolean? diagnostic enabled on start
+---@field diagnostics boolean|AstroCoreDiagnosticsFeature? diagnostic enabled on start
 ---@field highlighturl boolean? enable or disable highlighting of urls on start (boolean; default = true)
 ---table for defining the size of the max file for all features, above these limits we disable features like treesitter.
 ---value can also be `false` to disable large buffer detection.

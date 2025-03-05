@@ -14,9 +14,6 @@ M.config = require "astrocore.config"
 --- A table to manage ToggleTerm terminals created by the user, indexed by the command run and then the instance number
 ---@type table<string,table<integer,table>>
 M.user_terminals = {}
---- A table of settings for different levels of diagnostics
----@type table<integer,vim.diagnostic.Opts>
-M.diagnostics = { [0] = {}, {}, {}, {} }
 
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
@@ -548,7 +545,25 @@ function M.setup(opts)
 
   -- setup diagnostics
   vim.diagnostic.config(M.config.diagnostics)
-  vim.diagnostic.enable(vim.tbl_get(M.config, "features", "diagnostics") or false)
+  local diagnostic_feature = vim.tbl_get(M.config, "features", "diagnostics")
+  if diagnostic_feature then
+    vim.diagnostic.enable(true)
+    if type(diagnostic_feature) == "table" then
+      local diagnostic_config = assert(vim.diagnostic.config())
+      -- setup startup state of virtual text and virtual_lines
+      for _, feature in ipairs { "virtual_text", "virtual_lines" } do
+        if
+          diagnostic_config[feature] ~= nil
+          and diagnostic_feature[feature] ~= nil
+          and (diagnostic_config[feature] ~= false) ~= diagnostic_feature[feature]
+        then
+          require("astrocore.toggles")[feature](true)
+        end
+      end
+    end
+  else
+    vim.diagnostic.enable(false)
+  end
 
   vim.api.nvim_create_autocmd({ "BufReadPre", "BufReadPost" }, {
     group = vim.api.nvim_create_augroup("large_buf_detector", { clear = true }),
