@@ -33,20 +33,23 @@ function M.is_large(bufnr, large_buf_opts)
   if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
   if not large_buf_opts then large_buf_opts = vim.tbl_get(astro.config, "features", "large_buf") end
   if large_buf_opts then
-    if not large_buf_cache[bufnr] then
-      if not buf_size_cache[bufnr] then
-        local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
-        buf_size_cache[bufnr] = ok and stats and stats.size or 0
-      end
-      local file_size = buf_size_cache[bufnr]
-      local too_large = large_buf_opts.size and file_size > large_buf_opts.size
-      local too_long, too_wide = false, false
-      if not vim.b[bufnr].pre_buf_read then -- if the buffer hasn't been read yet, line count is unknown
+    if large_buf_cache[bufnr] == nil then
+      local enabled = vim.F.if_nil(vim.tbl_get(large_buf_opts, "enabled"), true)
+      if type(enabled) == "function" then enabled = enabled(bufnr) end
+      local large_buf = false
+      if enabled then
+        if not buf_size_cache[bufnr] then
+          local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+          buf_size_cache[bufnr] = ok and stats and stats.size or 0
+        end
+        local file_size = buf_size_cache[bufnr]
         local line_count = vim.api.nvim_buf_line_count(bufnr)
-        if large_buf_opts.lines then too_long = line_count > large_buf_opts.lines end
-        if large_buf_opts.line_length then too_wide = (file_size / line_count) - 1 > large_buf_opts.line_length end
+        local too_large = large_buf_opts.size and file_size > large_buf_opts.size
+        local too_long = large_buf_opts.lines and line_count > large_buf_opts.lines
+        local too_wide = large_buf_opts.line_length and (file_size / line_count) - 1 > large_buf_opts.line_length
+        large_buf = too_large or too_long or too_wide or false
       end
-      large_buf_cache[bufnr] = too_large or too_long or too_wide
+      large_buf_cache[bufnr] = large_buf
     end
     return large_buf_cache[bufnr]
   end
