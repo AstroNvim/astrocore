@@ -175,7 +175,7 @@ function M.toggle_term_cmd(opts)
   local terms = M.user_terminals
   -- if a command string is provided, create a basic table for Terminal:new() options
   if type(opts) == "string" then opts = { cmd = opts } end
-  opts = M.extend_tbl({ hidden = true }, opts)
+  if opts.hidden == nil then opts = M.extend_tbl({ hidden = true }, opts) end
   local num = vim.v.count > 0 and vim.v.count or 1
   -- if terminal doesn't exist yet, create it
   if not terms[opts.cmd] then terms[opts.cmd] = {} end
