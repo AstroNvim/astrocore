@@ -142,7 +142,13 @@ local opts = {
     highlighturl = true, -- enable or disable highlighting of urls on start
     -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
     large_buf = {
-      enabled = function(bufnr) return true end, -- whether to enable large file detection for a buffer
+      -- whether to enable large file detection for a buffer (must return false to disable)
+      -- first parameter is the buffer number, the second is the large buffer configuration table
+      -- return values:
+      --   - `true` or `nil` to continue and respects all changes made to the large buffer configuration table
+      --   - `false` to disable large file detection for the buffer
+      --   - a new table of large buffer options to use instead of the defaults
+      enabled = function(bufnr, config) end,
       notify = true, -- whether or not to display a notification when a large file is detected
       size = 1024 * 100, -- max file size (or false to disable check)
       lines = 10000, -- max number of lines (or false to disable check)

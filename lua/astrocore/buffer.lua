@@ -31,13 +31,18 @@ local large_buf_cache, buf_size_cache = {}, {} -- cache large buffer detection r
 ---@return boolean is_large whether the buffer is detected as large or not
 function M.is_large(bufnr, large_buf_opts)
   if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  local skip_cache = large_buf_opts ~= nil -- skip cache when called manually with custom options
   if not large_buf_opts then large_buf_opts = vim.tbl_get(astro.config, "features", "large_buf") end
   if large_buf_opts then
-    if large_buf_cache[bufnr] == nil then
-      local enabled = vim.F.if_nil(vim.tbl_get(large_buf_opts, "enabled"), true)
-      if type(enabled) == "function" then enabled = enabled(bufnr) end
+    if skip_cache or large_buf_cache[bufnr] == nil then
+      local enabled = vim.tbl_get(large_buf_opts, "enabled")
+      if type(enabled) == "function" then
+        large_buf_opts = vim.deepcopy(large_buf_opts)
+        enabled = enabled(bufnr, large_buf_opts)
+        if type(enabled) == "table" then large_buf_opts = enabled end
+      end
       local large_buf = false
-      if enabled then
+      if vim.F.if_nil(enabled, true) then
         if not buf_size_cache[bufnr] then
           local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
           buf_size_cache[bufnr] = ok and stats and stats.size or 0
@@ -49,6 +54,7 @@ function M.is_large(bufnr, large_buf_opts)
         local too_wide = large_buf_opts.line_length and (file_size / line_count) - 1 > large_buf_opts.line_length
         large_buf = too_large or too_long or too_wide or false
       end
+      if skip_cache then return large_buf end
       large_buf_cache[bufnr] = large_buf
     end
     return large_buf_cache[bufnr]
