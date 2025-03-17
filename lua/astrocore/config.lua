@@ -39,6 +39,7 @@
 ---@field gitdir string the location of the git directory
 
 ---@class AstroCoreMaxFile
+---@field enabled (boolean|fun(bufnr: integer):boolean?)? whether to enable large file detection
 ---@field notify boolean? whether or not to display a notification when a large file is detected
 ---@field size integer|false? the number of bytes in a file or false to disable check
 ---@field lines integer|false? the number of lines in a file or false to disable check
