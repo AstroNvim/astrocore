@@ -646,6 +646,9 @@ function M.setup(opts)
       })
     end
   end
+
+  local astroui_avail, astroui = pcall(require, "astroui")
+  if astroui_avail then astroui.set_colorscheme() end
 end
 
 return M
