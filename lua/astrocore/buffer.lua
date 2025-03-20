@@ -172,7 +172,6 @@ end
 ---@param func fun(bufnr:integer,force:boolean?) The function to execute if confirmation is passed
 ---@param bufnr integer The buffer to close or the current buffer if not provided
 ---@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
----@return boolean? # new value for whether to force save, `nil` to skip saving
 local function mini_confirm(func, bufnr, force)
   if not force and vim.bo[bufnr].modified then
     local bufname = vim.fn.expand "%"
@@ -197,8 +196,14 @@ end
 function M.close(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
   if M.is_valid(bufnr) and #vim.t.bufs > 1 then
-    if astro.is_available "snacks.nvim" then return require("snacks").bufdelete { buf = bufnr, force = force } end
-    if astro.is_available "mini.bufremove" then return mini_confirm(require("mini.bufremove").delete, bufnr, force) end
+    if astro.is_available "snacks.nvim" then
+      require("snacks").bufdelete { buf = bufnr, force = force }
+      return
+    end
+    if astro.is_available "mini.bufremove" then
+      mini_confirm(require("mini.bufremove").delete, bufnr, force)
+      return
+    end
   end
   -- fallback
   local buftype = vim.bo[bufnr].buftype
