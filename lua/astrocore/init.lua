@@ -410,6 +410,10 @@ function M.rename_file(opts)
     end
   end
   from = vim.fn.fnamemodify(from, ":p")
+  if not vim.uv.fs_stat(from) then
+    M.notify(("File does not exists:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
+    return
+  end
 
   local _rename_file = function(to)
     to = vim.fn.fnamemodify(to, ":p")
