@@ -394,6 +394,7 @@ end
 ---@field from string? the file to be renamed (defaults to name of current buffer)
 ---@field to string? the new filename relative to the original directory (defaults to prompting the user)
 ---@field on_rename fun(from: string, to: string, success: boolean)? optional function to execute after the file is renamed
+---@field save boolean? if file to be renamed is open and modified save before renaming or not (default is nil which will prompt the user)
 ---@field force boolean? set to true to overwrite existing files
 
 --- Prompt the user to rename a file
@@ -404,27 +405,44 @@ function M.rename_file(opts)
   if not from then
     if require("astrocore.buffer").is_valid() then
       from = vim.api.nvim_buf_get_name(0)
+      if from == "" then
+        M.notify("Cannot rename unnamed buffer", vim.log.levels.ERROR)
+        return
+      end
     else
       M.notify("Only renaming real file buffers is supported", vim.log.levels.ERROR)
       return
     end
   end
   from = vim.fn.fnamemodify(from, ":p")
+
+  local from_bufnr = vim.fn.bufnr(from)
+  if from_bufnr >= 0 and vim.bo[from_bufnr].modified then
+    local write_confirm = opts.save ~= nil and (opts.save and 1 or 2)
+      or vim.fn.confirm(
+        ('Save changes to "%s"?'):format(vim.fn.fnamemodify(from, ":.")),
+        "&Yes\n&No\n&Cancel",
+        1,
+        "Question"
+      )
+    -- write_confirm: 1 saves, 2 doesn't save, anything else aborts
+    if write_confirm == 1 then
+      vim.api.nvim_buf_call(from_bufnr, function() vim.cmd.write { mods = { silent = true } } end)
+    elseif write_confirm ~= 2 then
+      M.notify(("Renaming cancelled:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.INFO)
+      return
+    end
+  end
+
   if not vim.uv.fs_stat(from) then
-    M.notify(
-      ("File does not exists:\n`%s`\n\n_May need to save first_"):format(vim.fn.fnamemodify(from, ":.")),
-      vim.log.levels.ERROR
-    )
+    M.notify(("File does not exists:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
     return
   end
 
   local _rename_file = function(to)
     to = vim.fn.fnamemodify(to, ":p")
     if not opts.force and vim.uv.fs_stat(to) then
-      M.notify(
-        ("File already exists:\n`%s`\n\n_Re-run with `{ force = true }`_"):format(vim.fn.fnamemodify(to, ":.")),
-        vim.log.levels.ERROR
-      )
+      M.notify(("File already exists:\n`%s`\n\n"):format(vim.fn.fnamemodify(to, ":.")), vim.log.levels.ERROR)
       return
     end
     vim.fn.mkdir(vim.fs.dirname(to), "p")
@@ -433,7 +451,6 @@ function M.rename_file(opts)
     local success = vim.fn.rename(from, to) == 0
     rename_data.success = success
     if success then
-      local from_bufnr = vim.fn.bufnr(from)
       if from_bufnr >= 0 then
         local to_bufnr = vim.fn.bufadd(to)
         vim.bo[to_bufnr].buflisted = true
