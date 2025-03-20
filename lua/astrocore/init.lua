@@ -457,6 +457,15 @@ function M.rename_file(opts)
         for _, win in ipairs(vim.fn.win_findbuf(from_bufnr)) do
           vim.api.nvim_win_call(win, function() vim.cmd.buffer(to_bufnr) end)
         end
+        for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
+          if vim.t[tabpage].bufs then -- rebuild buffer ordering after rename
+            local bufs = {}
+            for _, bufnr in ipairs(vim.t[tabpage].bufs) do
+              if bufnr ~= to_bufnr then table.insert(bufs, bufnr == from_bufnr and to_bufnr or bufnr) end
+            end
+            vim.t[tabpage].bufs = bufs
+          end
+        end
         vim.api.nvim_buf_delete(from_bufnr, { force = true })
       end
     else
