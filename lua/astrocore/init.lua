@@ -394,7 +394,7 @@ end
 ---@field from string? the file to be renamed (defaults to name of current buffer)
 ---@field to string? the new filename relative to the original directory (defaults to prompting the user)
 ---@field on_rename fun(from: string, to: string, success: boolean)? optional function to execute after the file is renamed
----@field overwrite boolean? set to true to overwrite existing files
+---@field force boolean? set to true to overwrite existing files
 
 --- Prompt the user to rename a file
 ---@param opts? AstroCoreRenameFileOpts optional fields for file renaming
@@ -411,14 +411,20 @@ function M.rename_file(opts)
   end
   from = vim.fn.fnamemodify(from, ":p")
   if not vim.uv.fs_stat(from) then
-    M.notify(("File does not exists:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
+    M.notify(
+      ("File does not exists:\n`%s`\n\n_May need to save first_"):format(vim.fn.fnamemodify(from, ":.")),
+      vim.log.levels.ERROR
+    )
     return
   end
 
   local _rename_file = function(to)
     to = vim.fn.fnamemodify(to, ":p")
     if not opts.force and vim.uv.fs_stat(to) then
-      M.notify(("File already exists:\n`%s`"):format(vim.fn.fnamemodify(to, ":.")), vim.log.levels.ERROR)
+      M.notify(
+        ("File already exists:\n`%s`\n\n_Re-run with `{ force = true }`_"):format(vim.fn.fnamemodify(to, ":.")),
+        vim.log.levels.ERROR
+      )
       return
     end
     vim.fn.mkdir(vim.fs.dirname(to), "p")
