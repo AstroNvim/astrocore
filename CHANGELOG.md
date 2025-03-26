@@ -1,5 +1,44 @@
 # Changelog
 
+## [2.0.0](https://github.com/AstroNvim/astrocore/compare/v1.16.0...v2.0.0) (2025-03-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename `vim.b.cmp_enabled` to `vim.b.completion`
+* simplify diagnostic toggling to just enabled/disabled rather than various modes
+* allow `rename_file` to be passed in the new filename
+* remove `mason` module and use `mason-tools-installer` if available for applying mason updates
+* remove `system_open` function as one should use `vim.ui.open`
+* require Neovim v0.10
+
+### Features
+
+* add `enabled` function to `large_buf` configuration for fine grain control over what bufers get detected ([396974e](https://github.com/AstroNvim/astrocore/commit/396974ec2a820b72326d4d1c3e9b8c14a285a5e8))
+* add `virtual_text` and `virtual_lines` toggles ([78de20e](https://github.com/AstroNvim/astrocore/commit/78de20e59f6f6cae6cd12c2f2fbab7dc49abac04))
+* allow `large_buf.enabled` function to modify large buffer configuration ([9ac85b7](https://github.com/AstroNvim/astrocore/commit/9ac85b7b2efc96acc4d6484e1b9873bcb3c9d275))
+* allow `rename_file` to be passed in the new filename ([5da4f87](https://github.com/AstroNvim/astrocore/commit/5da4f873fdcf252a38a58d47dc558798a122b909))
+* allow configuration of virtual text and virtual lines on startup ([ea2206c](https://github.com/AstroNvim/astrocore/commit/ea2206c4dbb98b5b1122985570598a6e8e423be6))
+* prompt user to save file before renaming with `rename_file` ([3a75df9](https://github.com/AstroNvim/astrocore/commit/3a75df9979ee24bebc12fb96bf74b0630a39ac38))
+* rename `vim.b.cmp_enabled` to `vim.b.completion` ([499de90](https://github.com/AstroNvim/astrocore/commit/499de90c663fccb7d37d6048c702d205b1104abc))
+* set colorscheme when necessary if AstroUI is available ([c78fa9c](https://github.com/AstroNvim/astrocore/commit/c78fa9cfa72a876aa9a46f01a4dd4b3b47bc499f))
+* simplify diagnostic toggling to just enabled/disabled rather than various modes ([d435d72](https://github.com/AstroNvim/astrocore/commit/d435d72f3e7d329c7e7651954769f9adf846078c))
+
+
+### Bug Fixes
+
+* **config:** normalize mappings when running `setup` ([2d03ccc](https://github.com/AstroNvim/astrocore/commit/2d03ccc038f1fca21057dea43c209830a837ae06))
+* maintain original tab ordering when renaming file ([ba308ba](https://github.com/AstroNvim/astrocore/commit/ba308ba9e5f8fa2ec1021e48961ecd059901c665))
+* rename `overwrite` option to `force` in `rename_file` ([bc7bd35](https://github.com/AstroNvim/astrocore/commit/bc7bd35e7bb1b5a165d7347d6dc9b89e90587579))
+* validate original file exists in `rename_file` ([8295110](https://github.com/AstroNvim/astrocore/commit/8295110fe7962d6153dc9523151cc2e05ffe565b))
+
+
+### Code Refactoring
+
+* remove `mason` module and use `mason-tools-installer` if available for applying mason updates ([88c9e08](https://github.com/AstroNvim/astrocore/commit/88c9e08ce08e725eaa6980364982e76f91b7a8ec))
+* remove `system_open` function as one should use `vim.ui.open` ([2715dbf](https://github.com/AstroNvim/astrocore/commit/2715dbff99bdce60a69feb571194a4cd6997176b))
+* require Neovim v0.10 ([3690cc6](https://github.com/AstroNvim/astrocore/commit/3690cc60e953b4537aa6435ff6ef13162b44e0d1))
+
 ## [1.16.0](https://github.com/AstroNvim/astrocore/compare/v1.15.0...v1.16.0) (2025-02-18)
 
 
