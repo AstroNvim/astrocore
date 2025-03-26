@@ -1,4 +1,4 @@
-*astrocore.txt*        For Neovim >= 0.9.0       Last change: 2025 February 18
+*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2025 March 26
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -14,7 +14,6 @@ Table of Contents                                *astrocore-table-of-contents*
   - astrocore                                    |astrocore-lua-api-astrocore|
   - astrocore.buffer                      |astrocore-lua-api-astrocore.buffer|
   - astrocore.buffer.comparator|astrocore-lua-api-astrocore.buffer.comparator|
-  - astrocore.mason                        |astrocore-lua-api-astrocore.mason|
   - astrocore.rooter                      |astrocore-lua-api-astrocore.rooter|
   - astrocore.toggles                    |astrocore-lua-api-astrocore.toggles|
 
@@ -39,7 +38,7 @@ FEATURES                                        *astrocore-astrocore-features*
 
 REQUIREMENTS                                *astrocore-astrocore-requirements*
 
-- Neovim >= 0.9
+- Neovim >= 0.10
 - lazy.nvim <https://github.com/folke/lazy.nvim>
 - resession.nvim <https://github.com/stevearc/resession.nvim/> (_optional_)
 
@@ -169,10 +168,17 @@ usages:
       features = {
         autopairs = true, -- enable or disable autopairs on start
         cmp = true, -- enable or disable cmp on start
-        diagnostics_mode = 3, -- diagnostic mode on start (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = off)
+        diagnostics = { virtual_text = true, virtual_lines = false }, -- enable or disable diagnostics features on start
         highlighturl = true, -- enable or disable highlighting of urls on start
         -- table for defining the size of the max file for all features, above these limits we disable features like treesitter.
         large_buf = {
+          -- whether to enable large file detection for a buffer (must return false to disable)
+          -- first parameter is the buffer number, the second is the large buffer configuration table
+          -- return values:
+          --   - `true` or `nil` to continue and respects all changes made to the large buffer configuration table
+          --   - `false` to disable large file detection for the buffer
+          --   - a new table of large buffer options to use instead of the defaults
+          enabled = function(bufnr, config) end,
           notify = true, -- whether or not to display a notification when a large file is detected
           size = 1024 * 100, -- max file size (or false to disable check)
           lines = 10000, -- max number of lines (or false to disable check)
@@ -299,15 +305,6 @@ Delete the syntax matching rules for URLs/URIs if set
 
 _param_ `win` — the window id to remove url highlighting in (default: current
 window)
-
-
-DIAGNOSTICS ~
-
->lua
-    { [integer]: vim.diagnostic.Opts }
-<
-
-A table of settings for different levels of diagnostics
 
 
 EMPTY_MAP_TABLE ~
@@ -446,6 +443,15 @@ _param_ `funcs` — The functions to wrap in the given module (e.g. `"ui",
 "select"`)
 
 
+NORMALIZE_MAPPINGS ~
+
+>lua
+    function astrocore.normalize_mappings(mappings?: table<string, table<string, (string|function|AstroCoreMapping|false)?>?>)
+<
+
+Normalize a mappings table to use official keycode casing
+
+
 NOTIFY ~
 
 >lua
@@ -543,27 +549,12 @@ until restart.
 RENAME_FILE ~
 
 >lua
-    function astrocore.rename_file(file?: string, on_rename?: fun(new: string, old: string))
+    function astrocore.rename_file(opts?: AstroCoreRenameFileOpts)
 <
 
 Prompt the user to rename a file
 
-_param_ `file` — the file to be renamed (defaults to name of current buffer)
-
-_param_ `on_rename` — a function to execute after the file is renamed
-
-
-SET_DIAGNOSTICS ~
-
->lua
-    function astrocore.set_diagnostics(diagnostics_mode?: integer)
-<
-
-Configure diagnostics to a diagnostics mode
-
-_param_ `diagnostics_mode` — diagnostic mode (0 = off, 1 = no signs/virtual
-text, 2 = no virtual text, 3 = on; default = refresh current diagnostic mode
-configuration)
+_param_ `opts` — optional fields for file renaming
 
 
 SET_MAPPINGS ~
@@ -600,18 +591,7 @@ SETUP ~
 <
 
 Setup and configure AstroCore See: astrocore.config
-<file:///home/runner/work/astrocore/astrocore/./lua/astrocore/init.lua#13#0>
-
-
-SYSTEM_OPEN ~
-
->lua
-    function astrocore.system_open(path: string)
-<
-
-Open a URL under the cursor with the current operating system
-
-_param_ `path` — The path of the file to open with the system opener
+<file:///home/runner/work/astrocore/astrocore/lua/astrocore/init.lua#13#0>
 
 
 TOGGLE_TERM_CMD ~
@@ -727,7 +707,6 @@ CLOSE ~
 
 >lua
     function astrocore.buffer.close(bufnr?: integer, force?: boolean)
-      -> boolean|unknown
 <
 
 Close a given buffer
@@ -949,7 +928,6 @@ WIPE ~
 
 >lua
     function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
-      -> boolean|unknown
 <
 
 Fully wipeout a given buffer
@@ -1046,35 +1024,6 @@ _param_ `bufnr_b` — buffer number B
 
 _return_ `comparison` — true if A is sorted before B, false if B should be
 sorted before A
-
-
-ASTROCORE.MASON                            *astrocore-lua-api-astrocore.mason*
-
-
-UPDATE ~
-
->lua
-    function astrocore.mason.update(pkg_names?: string|string[], auto_install?: boolean)
-<
-
-Update specified mason packages, or just update the registries if no packages
-are listed
-
-_param_ `pkg_names` — The package names as defined in Mason (Not
-mason-lspconfig or mason-null-ls) if the value is nil then it will just update
-the registries
-
-_param_ `auto_install` — whether or not to install a package that is not
-currently installed (default: True)
-
-
-UPDATE_ALL ~
-
->lua
-    function astrocore.mason.update_all()
-<
-
-Update all packages in Mason
 
 
 ASTROCORE.ROOTER                          *astrocore-lua-api-astrocore.rooter*
@@ -1422,6 +1371,28 @@ URL_MATCH ~
 <
 
 Toggle URL/URI syntax highlighting rules
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+VIRTUAL_LINES ~
+
+>lua
+    function astrocore.toggles.virtual_lines(silent?: boolean)
+<
+
+Toggle diagnostics virtual lines
+
+_param_ `silent` — if true then don’t sent a notification
+
+
+VIRTUAL_TEXT ~
+
+>lua
+    function astrocore.toggles.virtual_text(silent?: boolean)
+<
+
+Toggle diagnostics virtual text
 
 _param_ `silent` — if true then don’t sent a notification
 

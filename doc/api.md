@@ -56,15 +56,6 @@ function astrocore.delete_url_match(win?: integer)
 
 *param* `win` — the window id to remove url highlighting in (default: current window)
 
-### diagnostics
-
-
-```lua
-{ [integer]: vim.diagnostic.Opts }
-```
-
- A table of settings for different levels of diagnostics
-
 ### empty_map_table
 
 
@@ -194,6 +185,15 @@ function astrocore.load_plugin_with_func(plugin: string, module: table, funcs: s
 
 *param* `funcs` — The functions to wrap in the given module (e.g. `"ui", "select"`)
 
+### normalize_mappings
+
+
+```lua
+function astrocore.normalize_mappings(mappings?: table<string, table<string, (string|function|AstroCoreMapping|false)?>?>)
+```
+
+ Normalize a mappings table to use official keycode casing
+
 ### notify
 
 
@@ -291,25 +291,12 @@ function astrocore.reload()
 
 
 ```lua
-function astrocore.rename_file(file?: string, on_rename?: fun(new: string, old: string))
+function astrocore.rename_file(opts?: AstroCoreRenameFileOpts)
 ```
 
  Prompt the user to rename a file
 
-*param* `file` — the file to be renamed (defaults to name of current buffer)
-
-*param* `on_rename` — a function to execute after the file is renamed
-
-### set_diagnostics
-
-
-```lua
-function astrocore.set_diagnostics(diagnostics_mode?: integer)
-```
-
- Configure diagnostics to a diagnostics mode
-
-*param* `diagnostics_mode` — diagnostic mode (0 = off, 1 = no signs/virtual text, 2 = no virtual text, 3 = on; default = refresh current diagnostic mode configuration)
+*param* `opts` — optional fields for file renaming
 
 ### set_mappings
 
@@ -343,18 +330,7 @@ function astrocore.setup(opts: AstroCoreOpts)
 ```
 
  Setup and configure AstroCore
-See: [astrocore.config](file:///home/runner/work/astrocore/astrocore/./lua/astrocore/init.lua#13#0)
-
-### system_open
-
-
-```lua
-function astrocore.system_open(path: string)
-```
-
- Open a URL under the cursor with the current operating system
-
-*param* `path` — The path of the file to open with the system opener
+See: [astrocore.config](file:///home/runner/work/astrocore/astrocore/lua/astrocore/init.lua#13#0)
 
 ### toggle_term_cmd
 
@@ -467,7 +443,6 @@ mode:
 
 ```lua
 function astrocore.buffer.close(bufnr?: integer, force?: boolean)
-  -> boolean|unknown
 ```
 
  Close a given buffer
@@ -678,7 +653,6 @@ function astrocore.buffer.sort(compare_func: string|function, skip_autocmd: bool
 
 ```lua
 function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
-  -> boolean|unknown
 ```
 
  Fully wipeout a given buffer
@@ -769,31 +743,6 @@ function astrocore.buffer.comparator.unique_path(bufnr_a: integer, bufnr_b: inte
 *param* `bufnr_b` — buffer number B
 
 *return* `comparison` — true if A is sorted before B, false if B should be sorted before A
-
-
-## astrocore.mason
-
-### update
-
-
-```lua
-function astrocore.mason.update(pkg_names?: string|string[], auto_install?: boolean)
-```
-
- Update specified mason packages, or just update the registries if no packages are listed
-
-*param* `pkg_names` — The package names as defined in Mason (Not mason-lspconfig or mason-null-ls) if the value is nil then it will just update the registries
-
-*param* `auto_install` — whether or not to install a package that is not currently installed (default: True)
-
-### update_all
-
-
-```lua
-function astrocore.mason.update_all()
-```
-
- Update all packages in Mason
 
 
 ## astrocore.rooter
@@ -1140,6 +1089,28 @@ function astrocore.toggles.url_match(silent?: boolean)
 ```
 
  Toggle URL/URI syntax highlighting rules
+
+*param* `silent` — if true then don't sent a notification
+
+### virtual_lines
+
+
+```lua
+function astrocore.toggles.virtual_lines(silent?: boolean)
+```
+
+ Toggle diagnostics virtual lines
+
+*param* `silent` — if true then don't sent a notification
+
+### virtual_text
+
+
+```lua
+function astrocore.toggles.virtual_text(silent?: boolean)
+```
+
+ Toggle diagnostics virtual text
 
 *param* `silent` — if true then don't sent a notification
 
