@@ -70,12 +70,12 @@ end
 ---@param silent? boolean if true then don't sent a notification
 function M.buffer_cmp(bufnr, silent)
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
-  if vim.b[bufnr].cmp_enabled == nil then vim.b[bufnr].cmp_enabled = require("astrocore").config.features.cmp end
-  vim.b[bufnr].cmp_enabled = not vim.b[bufnr].cmp_enabled
+  if vim.b[bufnr].completion == nil then vim.b[bufnr].completion = require("astrocore").config.features.cmp end
+  vim.b[bufnr].completion = not vim.b[bufnr].completion
   local ok, _ = pcall(require, "cmp")
   ui_notify(
     silent,
-    ok and ("Buffer completion %s"):format(bool2str(vim.b[bufnr].cmp_enabled)) or "completion not available"
+    ok and ("Buffer completion %s"):format(bool2str(vim.b[bufnr].completion)) or "completion not available"
   )
 end
 
