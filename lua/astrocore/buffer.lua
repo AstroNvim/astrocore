@@ -139,8 +139,9 @@ function M.nav(n)
   local current = vim.api.nvim_get_current_buf()
   for i, v in ipairs(vim.t.bufs) do
     if current == v then
-      vim.cmd.b(vim.t.bufs[(i + n - 1) % #vim.t.bufs + 1])
-      break
+      local new_buf = vim.t.bufs[(i + n - 1) % #vim.t.bufs + 1]
+      if new_buf ~= current then vim.api.nvim_set_current_buf(new_buf) end
+      return
     end
   end
 end
@@ -151,15 +152,16 @@ function M.nav_to(tabnr)
   if tabnr > #vim.t.bufs or tabnr < 1 then
     astro.notify(("No tab #%d"):format(tabnr), vim.log.levels.WARN)
   else
-    vim.cmd.b(vim.t.bufs[tabnr])
+    local new_buf = vim.t.bufs[tabnr]
+    if vim.api.nvim_get_current_buf() ~= new_buf then vim.api.nvim_set_current_buf(new_buf) end
   end
 end
 
 --- Navigate to the previously used buffer
 function M.prev()
-  if vim.fn.bufnr() == M.current_buf then
+  if vim.api.nvim_get_current_buf() == M.current_buf then
     if M.last_buf and M.is_valid(M.last_buf) then
-      vim.cmd.b(M.last_buf)
+      vim.api.nvim_set_current_buf(M.last_buf)
     else
       astro.notify("Previous buffer not found", vim.log.levels.WARN)
     end
