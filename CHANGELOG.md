@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/AstroNvim/astrocore/compare/v2.0.0...v2.0.1) (2025-04-09)
+
+
+### Bug Fixes
+
+* **resession:** prime `vim.lsp.foldexpr` on session restore ([6e9e51a](https://github.com/AstroNvim/astrocore/commit/6e9e51aa0d06c5a8af72abfa58f25ce80df8a86b))
+
 ## [2.0.0](https://github.com/AstroNvim/astrocore/compare/v1.16.0...v2.0.0) (2025-03-26)
 
 
