@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/AstroNvim/astrocore/compare/v2.0.1...v2.0.2) (2025-04-21)
+
+
+### Reverts
+
+* remove `vim.lsp.foldexpr` hack ([6a58ab8](https://github.com/AstroNvim/astrocore/commit/6a58ab83503097bc7b3df0517fbc0b9377cc3142))
+
 ## [2.0.1](https://github.com/AstroNvim/astrocore/compare/v2.0.0...v2.0.1) (2025-04-09)
 
 
