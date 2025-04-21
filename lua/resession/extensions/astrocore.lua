@@ -27,8 +27,6 @@ function M.on_post_load(data)
   local new_bufnrs = {}
   local new_tabpages = vim.api.nvim_list_tabpages()
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    -- HACK: make sure `vim.lsp.foldexpr` is primed for all loaded buffers
-    vim.api.nvim_buf_call(bufnr, function() return vim.lsp.foldexpr(1) end)
     local old_bufnr = data.bufnrs[vim.api.nvim_buf_get_name(bufnr)]
     if old_bufnr then new_bufnrs[old_bufnr] = bufnr end
   end
