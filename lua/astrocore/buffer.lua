@@ -11,8 +11,6 @@ local M = {}
 
 local astro = require "astrocore"
 
-M.sessions = astro.config.sessions
-
 --- Placeholders for keeping track of most recent and previous buffer
 M.current_buf, M.last_buf = nil, nil
 
@@ -84,9 +82,10 @@ function M.is_restorable(bufnr)
     if vim.api.nvim_buf_get_name(bufnr) == "" then return false end
   end
 
+  local session_ignore = vim.tbl_get(astro.config, "sessions", "ignore") or {}
   if
-    vim.tbl_contains(M.sessions.ignore.filetypes, vim.bo[bufnr].filetype)
-    or vim.tbl_contains(M.sessions.ignore.buftypes, vim.bo[bufnr].buftype)
+    vim.tbl_contains(vim.tbl_get(session_ignore, "filetypes") or {}, vim.bo[bufnr].filetype)
+    or vim.tbl_contains(vim.tbl_get(session_ignore, "buftypes") or {}, vim.bo[bufnr].buftype)
   then
     return false
   end
@@ -97,7 +96,7 @@ end
 ---@return boolean # Whether the current session of buffers is a valid session
 function M.is_valid_session()
   local cwd = vim.fn.getcwd()
-  for _, dir in ipairs(M.sessions.ignore.dirs) do
+  for _, dir in ipairs(vim.tbl_get(astro.config, "sessions", "ignore", "dirs") or {}) do
     if vim.fn.expand(dir) == cwd then return false end
   end
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
