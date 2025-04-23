@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/AstroNvim/astrocore/compare/v2.0.2...v2.0.3) (2025-04-23)
+
+
+### Bug Fixes
+
+* **buffer:** get the session config directly from the `astrocore` module ([89c080c](https://github.com/AstroNvim/astrocore/commit/89c080ce4e946adacbf5519eda97cd4c0c84a3a6))
+
 ## [2.0.2](https://github.com/AstroNvim/astrocore/compare/v2.0.1...v2.0.2) (2025-04-21)
 
 
