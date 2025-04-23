@@ -625,13 +625,6 @@ function astrocore.buffer.prev()
 
  Navigate to the previously used buffer
 
-### sessions
-
-
-```lua
-unknown
-```
-
 ### sort
 
 
