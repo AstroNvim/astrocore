@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.4](https://github.com/AstroNvim/astrocore/compare/v2.0.3...v2.0.4) (2025-04-28)
+
+
+### Bug Fixes
+
+* improve rooter docstring ([3c79603](https://github.com/AstroNvim/astrocore/commit/3c7960313120ea6f58196aa27b14760a7c459955))
+
 ## [2.0.3](https://github.com/AstroNvim/astrocore/compare/v2.0.2...v2.0.3) (2025-04-23)
 
 
