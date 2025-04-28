@@ -20,7 +20,7 @@
 ---@class AstroCoreAutocmd: vim.api.keyset.create_autocmd
 ---@field event string|string[] Event(s) that will trigger the handler
 
----@alias AstroCoreRooterSpec string|string[]|fun(bufnr: integer): (string|string[])
+---@alias AstroCoreRooterSpec string|string[]|fun(bufnr: integer): (string|string[]|nil)
 
 ---@class AstroCoreRooterIgnore
 ---@field dirs string[]? a list of patterns that match directories to exclude from root detection
