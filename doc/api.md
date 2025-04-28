@@ -841,7 +841,7 @@ function astrocore.rooter.realpath(path?: string)
 
 
 ```lua
-function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|string[], config?: AstroCoreRooterOpts)
+function astrocore.rooter.resolve(spec: string|fun(bufnr: integer):string|string[]|nil|string[], config?: AstroCoreRooterOpts)
   -> function
 ```
 
