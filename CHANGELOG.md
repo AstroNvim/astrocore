@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.5](https://github.com/AstroNvim/astrocore/compare/v2.0.4...v2.0.5) (2025-04-30)
+
+
+### Bug Fixes
+
+* **rooter:** improve `exists` function ([1b96f40](https://github.com/AstroNvim/astrocore/commit/1b96f40c76d7ff792515d5d41c8f31081fd3c5b0))
+
 ## [2.0.4](https://github.com/AstroNvim/astrocore/compare/v2.0.3...v2.0.4) (2025-04-28)
 
 
