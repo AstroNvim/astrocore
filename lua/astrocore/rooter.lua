@@ -98,7 +98,7 @@ end
 --- Check if a path exists
 ---@param path string the path
 ---@return boolean exists whether or not the path exists
-function M.exists(path) return vim.fn.empty(vim.fn.glob(path)) == 0 end
+function M.exists(path) return vim.uv.fs_stat(path) ~= nil end
 
 --- Normalize path
 ---@param path string
