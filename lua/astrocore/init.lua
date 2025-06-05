@@ -242,13 +242,8 @@ end
 ---@return table<string,table> mappings a table with entries for each map mode
 function M.empty_map_table()
   local maps = {}
-  for _, mode in ipairs { "", "n", "v", "x", "s", "o", "!", "i", "l", "c", "t" } do
+  for _, mode in ipairs { "", "n", "v", "x", "s", "o", "!", "i", "l", "c", "t", "ia", "ca", "!a" } do
     maps[mode] = {}
-  end
-  if vim.fn.has "nvim-0.10.0" == 1 then
-    for _, abbr_mode in ipairs { "ia", "ca", "!a" } do
-      maps[abbr_mode] = {}
-    end
   end
   return maps
 end
