@@ -54,11 +54,9 @@
 ---@field filetypes string[]? filetypes to ignore
 ---@field buftypes string[]? buffer types to ignore
 
--- TODO: remove note about version after dropping support for Neovim v0.10
-
 ---@class AstroCoreDiagnosticsFeature
 ---@field virtual_text boolean? show virtual text on startup
----@field virtual_lines boolean? show virtual lines on startup (Neovim v0.11+ only)
+---@field virtual_lines boolean? show virtual lines on startup
 ---
 ---@class AstroCoreSessionOpts
 ---Session autosaving options

@@ -245,8 +245,6 @@ local previous_virtual_lines
 ---@param silent? boolean if true then don't sent a notification
 function M.virtual_lines(silent)
   local virtual_lines = vim.diagnostic.config().virtual_lines
-  -- TODO: remove check when dropping support for Neovim v0.10
-  if virtual_lines == nil then ui_notify(silent, "Virtual lines not available") end
   local new_virtual_lines = false
   if virtual_lines then
     previous_virtual_lines = virtual_lines
