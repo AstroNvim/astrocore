@@ -232,7 +232,13 @@ function M.which_key_register()
   if M.which_key_queue then
     local wk_avail, wk = pcall(require, "which-key")
     if wk_avail then
-      wk.add(M.which_key_queue)
+      if type(wk.register)  == "functin" then
+        wk.register(M.which_key_queue)
+      elseif type(wk.add) == "function" then
+        wk.add(M.which_key_queue)
+      else
+        vim.notify("The appropriate API for which-key was not found",vim.log.levels.ERROR)
+      end
       M.which_key_queue = nil
     end
   end
