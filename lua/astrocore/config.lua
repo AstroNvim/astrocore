@@ -146,7 +146,8 @@
 ---end
 ---```
 ---@field indent AstroCoreTreesitterFeature?
----@field ensure_installed string[]|"all"|"auto"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
+---@field auto_install boolean? whether or not to automatically detect and install missing treesitter parsers
+---@field ensure_installed string[]|"all"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
 ---Configuration of textobject mappings to create using `nvim-treesitter-textobjects`
 ---
 ---Examples:

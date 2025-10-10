@@ -58,13 +58,13 @@ function M.available()
 end
 
 --- Install the provided parsers with `nvim-treesitter`
----@param languages? "auto"|"all"|string[] a list of languages to install, automatically detect the current language to install, or install all available parsers (default: "auto")
+---@param languages? "all"|string[] a list of languages to install, automatically detect the current language to install, or install all available parsers (default: "auto")
 ---@param cb? function optional callback function to execute after installation finishes
 function M.install(languages, cb)
   local patch_func = require("astrocore").patch_func
   local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
   if not treesitter_avail then return end
-  if not languages or languages == "auto" then
+  if not languages then
     local bufnr = vim.api.nvim_get_current_buf()
     local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
     if M.available()[lang] then
@@ -149,7 +149,7 @@ local function _setup()
         return
       end
       if not M.has_parser(args.match) then
-        if config.ensure_installed == "auto" then M.install() end
+        if config.auto_install then M.install() end
       else
         M.enable(args.buf)
       end
