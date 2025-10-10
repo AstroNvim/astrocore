@@ -79,6 +79,7 @@ function M.install(languages, cb)
   elseif languages == "all" then
     languages = treesitter.get_available()
   end
+  languages = vim.tbl_filter(function(lang) return not M.has_parser(lang) end, languages --[[ @as string[] ]])
   if
     next(languages --[[ @as string[] ]])
   then
