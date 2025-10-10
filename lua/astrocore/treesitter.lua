@@ -17,6 +17,9 @@ local installed = {}
 local queries = {}
 local captures = {}
 
+local enabled = {}
+local indentexprs = {}
+
 -- Configure the keymap modes for each textobject type
 M.textobject_modes = {
   select = { "x", "o" },
@@ -136,6 +139,14 @@ local function _setup()
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true }),
     callback = function(args)
+      local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+      if not lang then return end
+      local disabled = config.disabled
+      if type(disabled) == "function" then disabled = disabled(lang, args.buf) end
+      if disabled then
+        pcall(vim.treesitter.stop, args.buf) -- force disabling treesitter for built in languages
+        return
+      end
       if not M.has_parser(args.match) then
         if config.ensure_installed == "auto" then M.install() end
       else
@@ -188,30 +199,34 @@ function M.setup(opts)
 end
 
 --- Enable treesitter features in buffer
----@param bufnr integer the buffer to enable treesitter in
+---@param bufnr? integer the buffer to enable treesitter in
 function M.enable(bufnr)
+  if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
   local ft = vim.bo[bufnr].filetype
   local lang = vim.treesitter.language.get_lang(ft)
   if not M.has_parser(ft) or not lang then return end
+  enabled[bufnr] = true
 
   ---@param feat string
   ---@param query string
-  local function is_enabled(feat, query)
-    local enabled = config[feat] ---@type AstroCoreTreesitterFeature?
-    if type(enabled) == "table" then
-      enabled = vim.tbl_contains(enabled, lang)
-    elseif type(enabled) == "function" then
-      enabled = enabled(lang, bufnr)
+  local function feature_enabled(feat, query)
+    local enable = config[feat] ---@type AstroCoreTreesitterFeature?
+    if type(enable) == "table" then
+      enable = vim.tbl_contains(enable, lang)
+    elseif type(enable) == "function" then
+      enable = enable(lang, bufnr)
     end
-    return enabled and M.has_parser(ft, query)
+    return enable and M.has_parser(ft, query)
   end
 
   -- highlighting
-  if is_enabled("highlight", "highlights") then pcall(vim.treesitter.start, bufnr) end
+  if feature_enabled("highlight", "highlights") then pcall(vim.treesitter.start, bufnr) end
 
   -- indents
-  -- FIX: fix to only run if indenexpr is not set by a plugin
-  if is_enabled("indent", "indents") then vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" end
+  if feature_enabled("indent", "indents") then
+    indentexprs[bufnr] = vim.bo[bufnr].indentexpr
+    vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end
 
   -- treesitter text objects
   if config.textobjects and pcall(require, "nvim-treesitter-textobjects") then
@@ -232,6 +247,22 @@ function M.enable(bufnr)
       end
     end
   end
+end
+
+--- Disable treesitter features in buffer
+---@param bufnr? integer the buffer to disable treesitter in
+function M.disable(bufnr)
+  if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  enabled[bufnr] = false
+  pcall(vim.treesitter.stop, bufnr)
+  if indentexprs[bufnr] then vim.bo[bufnr].indentexpr = indentexprs[bufnr] end
+end
+
+--- Check if treesitter features in buffer
+---@param bufnr? integer the buffer to check if treesitter is enabled for
+function M.is_enabled(bufnr)
+  if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  return enabled[bufnr] == true
 end
 
 return M
