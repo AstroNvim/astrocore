@@ -449,7 +449,7 @@ local M = {
     indent = true,
     ensure_installed = {},
     textobjects = nil,
-   }
+  },
 }
 
 return M
