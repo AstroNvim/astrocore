@@ -145,7 +145,7 @@ local function _setup()
       local disabled = config.disabled
       if type(disabled) == "function" then disabled = disabled(lang, args.buf) end
       if disabled then
-        pcall(vim.treesitter.stop, args.buf) -- force disabling treesitter for built in languages
+        M.disable(args.buf) -- force disabling treesitter for built in languages
         return
       end
       if not M.has_parser(args.match) then
