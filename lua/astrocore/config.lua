@@ -81,7 +81,9 @@
 ---```
 ---@field ignore AstroCoreSessionIgnore?
 
----@alias AstroCoreTreesitterFeature boolean|string[]|(fun(lang: string, bufnr: integer): (boolean|nil))
+---@alias AstroCoreTreesitterDisable boolean|(fun(lang: string, bufnr: integer): (boolean|nil))
+
+---@alias AstroCoreTreesitterFeature string[]|AstroCoreTreesitterDisable
 
 ---@class AstroCoreTreesitterTextObjectsKey
 ---@field query string The textobject query capture group to perform against
@@ -109,6 +111,7 @@
 ---@field swap AstroCoreTreesitterTextObjectsSwapOpts? Keymaps for swapping treesitter capture groups
 
 ---@class AstroCoreTreesitterOpts
+---@field disabled AstroCoreTreesitterDisable? Control over the global disabling of treesitter features
 ---Whether or not to enable treesitter based highlighting. Can be one of the following:
 ---
 ---  - A boolean to apply to all languages
