@@ -687,6 +687,8 @@ function M.setup(opts)
     end
   end
 
+  if vim.tbl_get(M.config, "treesitter") then require("astrocore.treesitter").setup(M.config.treesitter) end
+
   local astroui_avail, astroui = pcall(require, "astroui")
   if astroui_avail then astroui.set_colorscheme() end
 end

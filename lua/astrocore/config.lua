@@ -81,6 +81,45 @@
 ---```
 ---@field ignore AstroCoreSessionIgnore?
 
+---@alias AstroCoreTreesitterFeature boolean|string[]|(fun(lang: string, bufnr: integer): (boolean|nil))
+
+---@class AstroCoreTreesitterOpts
+---Whether or not to enable treesitter based highlighting. Can be one of the following:
+---
+---  - A boolean to apply to all languages
+---  - A list of languages to enable
+---  - A function that takes a language and a buffer number and returns a boolean
+---Examples:
+---
+---```lua
+---highlight = true -- enables for all languages
+---highlight = { "c", "rust" } -- only enables for some languages
+---highlight = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
+---  local max_filesize = 100 * 1024 -- 100KB
+---  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return true
+---end
+---```
+---@field highlight AstroCoreTreesitterFeature?
+---Whether or not to enable treesitter based indentation. Can be one of the following:
+---
+---  - A boolean to apply to all languages
+---  - A list of languages to enable
+---  - A function that takes a language and a buffer number and returns a boolean
+---Examples:
+---
+---```lua
+---indent = true -- enables for all languages
+---indent = { "c", "rust" } -- only enables for some languages
+---indent = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
+---  local max_filesize = 100 * 1024 -- 100KB
+---  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return true
+---end
+---```
+---@field indent AstroCoreTreesitterFeature?
+---@field ensure_installed string[]|"all"|"auto"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
+
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
 ---@field cmp boolean? enable or disable cmp on start (boolean; default = true)
@@ -299,6 +338,17 @@
 ---}
 ---```
 ---@field sessions AstroCoreSessionOpts?
+---Configuration table of treesitter options for AstroNvim
+---Example:
+--
+---```lua
+---treesitter = {
+---  highlight = true,
+---  indent = true,
+---  ensure_installed = { "lua", "vim", "vimdoc" }
+---}
+---```
+---@field treesitter AstroCoreTreesitterOpts?
 
 ---@type AstroCoreOpts
 local M = {
@@ -328,6 +378,11 @@ local M = {
       buftypes = {},
     },
   },
+  --treesitter = {
+  --  highlight = true,
+  --  indent = true,
+  --  ensure_installed = {},
+  --}
 }
 
 return M
