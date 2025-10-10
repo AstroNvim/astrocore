@@ -83,6 +83,31 @@
 
 ---@alias AstroCoreTreesitterFeature boolean|string[]|(fun(lang: string, bufnr: integer): (boolean|nil))
 
+---@class AstroCoreTreesitterTextObjectsKey
+---@field query string The textobject query capture group to perform against
+---@field group string? The textobject query group to capture from (default: "textobjects")
+---@field desc string The description of the keymap
+
+---@alias AstroCoreTreesitterTextObjectsKeys table<string, AstroCoreTreesitterTextObjectsKey>
+
+---@class AstroCoreTreesitterTextObjectsSelectOpts
+---@field select_textobject AstroCoreTreesitterTextObjectsKeys? Keymaps for selecting a given treesitter capture group
+
+---@class AstroCoreTreesitterTextObjectsMoveOpts
+---@field goto_next_start AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the start of the next treesitter capture group
+---@field goto_next_end AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the end of the next treesitter capture group
+---@field goto_previous_start AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the start of the previous treesitter capture group
+---@field goto_previous_end AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the end of the previous treesitter capture group
+
+---@class AstroCoreTreesitterTextObjectsSwapOpts
+---@field swap_next AstroCoreTreesitterTextObjectsKeys? Keymaps for swapping with the next treesitter capture group
+---@field swap_previous AstroCoreTreesitterTextObjectsKeys? Keymaps for swapping with the previous treesitter capture group
+
+---@class AstroCoreTreesitterTextObjects
+---@field select AstroCoreTreesitterTextObjectsSelectOpts? Keymaps for selection of treesitter capture groups
+---@field move AstroCoreTreesitterTextObjectsMoveOpts? Keymaps for moving treesitter capture groups
+---@field swap AstroCoreTreesitterTextObjectsSwapOpts? Keymaps for swapping treesitter capture groups
+
 ---@class AstroCoreTreesitterOpts
 ---Whether or not to enable treesitter based highlighting. Can be one of the following:
 ---
@@ -119,6 +144,43 @@
 ---```
 ---@field indent AstroCoreTreesitterFeature?
 ---@field ensure_installed string[]|"all"|"auto"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
+---Configuration of textobject mappings to create using `nvim-treesitter-textobjects`
+---
+---Examples:
+---
+---```lua
+---textobjects = {
+---  select = {
+---    select_textobject = {
+---      ["af"] = { query = "@function.outer", desc = "around function" },
+---      ["if"] = { query = "@function.inner", desc = "around function" },
+---    },
+---  },
+---  move = {
+---    goto_next_start = {
+---      ["]f"] = { query = "@function.outer", "Next function start" },
+---    },
+---    goto_next_end = {
+---      ["]F"] = { query = "@function.outer", "Next function end" },
+---    },
+---    goto_previous_start = {
+---      ["[f"] = { query = "@function.outer", "Previous function start" },
+---    },
+---    goto_previous_end = {
+---      ["[F"] = { query = "@function.outer", "Previous function end" },
+---    },
+---  },
+---  swap = {
+---    swap_next = {
+---      [">F"] = { query = "@function.outer", desc = "Swap next function" },
+---    },
+---    swap_previous = {
+---      ["<F"] = { query = "@function.outer", desc = "Swap previous function" },
+---    },
+---  },
+---}
+---```
+---@field textobjects AstroCoreTreesitterTextObjects?
 
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
@@ -378,11 +440,12 @@ local M = {
       buftypes = {},
     },
   },
-  --treesitter = {
-  --  highlight = true,
-  --  indent = true,
-  --  ensure_installed = {},
-  --}
+  treesitter = {
+    highlight = true,
+    indent = true,
+    ensure_installed = {},
+    textobjects = nil,
+   }
 }
 
 return M

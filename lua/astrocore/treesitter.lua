@@ -15,6 +15,14 @@ local config = {}
 local available
 local installed = {}
 local queries = {}
+local captures = {}
+
+-- Configure the keymap modes for each textobject type
+M.textobject_modes = {
+  select = { "x", "o" },
+  swap = { "n" },
+  move = { "n", "x", "o" },
+}
 
 --- Get list of treesitter parsers installed with `nvim-treesitter`
 ---@param update boolean? whether or not to refresh installed parsers
@@ -76,6 +84,23 @@ function M.install(languages, cb)
   end
 end
 
+--- Check if capture is supported for given treesitter parser language
+---@param lang string the parser language to check against
+---@param query string the query type to check for support of
+---@param capture string the capture type to check for support of
+---@return boolean # whether or not a query is supported by the given parser
+function M.has_capture(lang, query, capture)
+  local key = lang .. ":" .. query
+  if captures[key] == nil then
+    captures[key] = {}
+    local found_captures = (vim.treesitter.query.get(lang, query) or {}).captures
+    for _, found_capture in ipairs(found_captures or {}) do
+      captures[key][found_capture] = true
+    end
+  end
+  return captures[key][capture] == true
+end
+
 --- Check if query is supported for given treesitter parser language
 ---@param lang string the parser language to check against
 ---@param query string the query type to check for support of
@@ -104,7 +129,10 @@ end
 function M.setup(opts)
   local astrocore = require "astrocore"
   config = astrocore.extend_tbl(config, opts) --[[ @as AstroCoreTreesitterOpts ]]
-  astrocore.on_load("nvim-treesitter", function() M.installed(true) end)
+  astrocore.on_load("nvim-treesitter", function()
+    M.installed(true)
+    M.install(opts.ensure_installed)
+  end)
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true }),
     callback = function(args)
@@ -142,6 +170,26 @@ function M.enable(bufnr)
   -- indents
   -- FIX: fix to only run if indenexpr is not set by a plugin
   if is_enabled("indent", "indents") then vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()" end
+
+  -- treesitter text objects
+  if config.textobjects and pcall(require, "nvim-treesitter-textobjects") then
+    for type, methods in pairs(config.textobjects) do
+      local mode = M.textobject_modes[type]
+      for method, keys in pairs(methods) do
+        for key, opts in pairs(keys) do
+          local group = opts.group or "textobjects"
+          if M.has_capture(lang, group, string.sub(opts.query, 2)) then
+            vim.keymap.set(
+              mode,
+              key,
+              function() require("nvim-treesitter-textobjects." .. type)[method](opts.query, group) end,
+              { buffer = bufnr, desc = opts.desc, silent = true }
+            )
+          end
+        end
+      end
+    end
+  end
 end
 
 return M
