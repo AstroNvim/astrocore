@@ -59,14 +59,16 @@ end
 ---@param cb? function optional callback function to execute after installation finishes
 function M.install(languages, cb)
   local patch_func = require("astrocore").patch_func
-  cb = patch_func(cb, function() M.installed(true) end)
   local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
   if not treesitter_avail then return end
   if not languages or languages == "auto" then
     local bufnr = vim.api.nvim_get_current_buf()
     local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
     if M.available()[lang] then
-      cb = patch_func(cb, function() M.enable(bufnr) end)
+      cb = patch_func(cb, function(orig)
+        M.enable(bufnr)
+        orig()
+      end)
       languages = { lang }
     else
       languages = {}
@@ -77,10 +79,11 @@ function M.install(languages, cb)
   if
     next(languages --[[ @as string[] ]])
   then
-    treesitter.install(languages, { summary = true }):await(function()
-      if cb then cb() end
+    cb = patch_func(cb, function(orig)
       M.installed(true)
+      orig()
     end)
+    treesitter.install(languages, { summary = true }):await(cb)
   end
 end
 
@@ -124,15 +127,12 @@ function M.has_parser(filetype, query)
   return true
 end
 
---- Initialize treesitter configuration
----@param opts AstroCoreTreesitterOpts
-function M.setup(opts)
-  local astrocore = require "astrocore"
-  config = astrocore.extend_tbl(config, opts) --[[ @as AstroCoreTreesitterOpts ]]
-  astrocore.on_load("nvim-treesitter", function()
+local function _setup()
+  require("astrocore").on_load("nvim-treesitter", function()
     M.installed(true)
-    M.install(opts.ensure_installed)
+    M.install(config.ensure_installed)
   end)
+
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true }),
     callback = function(args)
@@ -143,6 +143,48 @@ function M.setup(opts)
       end
     end,
   })
+end
+
+--- Initialize treesitter configuration
+---@param opts AstroCoreTreesitterOpts
+function M.setup(opts)
+  local astrocore = require "astrocore"
+  config = astrocore.extend_tbl(config, opts) --[[ @as AstroCoreTreesitterOpts ]]
+
+  if vim.fn.executable "tree-sitter" ~= 1 then
+    if pcall(require, "mason") and vim.fn.executable "tree-sitter" ~= 1 then
+      local mr = require "mason-registry"
+      mr.refresh(function()
+        local p = mr.get_package "tree-sitter-cli"
+        if not p:is_installed() then
+          astrocore.notify "Installing `tree-sitter-cli` with `mason.nvim`..."
+          p:install(
+            nil,
+            vim.schedule_wrap(function(success)
+              if success then
+                astrocore.notify "Installed `tree-sitter-cli` with `mason.nvim`."
+                _setup()
+              else
+                astrocore.notify(
+                  "Failed to install `tree-sitter-cli` with `mason.nvim\n\nCheck `:Mason` UI for details.",
+                  vim.log.levels.ERROR
+                )
+              end
+            end)
+          )
+        end
+      end)
+      return
+    end
+    if vim.fn.executable "tree-sitter" ~= 1 then
+      astrocore.notify(
+        "`tree-sitter` CLI is required for using `nvim-treesitter`\n\nInstall to enable treesitter features.",
+        vim.log.levels.WARN
+      )
+      return
+    end
+  end
+  _setup()
 end
 
 --- Enable treesitter features in buffer
