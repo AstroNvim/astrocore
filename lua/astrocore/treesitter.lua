@@ -229,6 +229,9 @@ function M.enable(bufnr)
     vim.bo[bufnr].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
   end
 
+  -- if folds are present force update of folds after loading
+  if M.has_parser(ft, "folds") then vim.schedule(function() vim.cmd "normal! zx" end) end
+
   -- treesitter text objects
   if config.textobjects and pcall(require, "nvim-treesitter-textobjects") then
     for type, methods in pairs(config.textobjects) do
@@ -257,6 +260,7 @@ function M.disable(bufnr)
   enabled[bufnr] = false
   pcall(vim.treesitter.stop, bufnr)
   if indentexprs[bufnr] then vim.bo[bufnr].indentexpr = indentexprs[bufnr] end
+  vim.schedule(function() vim.cmd "normal! zx" end)
 end
 
 --- Check if treesitter features in buffer
