@@ -65,17 +65,8 @@ function M.install(languages, cb)
   local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
   if not treesitter_avail then return end
   if not languages then
-    local bufnr = vim.api.nvim_get_current_buf()
-    local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
-    if M.available()[lang] then
-      cb = patch_func(cb, function(orig)
-        M.enable(bufnr)
-        orig()
-      end)
-      languages = { lang }
-    else
-      languages = {}
-    end
+    local lang = vim.treesitter.language.get_lang(vim.bo[vim.api.nvim_get_current_buf()].filetype)
+    languages = M.available()[lang] and { lang } or {}
   elseif languages == "all" then
     languages = treesitter.get_available()
   end
@@ -143,16 +134,16 @@ local function _setup()
       if enabled[args.buf] == false then return end
       local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
       if not lang then return end
-      local disabled = config.disabled
-      if type(disabled) == "function" then disabled = disabled(lang, args.buf) end
-      if disabled then
-        M.disable(args.buf) -- force disabling treesitter for built in languages
-        return
-      end
-      if not M.has_parser(args.match) then
-        if config.auto_install then M.install() end
+      local _enabled = config.enabled
+      if type(_enabled) == "function" then _enabled = _enabled(lang, args.buf) end
+      if _enabled then
+        if not M.has_parser(args.match) then
+          if config.auto_install then M.install(nil, function() M.enable(args.buf) end) end
+        else
+          M.enable(args.buf)
+        end
       else
-        M.enable(args.buf)
+        M.disable(args.buf)
       end
     end,
   })
