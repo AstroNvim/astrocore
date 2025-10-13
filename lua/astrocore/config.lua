@@ -81,9 +81,9 @@
 ---```
 ---@field ignore AstroCoreSessionIgnore?
 
----@alias AstroCoreTreesitterDisable boolean|(fun(lang: string, bufnr: integer): (boolean|nil))
+---@alias AstroCoreTreesitterEnable boolean|(fun(lang: string, bufnr: integer): (boolean|nil))
 
----@alias AstroCoreTreesitterFeature string[]|AstroCoreTreesitterDisable
+---@alias AstroCoreTreesitterFeature string[]|AstroCoreTreesitterEnable
 
 ---@class AstroCoreTreesitterTextObjectsKey
 ---@field query string The textobject query capture group to perform against
@@ -111,7 +111,7 @@
 ---@field swap AstroCoreTreesitterTextObjectsSwapOpts? Keymaps for swapping treesitter capture groups
 
 ---@class AstroCoreTreesitterOpts
----@field disabled AstroCoreTreesitterDisable? Control over the global disabling of treesitter features
+---@field enabled AstroCoreTreesitterEnable? Control over the global enabling of treesitter features
 ---Whether or not to enable treesitter based highlighting. Can be one of the following:
 ---
 ---  - A boolean to apply to all languages
@@ -162,16 +162,16 @@
 ---  },
 ---  move = {
 ---    goto_next_start = {
----      ["]f"] = { query = "@function.outer", "Next function start" },
+---      ["]f"] = { query = "@function.outer", desc = "Next function start" },
 ---    },
 ---    goto_next_end = {
----      ["]F"] = { query = "@function.outer", "Next function end" },
+---      ["]F"] = { query = "@function.outer", desc = "Next function end" },
 ---    },
 ---    goto_previous_start = {
----      ["[f"] = { query = "@function.outer", "Previous function start" },
+---      ["[f"] = { query = "@function.outer", desc = "Previous function start" },
 ---    },
 ---    goto_previous_end = {
----      ["[F"] = { query = "@function.outer", "Previous function end" },
+---      ["[F"] = { query = "@function.outer", desc = "Previous function end" },
 ---    },
 ---  },
 ---  swap = {
@@ -445,6 +445,7 @@ local M = {
     },
   },
   treesitter = {
+    enabled = true,
     highlight = true,
     indent = true,
     ensure_installed = {},
