@@ -140,6 +140,7 @@ local function _setup()
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true }),
     callback = function(args)
+      if enabled[args.buf] == false then return end
       local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
       if not lang then return end
       local disabled = config.disabled
