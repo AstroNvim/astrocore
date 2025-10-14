@@ -20,7 +20,7 @@ local captures = {}
 local enabled = {}
 local indentexprs = {}
 
--- Configure the keymap modes for each textobject type
+--- Configure the keymap modes for each textobject type
 M.textobject_modes = {
   select = { "x", "o" },
   swap = { "n" },
@@ -43,7 +43,8 @@ function M.installed(update)
   return installed
 end
 
--- Get list of available treesitter parers in `nvim-treesitter`
+--- Get available treesitter parers in `nvim-treesitter`
+---@return table<string,boolean> # a lookup table of available parsers
 function M.available()
   if available == nil then
     available = {}
@@ -112,7 +113,7 @@ end
 --- Check if parser exists for filetype with optional query check
 ---@param filetype? string|integer the filetype to check or a buffer number to get the filetype of (defaults to current buffer)
 ---@param query? string the query type to check for support of
----@return boolean
+---@return boolean # whether or not a parser is supported
 function M.has_parser(filetype, query)
   if not filetype then filetype = vim.api.nvim_get_current_buf() end
   if type(filetype) == "number" then filetype = vim.bo[filetype].filetype end
@@ -130,6 +131,7 @@ local function _setup()
 
   vim.api.nvim_create_autocmd("FileType", {
     group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true }),
+    desc = "Automatically detect available treesitter parsers and enable necessary features",
     callback = function(args)
       if enabled[args.buf] == false then return end
       local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
@@ -257,6 +259,7 @@ end
 
 --- Check if treesitter features in buffer
 ---@param bufnr? integer the buffer to check if treesitter is enabled for
+---@return boolean # whether or not treesitter is enabled in buffer
 function M.is_enabled(bufnr)
   if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
   return enabled[bufnr] == true
