@@ -27,7 +27,16 @@ end
 --- Sync Lazy and then update Mason
 function M.update_packages()
   require("lazy").sync { wait = true }
-  if vim.fn.exists ":MasonToolsUpdate" > 0 then vim.cmd.MasonToolsUpdate() end
+  if vim.fn.exists ":MasonToolsUpdate" > 0 then
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "MasonToolsUpdateCompleted",
+      once = true,
+      callback = function() M.event("UpdateCompleted", true) end,
+    })
+    vim.cmd.MasonToolsUpdate()
+  else
+    M.event("UpdateCompleted", true)
+  end
 end
 
 --- Partially reload AstroNvim user settings. Includes core vim options, mappings, and highlights. This is an experimental feature and may lead to instabilities until restart.
