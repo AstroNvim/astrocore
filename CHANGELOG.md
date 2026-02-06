@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://github.com/AstroNvim/astrocore/compare/v2.0.5...v2.1.0) (2026-02-06)
+
+
+### Features
+
+* add AstroUpdateCompleted event after Mason tools update ([e619a6b](https://github.com/AstroNvim/astrocore/commit/e619a6bd3ffff71d8b014cc74e4cde92b9f540c8))
+
 ## [2.0.5](https://github.com/AstroNvim/astrocore/compare/v2.0.4...v2.0.5) (2025-04-30)
 
 
