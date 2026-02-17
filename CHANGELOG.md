@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.1](https://github.com/AstroNvim/astrocore/compare/v2.1.0...v2.1.1) (2026-02-17)
+
+
+### Bug Fixes
+
+* **buffer:** make sure to not rule a buffer as large until it is fully loaded ([cf7c5ea](https://github.com/AstroNvim/astrocore/commit/cf7c5eaf3078e8e7389cfc6b40aa7c49710ede22))
+
 ## [2.1.0](https://github.com/AstroNvim/astrocore/compare/v2.0.5...v2.1.0) (2026-02-06)
 
 
