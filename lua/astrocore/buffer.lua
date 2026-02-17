@@ -29,6 +29,8 @@ local large_buf_cache, buf_size_cache = {}, {} -- cache large buffer detection r
 ---@return boolean is_large whether the buffer is detected as large or not
 function M.is_large(bufnr, large_buf_opts)
   if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  -- always return not large until buffer is loaded, do not cache decision
+  if not vim.api.nvim_buf_is_loaded(bufnr) then return false end
   local skip_cache = large_buf_opts ~= nil -- skip cache when called manually with custom options
   if not large_buf_opts then large_buf_opts = vim.tbl_get(astro.config, "features", "large_buf") end
   if large_buf_opts then
