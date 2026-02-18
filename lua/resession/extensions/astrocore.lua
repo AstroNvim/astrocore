@@ -33,11 +33,17 @@ function M.on_post_load(data)
   -- build new tab scoped buffer lists
   if not data.tabpage then
     for tabpage, tabs in pairs(data.tabs) do
-      local bufs = vim.tbl_map(function(bufnr) return new_bufnrs[bufnr] end, tabs)
+      local bufs = {}
+      for _, bufnr in pairs(tabs) do
+        table.insert(bufs, new_bufnrs[bufnr])
+      end
       vim.t[new_tabpages[tabpage]].bufs = bufs
     end
   else
-    vim.t.bufs = vim.tbl_map(function(bufnr) return new_bufnrs[bufnr] end, data.tabs[data.tabpage])
+    vim.t.bufs = {}
+    for _, bufnr in pairs(data.tabs[data.tabpage]) do
+      table.insert(vim.t.bufs, new_bufnrs[bufnr])
+    end
   end
 
   local buf_utils = require "astrocore.buffer"
