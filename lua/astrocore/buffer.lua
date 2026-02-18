@@ -77,12 +77,8 @@ end
 function M.is_restorable(bufnr)
   if not M.is_valid(bufnr) or vim.bo[bufnr].bufhidden ~= "" then return false end
 
-  if vim.bo[bufnr].buftype == "" then
-    -- Normal buffer, check if it listed.
-    if not vim.bo[bufnr].buflisted then return false end
-    -- Check if it has a filename.
-    if vim.api.nvim_buf_get_name(bufnr) == "" then return false end
-  end
+  -- Check if it has a filename.
+  if vim.api.nvim_buf_get_name(bufnr) == "" then return false end
 
   local session_ignore = vim.tbl_get(astro.config, "sessions", "ignore") or {}
   if
@@ -91,7 +87,7 @@ function M.is_restorable(bufnr)
   then
     return false
   end
-  return true
+  return vim.bo[bufnr].buflisted
 end
 
 --- Check if the current buffers form a valid session
