@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.2](https://github.com/AstroNvim/astrocore/compare/v2.1.1...v2.1.2) (2026-02-18)
+
+
+### Bug Fixes
+
+* **resession:** fix vim.t.bufs arrays restoring as non-contiguous ([f7c9515](https://github.com/AstroNvim/astrocore/commit/f7c951542032d0744b875af91854a2860bbbcf2b))
+
 ## [2.1.1](https://github.com/AstroNvim/astrocore/compare/v2.1.0...v2.1.1) (2026-02-17)
 
 
