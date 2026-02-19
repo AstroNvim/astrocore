@@ -185,14 +185,14 @@ end
 function M.buffer_syntax(bufnr, silent)
   -- HACK: this should just be `bufnr = bufnr or 0` but it looks like `vim.treesitter.stop` has a bug with `0` being current
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
-  local ts_avail, parsers = pcall(require, "nvim-treesitter.parsers")
+  local treesitter = require "astrocore.treesitter"
   local astrolsp_avail, lsp_toggle = pcall(require, "astrolsp.toggles")
   if vim.bo[bufnr].syntax == "off" then
-    if ts_avail and parsers.has_parser() then vim.treesitter.start(bufnr) end
+    if treesitter.has_parser() then vim.treesitter.start(bufnr) end
     vim.bo[bufnr].syntax = "on"
     if astrolsp_avail and not vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   else
-    if ts_avail and parsers.has_parser() then vim.treesitter.stop(bufnr) end
+    if treesitter.has_parser() then vim.treesitter.stop(bufnr) end
     vim.bo[bufnr].syntax = "off"
     if astrolsp_avail and vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   end
@@ -245,8 +245,6 @@ local previous_virtual_lines
 ---@param silent? boolean if true then don't sent a notification
 function M.virtual_lines(silent)
   local virtual_lines = vim.diagnostic.config().virtual_lines
-  -- TODO: remove check when dropping support for Neovim v0.10
-  if virtual_lines == nil then ui_notify(silent, "Virtual lines not available") end
   local new_virtual_lines = false
   if virtual_lines then
     previous_virtual_lines = virtual_lines

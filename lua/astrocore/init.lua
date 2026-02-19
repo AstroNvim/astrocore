@@ -24,9 +24,14 @@ function M.extend_tbl(default, opts)
   return default and vim.tbl_deep_extend("force", default, opts) or opts
 end
 
---- Sync Lazy and then update Mason
+--- Sync Lazy plugins, Treesitter parsers, and Mason packages
 function M.update_packages()
+  -- plugins
   require("lazy").sync { wait = true }
+  -- parsers
+  local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
+  if treesitter_avail then treesitter.update():wait() end
+  -- packages
   if vim.fn.exists ":MasonToolsUpdate" > 0 then
     vim.api.nvim_create_autocmd("User", {
       pattern = "MasonToolsUpdateCompleted",
@@ -686,6 +691,8 @@ function M.setup(opts)
       })
     end
   end
+
+  if vim.tbl_get(M.config, "treesitter") then require("astrocore.treesitter").setup(M.config.treesitter) end
 
   local astroui_avail, astroui = pcall(require, "astroui")
   if astroui_avail then astroui.set_colorscheme() end

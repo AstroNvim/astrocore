@@ -54,11 +54,9 @@
 ---@field filetypes string[]? filetypes to ignore
 ---@field buftypes string[]? buffer types to ignore
 
--- TODO: remove note about version after dropping support for Neovim v0.10
-
 ---@class AstroCoreDiagnosticsFeature
 ---@field virtual_text boolean? show virtual text on startup
----@field virtual_lines boolean? show virtual lines on startup (Neovim v0.11+ only)
+---@field virtual_lines boolean? show virtual lines on startup
 ---
 ---@class AstroCoreSessionOpts
 ---Session autosaving options
@@ -82,6 +80,111 @@
 ---}
 ---```
 ---@field ignore AstroCoreSessionIgnore?
+
+---@alias AstroCoreTreesitterEnable boolean|(fun(lang: string, bufnr: integer): (boolean|nil))
+
+---@alias AstroCoreTreesitterFeature string[]|AstroCoreTreesitterEnable
+
+---@class AstroCoreTreesitterTextObjectsKey
+---@field query string The textobject query capture group to perform against
+---@field group string? The textobject query group to capture from (default: "textobjects")
+---@field desc string The description of the keymap
+
+---@alias AstroCoreTreesitterTextObjectsKeys table<string, AstroCoreTreesitterTextObjectsKey>
+
+---@class AstroCoreTreesitterTextObjectsSelectOpts
+---@field select_textobject AstroCoreTreesitterTextObjectsKeys? Keymaps for selecting a given treesitter capture group
+
+---@class AstroCoreTreesitterTextObjectsMoveOpts
+---@field goto_next_start AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the start of the next treesitter capture group
+---@field goto_next_end AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the end of the next treesitter capture group
+---@field goto_previous_start AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the start of the previous treesitter capture group
+---@field goto_previous_end AstroCoreTreesitterTextObjectsKeys? Keymaps for going to the end of the previous treesitter capture group
+
+---@class AstroCoreTreesitterTextObjectsSwapOpts
+---@field swap_next AstroCoreTreesitterTextObjectsKeys? Keymaps for swapping with the next treesitter capture group
+---@field swap_previous AstroCoreTreesitterTextObjectsKeys? Keymaps for swapping with the previous treesitter capture group
+
+---@class AstroCoreTreesitterTextObjects
+---@field select AstroCoreTreesitterTextObjectsSelectOpts? Keymaps for selection of treesitter capture groups
+---@field move AstroCoreTreesitterTextObjectsMoveOpts? Keymaps for moving treesitter capture groups
+---@field swap AstroCoreTreesitterTextObjectsSwapOpts? Keymaps for swapping treesitter capture groups
+
+---@class AstroCoreTreesitterOpts
+---@field enabled AstroCoreTreesitterEnable? Control over the global enabling of treesitter features
+---Whether or not to enable treesitter based highlighting. Can be one of the following:
+---
+---  - A boolean to apply to all languages
+---  - A list of languages to enable
+---  - A function that takes a language and a buffer number and returns a boolean
+---Examples:
+---
+---```lua
+---highlight = true -- enables for all languages
+---highlight = { "c", "rust" } -- only enables for some languages
+---highlight = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
+---  local max_filesize = 100 * 1024 -- 100KB
+---  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return true
+---end
+---```
+---@field highlight AstroCoreTreesitterFeature?
+---Whether or not to enable treesitter based indentation. Can be one of the following:
+---
+---  - A boolean to apply to all languages
+---  - A list of languages to enable
+---  - A function that takes a language and a buffer number and returns a boolean
+---Examples:
+---
+---```lua
+---indent = true -- enables for all languages
+---indent = { "c", "rust" } -- only enables for some languages
+---indent = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
+---  local max_filesize = 100 * 1024 -- 100KB
+---  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return true
+---end
+---```
+---@field indent AstroCoreTreesitterFeature?
+---@field auto_install boolean? whether or not to automatically detect and install missing treesitter parsers
+---@field ensure_installed string[]|"all"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
+---Configuration of textobject mappings to create using `nvim-treesitter-textobjects`
+---
+---Examples:
+---
+---```lua
+---textobjects = {
+---  select = {
+---    select_textobject = {
+---      ["af"] = { query = "@function.outer", desc = "around function" },
+---      ["if"] = { query = "@function.inner", desc = "around function" },
+---    },
+---  },
+---  move = {
+---    goto_next_start = {
+---      ["]f"] = { query = "@function.outer", desc = "Next function start" },
+---    },
+---    goto_next_end = {
+---      ["]F"] = { query = "@function.outer", desc = "Next function end" },
+---    },
+---    goto_previous_start = {
+---      ["[f"] = { query = "@function.outer", desc = "Previous function start" },
+---    },
+---    goto_previous_end = {
+---      ["[F"] = { query = "@function.outer", desc = "Previous function end" },
+---    },
+---  },
+---  swap = {
+---    swap_next = {
+---      [">F"] = { query = "@function.outer", desc = "Swap next function" },
+---    },
+---    swap_previous = {
+---      ["<F"] = { query = "@function.outer", desc = "Swap previous function" },
+---    },
+---  },
+---}
+---```
+---@field textobjects AstroCoreTreesitterTextObjects?
 
 ---@class AstroCoreFeatureOpts
 ---@field autopairs boolean? enable or disable autopairs on start (boolean; default = true)
@@ -301,6 +404,17 @@
 ---}
 ---```
 ---@field sessions AstroCoreSessionOpts?
+---Configuration table of treesitter options for AstroNvim
+---Example:
+--
+---```lua
+---treesitter = {
+---  highlight = true,
+---  indent = true,
+---  ensure_installed = { "lua", "vim", "vimdoc" }
+---}
+---```
+---@field treesitter AstroCoreTreesitterOpts?
 
 ---@type AstroCoreOpts
 local M = {
@@ -329,6 +443,13 @@ local M = {
       filetypes = { "gitcommit", "gitrebase" },
       buftypes = {},
     },
+  },
+  treesitter = {
+    enabled = true,
+    highlight = true,
+    indent = true,
+    ensure_installed = {},
+    textobjects = nil,
   },
 }
 

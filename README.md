@@ -13,7 +13,7 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 
 ## ⚡️ Requirements
 
-- Neovim >= 0.10
+- Neovim >= 0.11
 - [lazy.nvim](https://github.com/folke/lazy.nvim)
 - [resession.nvim][resession] (_optional_)
 
@@ -195,6 +195,54 @@ local opts = {
       dirs = {}, -- working directories to ignore sessions in
       filetypes = { "gitcommit", "gitrebase" }, -- filetypes to ignore sessions
       buftypes = {}, -- buffer types to ignore sessions
+    },
+  },
+  -- Configuration of treesitter features in Neovim
+  treesitter = {
+    -- Globally enable or disable treesitter features
+    -- can be a boolean or a function (`fun(lang: string, bufnr: integer): boolean`)
+    enabled = true,
+    -- Enable or disable treesitter based highlighting
+    -- can be a boolean, list of parsers, or a function (`fun(lang: string, bufnr: integer): boolean`)
+    highlight = true,
+    -- Enable or disable treesitter based indenting
+    -- can be a boolean, list of parsers, or a function (`fun(lang: string, bufnr: integer): boolean`)
+    indent = true,
+    -- List of treesitter parsers that should be installed automatically
+    -- ("all" can be used to install all available parsers)
+    ensure_installed = { "lua", "vim", "vimdoc" },
+    -- Automatically detect missing treesitter parser and install when editing file
+    auto_install = false,
+    -- Configure treesitter based text objects
+    textobjects = {
+      select = {
+        select_textobject = {
+          ["af"] = { query = "@function.outer", desc = "around function" },
+          ["if"] = { query = "@function.inner", desc = "around function" },
+        },
+      },
+      move = {
+        goto_next_start = {
+          ["]f"] = { query = "@function.outer", desc = "Next function start" },
+        },
+        goto_next_end = {
+          ["]F"] = { query = "@function.outer", desc = "Next function end" },
+        },
+        goto_previous_start = {
+          ["[f"] = { query = "@function.outer", desc = "Previous function start" },
+        },
+        goto_previous_end = {
+          ["[F"] = { query = "@function.outer", desc = "Previous function end" },
+        },
+      },
+      swap = {
+        swap_next = {
+          [">F"] = { query = "@function.outer", desc = "Swap next function" },
+        },
+        swap_previous = {
+          ["<F"] = { query = "@function.outer", desc = "Swap previous function" },
+        },
+      },
     },
   },
 }
