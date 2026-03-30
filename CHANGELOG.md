@@ -1,5 +1,36 @@
 # Changelog
 
+## [3.0.0](https://github.com/AstroNvim/astrocore/compare/v2.1.2...v3.0.0) (2026-03-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for Neovim v0.10
+
+### Features
+
+* add tooling for configuring and setting up treesitter features in Neovim ([d9a3831](https://github.com/AstroNvim/astrocore/commit/d9a383104ed2327a2d9ec5a871977ac974d589b5))
+* **treesitter:** add ability to disable treesitter ([aa5d2ce](https://github.com/AstroNvim/astrocore/commit/aa5d2cedabba678ee200370772b3f262c7d5466f))
+* **treesitter:** add the ability to configure textobjects ([6f5099f](https://github.com/AstroNvim/astrocore/commit/6f5099f50a3253af9c81f5eafc90d3b246c4916d))
+* update treesitter parsers when updating plugins and packages ([4ce7521](https://github.com/AstroNvim/astrocore/commit/4ce7521a185fd07652975554f775cbb01fea806a))
+
+
+### Bug Fixes
+
+* **buffer:** require all restored files to have a filename and be listed ([a03e23e](https://github.com/AstroNvim/astrocore/commit/a03e23eaaa2a06f694318db5c773efff2e285de3))
+* fix formatting ([a4ba031](https://github.com/AstroNvim/astrocore/commit/a4ba031a05b18a2ab2f61a7e1355da1be67ca170))
+* **toggles:** update treesitter syntax toggling ([1ba44f8](https://github.com/AstroNvim/astrocore/commit/1ba44f8a832bffbdd6145bbb5b5686b0ea357046))
+* **treesitter:** don't automatically enable treesitter if user has disabled it specifically ([d633eb9](https://github.com/AstroNvim/astrocore/commit/d633eb9450c82fb12513947bf5f97b547aced760))
+* **treesitter:** filter already installed languages ([d621a7b](https://github.com/AstroNvim/astrocore/commit/d621a7b79cbd08c8663aa2fb8a371a95fd220802))
+* **treesitter:** force refresh folds on loading treesitter ([25b2ed1](https://github.com/AstroNvim/astrocore/commit/25b2ed108a18c5942e864a3a724e22b6d0a023fc))
+* **treesitter:** resolve incorrect callbacks in installation ([2147f73](https://github.com/AstroNvim/astrocore/commit/2147f735d922820dff0530fb6a993484735eccfd))
+* **treesitter:** separate automatic installation option ([58e6c06](https://github.com/AstroNvim/astrocore/commit/58e6c0649af990e3affbe687140688cff6e3bb68))
+
+
+### Code Refactoring
+
+* drop support for Neovim v0.10 ([4ad031c](https://github.com/AstroNvim/astrocore/commit/4ad031cf7c4f47e4641a9490b8f3a42e14e08271))
+
 ## [2.1.2](https://github.com/AstroNvim/astrocore/compare/v2.1.1...v2.1.2) (2026-02-18)
 
 
