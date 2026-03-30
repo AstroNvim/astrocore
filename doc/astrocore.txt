@@ -16,6 +16,7 @@ Table of Contents                                *astrocore-table-of-contents*
   - astrocore.buffer.comparator|astrocore-lua-api-astrocore.buffer.comparator|
   - astrocore.rooter                      |astrocore-lua-api-astrocore.rooter|
   - astrocore.toggles                    |astrocore-lua-api-astrocore.toggles|
+  - astrocore.treesitter              |astrocore-lua-api-astrocore.treesitter|
 
 ==============================================================================
 1. AstroCore                                             *astrocore-astrocore*
@@ -38,7 +39,7 @@ FEATURES                                        *astrocore-astrocore-features*
 
 REQUIREMENTS                                *astrocore-astrocore-requirements*
 
-- Neovim >= 0.10
+- Neovim >= 0.11
 - lazy.nvim <https://github.com/folke/lazy.nvim>
 - resession.nvim <https://github.com/stevearc/resession.nvim/> (_optional_)
 
@@ -225,6 +226,54 @@ usages:
           dirs = {}, -- working directories to ignore sessions in
           filetypes = { "gitcommit", "gitrebase" }, -- filetypes to ignore sessions
           buftypes = {}, -- buffer types to ignore sessions
+        },
+      },
+      -- Configuration of treesitter features in Neovim
+      treesitter = {
+        -- Globally enable or disable treesitter features
+        -- can be a boolean or a function (`fun(lang: string, bufnr: integer): boolean`)
+        enabled = true,
+        -- Enable or disable treesitter based highlighting
+        -- can be a boolean, list of parsers, or a function (`fun(lang: string, bufnr: integer): boolean`)
+        highlight = true,
+        -- Enable or disable treesitter based indenting
+        -- can be a boolean, list of parsers, or a function (`fun(lang: string, bufnr: integer): boolean`)
+        indent = true,
+        -- List of treesitter parsers that should be installed automatically
+        -- ("all" can be used to install all available parsers)
+        ensure_installed = { "lua", "vim", "vimdoc" },
+        -- Automatically detect missing treesitter parser and install when editing file
+        auto_install = false,
+        -- Configure treesitter based text objects
+        textobjects = {
+          select = {
+            select_textobject = {
+              ["af"] = { query = "@function.outer", desc = "around function" },
+              ["if"] = { query = "@function.inner", desc = "around function" },
+            },
+          },
+          move = {
+            goto_next_start = {
+              ["]f"] = { query = "@function.outer", desc = "Next function start" },
+            },
+            goto_next_end = {
+              ["]F"] = { query = "@function.outer", desc = "Next function end" },
+            },
+            goto_previous_start = {
+              ["[f"] = { query = "@function.outer", desc = "Previous function start" },
+            },
+            goto_previous_end = {
+              ["[F"] = { query = "@function.outer", desc = "Previous function end" },
+            },
+          },
+          swap = {
+            swap_next = {
+              [">F"] = { query = "@function.outer", desc = "Swap next function" },
+            },
+            swap_previous = {
+              ["<F"] = { query = "@function.outer", desc = "Swap previous function" },
+            },
+          },
         },
       },
     }
@@ -634,7 +683,7 @@ UPDATE_PACKAGES ~
     function astrocore.update_packages()
 <
 
-Sync Lazy and then update Mason
+Sync Lazy plugins, Treesitter parsers, and Mason packages
 
 
 URL_MATCHER ~
@@ -1445,6 +1494,170 @@ WRAP ~
 Toggle wrap
 
 _param_ `silent` — if true then don’t sent a notification
+
+
+ASTROCORE.TREESITTER                  *astrocore-lua-api-astrocore.treesitter*
+
+AstroNvim Treesitter Utilities
+
+Utilities necessary for configuring treesitter in Neovim
+
+This module can be loaded with `local astrocore_treesitter = require
+"astrocore.treesitter"`
+
+copyright 2025 license GNU General Public License v3.0
+
+
+AVAILABLE ~
+
+>lua
+    function astrocore.treesitter.available()
+      -> table<string, boolean>
+<
+
+Get available treesitter parers in `nvim-treesitter`
+
+_return_ — a lookup table of available parsers
+
+
+DISABLE ~
+
+>lua
+    function astrocore.treesitter.disable(bufnr?: integer)
+<
+
+Disable treesitter features in buffer
+
+_param_ `bufnr` — the buffer to disable treesitter in
+
+
+ENABLE ~
+
+>lua
+    function astrocore.treesitter.enable(bufnr?: integer)
+<
+
+Enable treesitter features in buffer
+
+_param_ `bufnr` — the buffer to enable treesitter in
+
+
+HAS_CAPTURE ~
+
+>lua
+    function astrocore.treesitter.has_capture(lang: string, query: string, capture: string)
+      -> boolean
+<
+
+Check if capture is supported for given treesitter parser language
+
+_param_ `lang` — the parser language to check against
+
+_param_ `query` — the query type to check for support of
+
+_param_ `capture` — the capture type to check for support of
+
+_return_ — whether or not a query is supported by the given parser
+
+
+HAS_PARSER ~
+
+>lua
+    function astrocore.treesitter.has_parser(filetype?: string|integer, query?: string)
+      -> boolean
+<
+
+Check if parser exists for filetype with optional query check
+
+_param_ `filetype` — the filetype to check or a buffer number to get the
+filetype of (defaults to current buffer)
+
+_param_ `query` — the query type to check for support of
+
+_return_ — whether or not a parser is supported
+
+
+HAS_QUERY ~
+
+>lua
+    function astrocore.treesitter.has_query(lang: string, query: string)
+      -> boolean
+<
+
+Check if query is supported for given treesitter parser language
+
+_param_ `lang` — the parser language to check against
+
+_param_ `query` — the query type to check for support of
+
+_return_ — whether or not a query is supported by the given parser
+
+
+INSTALL ~
+
+>lua
+    function astrocore.treesitter.install(languages?: "all"|string[], cb?: function)
+<
+
+Install the provided parsers with `nvim-treesitter`
+
+_param_ `languages` — a list of languages to install, automatically detect
+the current language to install, or install all available parsers (default:
+"auto")
+
+_param_ `cb` — optional callback function to execute after installation
+finishes
+
+>lua
+    languages:
+        | "all"
+<
+
+
+INSTALLED ~
+
+>lua
+    function astrocore.treesitter.installed(update?: boolean)
+      -> string[]
+<
+
+Get list of treesitter parsers installed with `nvim-treesitter`
+
+_param_ `update` — whether or not to refresh installed parsers
+
+_return_ — the list of installed parsers
+
+
+IS_ENABLED ~
+
+>lua
+    function astrocore.treesitter.is_enabled(bufnr?: integer)
+      -> boolean
+<
+
+Check if treesitter features in buffer
+
+_param_ `bufnr` — the buffer to check if treesitter is enabled for
+
+_return_ — whether or not treesitter is enabled in buffer
+
+
+SETUP ~
+
+>lua
+    function astrocore.treesitter.setup(opts: AstroCoreTreesitterOpts)
+<
+
+Initialize treesitter configuration
+
+
+TEXTOBJECT_MODES ~
+
+>lua
+    table
+<
+
+Configure the keymap modes for each textobject type
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
 

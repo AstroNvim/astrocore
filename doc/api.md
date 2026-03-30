@@ -373,7 +373,7 @@ function astrocore.unique_list(list: any[])
 function astrocore.update_packages()
 ```
 
- Sync Lazy and then update Mason
+ Sync Lazy plugins, Treesitter parsers, and Mason packages
 
 ### url_matcher
 
@@ -1166,5 +1166,165 @@ function astrocore.toggles.wrap(silent?: boolean)
  Toggle wrap
 
 *param* `silent` — if true then don't sent a notification
+
+
+## astrocore.treesitter
+
+AstroNvim Treesitter Utilities
+
+Utilities necessary for configuring treesitter in Neovim
+
+This module can be loaded with `local astrocore_treesitter = require "astrocore.treesitter"`
+
+copyright 2025
+license GNU General Public License v3.0
+
+### available
+
+
+```lua
+function astrocore.treesitter.available()
+  -> table<string, boolean>
+```
+
+ Get available treesitter parers in `nvim-treesitter`
+
+*return* — a lookup table of available parsers
+
+### disable
+
+
+```lua
+function astrocore.treesitter.disable(bufnr?: integer)
+```
+
+ Disable treesitter features in buffer
+
+*param* `bufnr` — the buffer to disable treesitter in
+
+### enable
+
+
+```lua
+function astrocore.treesitter.enable(bufnr?: integer)
+```
+
+ Enable treesitter features in buffer
+
+*param* `bufnr` — the buffer to enable treesitter in
+
+### has_capture
+
+
+```lua
+function astrocore.treesitter.has_capture(lang: string, query: string, capture: string)
+  -> boolean
+```
+
+ Check if capture is supported for given treesitter parser language
+
+*param* `lang` — the parser language to check against
+
+*param* `query` — the query type to check for support of
+
+*param* `capture` — the capture type to check for support of
+
+*return* — whether or not a query is supported by the given parser
+
+### has_parser
+
+
+```lua
+function astrocore.treesitter.has_parser(filetype?: string|integer, query?: string)
+  -> boolean
+```
+
+ Check if parser exists for filetype with optional query check
+
+*param* `filetype` — the filetype to check or a buffer number to get the filetype of (defaults to current buffer)
+
+*param* `query` — the query type to check for support of
+
+*return* — whether or not a parser is supported
+
+### has_query
+
+
+```lua
+function astrocore.treesitter.has_query(lang: string, query: string)
+  -> boolean
+```
+
+ Check if query is supported for given treesitter parser language
+
+*param* `lang` — the parser language to check against
+
+*param* `query` — the query type to check for support of
+
+*return* — whether or not a query is supported by the given parser
+
+### install
+
+
+```lua
+function astrocore.treesitter.install(languages?: "all"|string[], cb?: function)
+```
+
+ Install the provided parsers with `nvim-treesitter`
+
+*param* `languages` — a list of languages to install, automatically detect the current language to install, or install all available parsers (default: "auto")
+
+*param* `cb` — optional callback function to execute after installation finishes
+
+```lua
+languages:
+    | "all"
+```
+
+### installed
+
+
+```lua
+function astrocore.treesitter.installed(update?: boolean)
+  -> string[]
+```
+
+ Get list of treesitter parsers installed with `nvim-treesitter`
+
+*param* `update` — whether or not to refresh installed parsers
+
+*return* — the list of installed parsers
+
+### is_enabled
+
+
+```lua
+function astrocore.treesitter.is_enabled(bufnr?: integer)
+  -> boolean
+```
+
+ Check if treesitter features in buffer
+
+*param* `bufnr` — the buffer to check if treesitter is enabled for
+
+*return* — whether or not treesitter is enabled in buffer
+
+### setup
+
+
+```lua
+function astrocore.treesitter.setup(opts: AstroCoreTreesitterOpts)
+```
+
+ Initialize treesitter configuration
+
+### textobject_modes
+
+
+```lua
+table
+```
+
+ Configure the keymap modes for each textobject type
 
 
