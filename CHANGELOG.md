@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/AstroNvim/astrocore/compare/v3.0.0...v3.0.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* **treesitter:** check buffer validity before enabling features ([4763bc9](https://github.com/AstroNvim/astrocore/commit/4763bc92c21191039497e3d862fa9e0b2b33fedd))
+
 ## [3.0.0](https://github.com/AstroNvim/astrocore/compare/v2.1.2...v3.0.0) (2026-03-30)
 
 
