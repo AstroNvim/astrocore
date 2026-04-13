@@ -197,6 +197,8 @@ end
 ---@param bufnr? integer the buffer to enable treesitter in
 function M.enable(bufnr)
   if not bufnr then bufnr = vim.api.nvim_get_current_buf() end
+  -- Check if buffer is valid (may have been deleted during async operations)
+  if not vim.api.nvim_buf_is_valid(bufnr) then return end
   local ft = vim.bo[bufnr].filetype
   local lang = vim.treesitter.language.get_lang(ft)
   if not M.has_parser(ft) or not lang then return end
