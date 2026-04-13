@@ -1,4 +1,5 @@
-*astrocore.txt*         For Neovim >= 0.9.0         Last change: 2026 March 30
+*astrocore.txt*
+                             For Neovim >= 0.9.0    Last change: 2026 April 13
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -493,10 +494,9 @@ A helper function to wrap a module function to require a plugin before running
 
 _param_ `plugin` — The plugin to call `require("lazy").load` with
 
-_param_ `module` — The system module where the functions live
-(e.g. `vim.ui`)
+_param_ `module` — The system module where the functions live (e.g. `vim.ui`)
 
-_param_ `funcs` — The functions to wrap in the given module (e.g. `"ui",
+_param_ `funcs` — The functions to wrap in the given module (e.g. `"ui",
 "select"`)
 
 
