@@ -226,7 +226,11 @@ function M.enable(bufnr)
   end
 
   -- if folds are present force update of folds after loading
-  if M.has_parser(ft, "folds") then vim.schedule(function() vim.cmd "normal! zx" end) end
+  if M.has_parser(ft, "folds") then
+    vim.schedule(function()
+      if vim.api.nvim_get_current_buf() == bufnr then vim.cmd "normal! zx" end
+    end)
+  end
 
   -- treesitter text objects
   if config.textobjects and pcall(require, "nvim-treesitter-textobjects") then
