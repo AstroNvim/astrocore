@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2](https://github.com/AstroNvim/astrocore/compare/v3.0.1...v3.0.2) (2026-04-17)
+
+
+### Bug Fixes
+
+* **treesitter:** only force a folds refresh if the buffer is the current buffer ([84ecc2c](https://github.com/AstroNvim/astrocore/commit/84ecc2c6e95fdf31fce3c5ad207ea23c640a2f6f))
+
 ## [3.0.1](https://github.com/AstroNvim/astrocore/compare/v3.0.0...v3.0.1) (2026-04-13)
 
 
