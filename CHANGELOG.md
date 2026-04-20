@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.3](https://github.com/AstroNvim/astrocore/compare/v3.0.2...v3.0.3) (2026-04-20)
+
+
+### Performance Improvements
+
+* **treesitter:** improve performance of fold refresh after loading treesitter ([2b87f90](https://github.com/AstroNvim/astrocore/commit/2b87f909b5f1040b0855ca7ecf1a17bb00a6640f))
+
 ## [3.0.2](https://github.com/AstroNvim/astrocore/compare/v3.0.1...v3.0.2) (2026-04-17)
 
 
