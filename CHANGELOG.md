@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.4](https://github.com/AstroNvim/astrocore/compare/v3.0.3...v3.0.4) (2026-06-03)
+
+
+### Bug Fixes
+
+* **treesitter:** make sure installed parsers are properly checked before auto installing ([8ea3a1e](https://github.com/AstroNvim/astrocore/commit/8ea3a1e43041862dd481772b943f6b2bf655057e))
+
 ## [3.0.3](https://github.com/AstroNvim/astrocore/compare/v3.0.2...v3.0.3) (2026-04-20)
 
 
