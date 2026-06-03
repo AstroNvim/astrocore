@@ -13,6 +13,7 @@ local M = {}
 local config = {}
 
 local available
+local installed_checked = false
 local installed = {}
 local queries = {}
 local captures = {}
@@ -38,6 +39,7 @@ function M.installed(update)
       for _, lang in ipairs(treesitter.get_installed "parsers") do
         installed[lang] = true
       end
+      installed_checked = true
     end
   end
   return installed
@@ -140,7 +142,10 @@ local function _setup()
       if type(_enabled) == "function" then _enabled = _enabled(lang, args.buf) end
       if _enabled then
         if not M.has_parser(args.match) then
-          if config.auto_install then M.install(nil, function() M.enable(args.buf) end) end
+          if config.auto_install then
+            if not installed_checked then M.installed(true) end
+            M.install(nil, function() M.enable(args.buf) end)
+          end
         else
           M.enable(args.buf)
         end
