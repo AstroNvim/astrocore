@@ -141,11 +141,9 @@ local function _setup()
       local _enabled = config.enabled
       if type(_enabled) == "function" then _enabled = _enabled(lang, args.buf) end
       if _enabled then
+        if not installed_checked then M.installed(true) end
         if not M.has_parser(args.match) then
-          if config.auto_install then
-            if not installed_checked then M.installed(true) end
-            M.install(nil, function() M.enable(args.buf) end)
-          end
+          if config.auto_install then M.install(nil, function() M.enable(args.buf) end) end
         else
           M.enable(args.buf)
         end
