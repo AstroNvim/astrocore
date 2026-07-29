@@ -101,7 +101,7 @@ function astrocore.exec_buffer_autocmds(event: string|string[], opts: vim.api.ke
 
 *param* `event` — the event or events to execute
 
-*param* `opts` — Dictionary of autocommnd options
+*param* `opts` — Dictionary of autocommand options
 
 ### extend_tbl
 
@@ -281,7 +281,7 @@ function astrocore.read_file(path: string)
   -> content: string
 ```
 
- Helper function to read a file and return it's content
+ Helper function to read a file and return its content
 
 *param* `path` — the path to the file to read
 
@@ -467,7 +467,7 @@ function astrocore.buffer.close(bufnr?: integer, force?: boolean)
 
 *param* `bufnr` — The buffer to close or the current buffer if not provided
 
-*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+*param* `force` — Whether or not to force close the buffers or confirm changes (default: false)
 
 ### close_all
 
@@ -480,7 +480,7 @@ function astrocore.buffer.close_all(keep_current?: boolean, force?: boolean)
 
 *param* `keep_current` — Whether or not to keep the current buffer (default: false)
 
-*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+*param* `force` — Whether or not to force close the buffers or confirm changes (default: false)
 
 ### close_left
 
@@ -491,7 +491,7 @@ function astrocore.buffer.close_left(force?: boolean)
 
  Close buffers to the left of the current buffer
 
-*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+*param* `force` — Whether or not to force close the buffers or confirm changes (default: false)
 
 ### close_right
 
@@ -502,7 +502,7 @@ function astrocore.buffer.close_right(force?: boolean)
 
  Close buffers to the right of the current buffer
 
-*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+*param* `force` — Whether or not to force close the buffers or confirm changes (default: false)
 
 ### close_tab
 
@@ -670,7 +670,7 @@ function astrocore.buffer.wipe(bufnr?: integer, force?: boolean)
 
 *param* `bufnr` — The buffer to wipe or the current buffer if not provided
 
-*param* `force` — Whether or not to foce close the buffers or confirm changes (default: false)
+*param* `force` — Whether or not to force close the buffers or confirm changes (default: false)
 
 
 ## astrocore.buffer.comparator
@@ -769,7 +769,7 @@ function astrocore.buffer.comparator.unique_path(bufnr_a: integer, bufnr_b: inte
 
 AstroNvim Rooter
 
-Utilities necessary for automatic root detectoin
+Utilities necessary for automatic root detection
 
 This module is heavily inspired by LazyVim and project.nvim
 https://github.com/ahmedkhalf/project.nvim
@@ -811,6 +811,13 @@ function astrocore.rooter.detect(bufnr?: integer, all?: boolean, config?: AstroC
 *param* `config` — a rooter configuration (defaults to global configuration)
 
 *return* `detected` — roots
+
+### detectors
+
+
+```lua
+table
+```
 
 ### exists
 
@@ -941,7 +948,7 @@ function astrocore.toggles.autochdir(silent?: boolean)
 
  Toggle rooter autochdir
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### autopairs
 
@@ -952,7 +959,7 @@ function astrocore.toggles.autopairs(silent?: boolean)
 
  Toggle autopairs
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### background
 
@@ -963,7 +970,7 @@ function astrocore.toggles.background(silent?: boolean)
 
  Toggle background="dark"|"light"
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### buffer_cmp
 
@@ -976,7 +983,7 @@ function astrocore.toggles.buffer_cmp(bufnr?: integer, silent?: boolean)
 
 *param* `bufnr` — the buffer to toggle cmp completion on
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### buffer_syntax
 
@@ -989,7 +996,7 @@ function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 
 *param* `bufnr` — the buffer to toggle syntax on
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### cmp
 
@@ -998,9 +1005,9 @@ function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 function astrocore.toggles.cmp(silent?: boolean)
 ```
 
- Toggle cmp entrirely
+ Toggle cmp entirely
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### conceal
 
@@ -1011,7 +1018,7 @@ function astrocore.toggles.conceal(silent?: boolean)
 
  Toggle conceal=2|0
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### diagnostics
 
@@ -1022,7 +1029,7 @@ function astrocore.toggles.diagnostics(silent?: boolean)
 
  Toggle diagnostics
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### foldcolumn
 
@@ -1033,7 +1040,7 @@ function astrocore.toggles.foldcolumn(silent?: boolean)
 
  Toggle foldcolumn=0|1
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### indent
 
@@ -1044,7 +1051,7 @@ function astrocore.toggles.indent(silent?: boolean)
 
  Set the indent and tab related numbers
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### notifications
 
@@ -1055,7 +1062,7 @@ function astrocore.toggles.notifications(silent?: boolean)
 
  Toggle notifications for UI toggles
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### number
 
@@ -1066,7 +1073,7 @@ function astrocore.toggles.number(silent?: boolean)
 
  Change the number display modes
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### paste
 
@@ -1077,7 +1084,7 @@ function astrocore.toggles.paste(silent?: boolean)
 
  Toggle paste
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### signcolumn
 
@@ -1088,7 +1095,7 @@ function astrocore.toggles.signcolumn(silent?: boolean)
 
  Toggle signcolumn="auto"|"no"
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### spell
 
@@ -1099,7 +1106,7 @@ function astrocore.toggles.spell(silent?: boolean)
 
  Toggle spell
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### statusline
 
@@ -1110,7 +1117,7 @@ function astrocore.toggles.statusline(silent?: boolean)
 
  Toggle laststatus=3|2|0
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### tabline
 
@@ -1121,7 +1128,7 @@ function astrocore.toggles.tabline(silent?: boolean)
 
  Toggle showtabline=2|0
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### url_match
 
@@ -1132,7 +1139,7 @@ function astrocore.toggles.url_match(silent?: boolean)
 
  Toggle URL/URI syntax highlighting rules
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### virtual_lines
 
@@ -1143,7 +1150,7 @@ function astrocore.toggles.virtual_lines(silent?: boolean)
 
  Toggle diagnostics virtual lines
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### virtual_text
 
@@ -1154,7 +1161,7 @@ function astrocore.toggles.virtual_text(silent?: boolean)
 
  Toggle diagnostics virtual text
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 ### wrap
 
@@ -1165,7 +1172,7 @@ function astrocore.toggles.wrap(silent?: boolean)
 
  Toggle wrap
 
-*param* `silent` — if true then don't sent a notification
+*param* `silent` — if true then do not send a notification
 
 
 ## astrocore.treesitter
@@ -1187,7 +1194,7 @@ function astrocore.treesitter.available()
   -> table<string, boolean>
 ```
 
- Get available treesitter parers in `nvim-treesitter`
+ Get available treesitter parsers in `nvim-treesitter`
 
 *return* — a lookup table of available parsers
 
@@ -1286,14 +1293,14 @@ languages:
 
 ```lua
 function astrocore.treesitter.installed(update?: boolean)
-  -> string[]
+  -> table<string, boolean>
 ```
 
  Get list of treesitter parsers installed with `nvim-treesitter`
 
 *param* `update` — whether or not to refresh installed parsers
 
-*return* — the list of installed parsers
+*return* — a lookup table of installed parsers
 
 ### is_enabled
 
