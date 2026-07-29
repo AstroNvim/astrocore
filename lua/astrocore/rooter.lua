@@ -222,7 +222,8 @@ function M.set_pwd(root, config)
       elseif config.scope == "win" then
         vim.cmd.lchdir(path)
       else
-        vim.api.nvim_err_writeln(("Unable to parse scope: %s"):format(config.scope))
+        vim.api.nvim_echo({ { ("Unable to parse scope: %s"):format(config.scope) } }, true, { err = true })
+        return false
       end
 
       if config.notify then notify(("Set CWD to `%s`"):format(path)) end
