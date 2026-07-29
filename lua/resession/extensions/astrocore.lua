@@ -48,18 +48,12 @@ function M.on_post_load(data)
 
   local buf_utils = require "astrocore.buffer"
   local current_buf, last_buf = new_bufnrs[data.current_buf], new_bufnrs[data.last_buf]
-  if current_buf and last_buf then
-    buf_utils.current_buf = current_buf
-    buf_utils.last_buf = last_buf
-  end
+  buf_utils.current_buf = current_buf
+  buf_utils.last_buf = last_buf
 
   require("astrocore").event "BufsUpdated"
 
-  if current_buf and last_buf then
-    if vim.opt.bufhidden:get() == "wipe" and vim.fn.bufnr() ~= buf_utils.current_buf then
-      vim.cmd.b(buf_utils.current_buf)
-    end
-  end
+  if current_buf and vim.opt.bufhidden:get() == "wipe" and vim.fn.bufnr() ~= current_buf then vim.cmd.b(current_buf) end
 end
 
 return M
