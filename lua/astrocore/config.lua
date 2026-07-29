@@ -73,10 +73,10 @@
 ---Example:
 ---
 ---```lua
----autosave = {
+---ignore = {
 ---  dirs = { "/path/to/ignore/sessions/dir" },
 ---  filetypes = { "gitcommit", "gitrebase" },
----  buftypes = { "nofile" }
+---  buftypes = { "nofile" },
 ---}
 ---```
 ---@field ignore AstroCoreSessionIgnore?
@@ -124,8 +124,9 @@
 ---highlight = { "c", "rust" } -- only enables for some languages
 ---highlight = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
 ---  local max_filesize = 100 * 1024 -- 100KB
----  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
----  if ok and stats and stats.size > max_filesize then return true
+---  local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return false end
+---  return true
 ---end
 ---```
 ---@field highlight AstroCoreTreesitterFeature?
@@ -141,8 +142,9 @@
 ---indent = { "c", "rust" } -- only enables for some languages
 ---indent = function(lang, bufnr) -- use a function to decide, for example setting a max filesize
 ---  local max_filesize = 100 * 1024 -- 100KB
----  local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(bufnr))
----  if ok and stats and stats.size > max_filesize then return true
+---  local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
+---  if ok and stats and stats.size > max_filesize then return false end
+---  return true
 ---end
 ---```
 ---@field indent AstroCoreTreesitterFeature?
@@ -340,7 +342,7 @@
 --
 ---```lua
 ---signs = {
----  DapBreakPoint" = { text = "", texthl = "DiagnosticInfo" },
+---  DapBreakPoint = { text = "", texthl = "DiagnosticInfo" },
 ---},
 ---```
 ---@field signs table<string,vim.fn.sign_define.dict|false>?
@@ -353,7 +355,7 @@
 ---  cmp = true,
 ---  diagnostics = true,
 ---  highlighturl = true,
----  notiifcations = true,
+---  notifications = true,
 ---  large_buf = { size = 1024 * 100, lines = 10000 },
 ---}
 ---```
@@ -375,11 +377,11 @@
 ---  detector = {
 ---    "lsp", -- highest priority is getting workspace from running language servers
 ---    { ".git", "_darcs", ".hg", ".bzr", ".svn" }, -- next check for a version controlled parent directory
----    { "lua", "MakeFile", "package.json" }, -- lastly check for known project root files
+---    { "lua", "Makefile", "package.json" }, -- lastly check for known project root files
 ---  },
 ---  ignore = {
 ---    servers = {}, -- list of language server names to ignore (Ex. { "efm" })
----    dirs = {}, -- list of directory patterns (Ex. { "~/.cargo/*" })
+---    dirs = {}, -- list of directory patterns (Ex. { "^" .. vim.pesc(vim.fn.expand "~/.cargo/") })
 ---  },
 ---  autochdir = false, -- automatically update working directory
 ---  scope = "global", -- scope of working directory to change ("global"|"tab"|"win")

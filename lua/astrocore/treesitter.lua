@@ -30,7 +30,7 @@ M.textobject_modes = {
 
 --- Get list of treesitter parsers installed with `nvim-treesitter`
 ---@param update boolean? whether or not to refresh installed parsers
----@return string[] # the list of installed parsers
+---@return table<string,boolean> # a lookup table of installed parsers
 function M.installed(update)
   if update then
     local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
@@ -45,7 +45,7 @@ function M.installed(update)
   return installed
 end
 
---- Get available treesitter parers in `nvim-treesitter`
+--- Get available treesitter parsers in `nvim-treesitter`
 ---@return table<string,boolean> # a lookup table of available parsers
 function M.available()
   if available == nil then

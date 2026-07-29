@@ -122,7 +122,7 @@ end
 
 --- Execute autocommand across all valid buffers
 ---@param event string|string[] the event or events to execute
----@param opts vim.api.keyset.exec_autocmds Dictionary of autocommnd options
+---@param opts vim.api.keyset.exec_autocmds Dictionary of autocommand options
 function M.exec_buffer_autocmds(event, opts)
   opts = M.extend_tbl(opts, { modeline = false })
   for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
@@ -135,7 +135,7 @@ function M.exec_buffer_autocmds(event, opts)
   end
 end
 
---- Helper function to read a file and return it's content
+--- Helper function to read a file and return its content
 ---@param path string the path to the file to read
 ---@return string content the contents of the file
 function M.read_file(path)

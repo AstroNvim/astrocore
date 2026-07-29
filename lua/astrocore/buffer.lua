@@ -170,7 +170,7 @@ end
 --- Helper function to power a save confirmation prompt before `mini.bufremove`
 ---@param func fun(bufnr:integer,force:boolean?) The function to execute if confirmation is passed
 ---@param bufnr integer The buffer to close or the current buffer if not provided
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 local function mini_confirm(func, bufnr, force)
   if not force and vim.bo[bufnr].modified then
     local bufname = vim.fn.expand "%"
@@ -191,7 +191,7 @@ end
 
 --- Close a given buffer
 ---@param bufnr? integer The buffer to close or the current buffer if not provided
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 function M.close(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
   if M.is_valid(bufnr) and #vim.t.bufs > 1 then
@@ -211,7 +211,7 @@ end
 
 --- Fully wipeout a given buffer
 ---@param bufnr? integer The buffer to wipe or the current buffer if not provided
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 function M.wipe(bufnr, force)
   if not bufnr or bufnr == 0 then bufnr = vim.api.nvim_get_current_buf() end
   if M.is_valid(bufnr) and #vim.t.bufs > 1 then
@@ -227,7 +227,7 @@ end
 
 --- Close all buffers
 ---@param keep_current? boolean Whether or not to keep the current buffer (default: false)
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 function M.close_all(keep_current, force)
   if keep_current == nil then keep_current = false end
   local current = vim.api.nvim_get_current_buf()
@@ -237,7 +237,7 @@ function M.close_all(keep_current, force)
 end
 
 --- Close buffers to the left of the current buffer
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 function M.close_left(force)
   local current = vim.api.nvim_get_current_buf()
   for _, bufnr in ipairs(vim.t.bufs) do
@@ -247,7 +247,7 @@ function M.close_left(force)
 end
 
 --- Close buffers to the right of the current buffer
----@param force? boolean Whether or not to foce close the buffers or confirm changes (default: false)
+---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 function M.close_right(force)
   local current = vim.api.nvim_get_current_buf()
   local after_current = false

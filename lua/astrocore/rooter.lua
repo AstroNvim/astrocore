@@ -1,6 +1,6 @@
 ---AstroNvim Rooter
 ---
----Utilities necessary for automatic root detectoin
+---Utilities necessary for automatic root detection
 ---
 ---This module is heavily inspired by LazyVim and project.nvim
 ---https://github.com/ahmedkhalf/project.nvim
