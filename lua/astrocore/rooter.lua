@@ -67,7 +67,7 @@ end
 
 --- Create a detect folders matching patterns
 ---@return AstroCoreRooterDetectorFunc
-function M.detectors.pattern()
+function M.detectors.pattern(_)
   return function(bufnr, patterns)
     if type(patterns) == "string" then patterns = { patterns } end
     local path = M.bufpath(bufnr) or vim.uv.cwd()
