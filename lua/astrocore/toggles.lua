@@ -188,11 +188,11 @@ function M.buffer_syntax(bufnr, silent)
   local treesitter = require "astrocore.treesitter"
   local astrolsp_avail, lsp_toggle = pcall(require, "astrolsp.toggles")
   if vim.bo[bufnr].syntax == "off" then
-    if treesitter.has_parser() then vim.treesitter.start(bufnr) end
+    if treesitter.has_parser(bufnr) then vim.treesitter.start(bufnr) end
     vim.bo[bufnr].syntax = "on"
     if astrolsp_avail and not vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   else
-    if treesitter.has_parser() then vim.treesitter.stop(bufnr) end
+    if treesitter.has_parser(bufnr) then vim.treesitter.stop(bufnr) end
     vim.bo[bufnr].syntax = "off"
     if astrolsp_avail and vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   end
