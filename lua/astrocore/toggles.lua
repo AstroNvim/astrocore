@@ -13,7 +13,7 @@ local function bool2str(bool) return bool and "on" or "off" end
 local function ui_notify(silent, ...) return not silent and require("astrocore").notify(...) end
 
 --- Toggle rooter autochdir
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.autochdir(silent)
   local root_config = require("astrocore").config.rooter
   if not root_config then
@@ -25,7 +25,7 @@ function M.autochdir(silent)
 end
 
 --- Toggle notifications for UI toggles
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.notifications(silent)
   local features = assert(require("astrocore").config.features)
   features.notifications = not features.notifications
@@ -33,7 +33,7 @@ function M.notifications(silent)
 end
 
 --- Toggle autopairs
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.autopairs(silent)
   local ok, autopairs = pcall(require, "nvim-autopairs")
   if ok then
@@ -50,14 +50,14 @@ function M.autopairs(silent)
 end
 
 --- Toggle background="dark"|"light"
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.background(silent)
   vim.go.background = vim.go.background == "light" and "dark" or "light"
   ui_notify(silent, ("background=%s"):format(vim.go.background))
 end
 
---- Toggle cmp entrirely
----@param silent? boolean if true then don't sent a notification
+--- Toggle cmp entirely
+---@param silent? boolean if true then do not send a notification
 function M.cmp(silent)
   local features = assert(require("astrocore").config.features)
   features.cmp = not features.cmp
@@ -67,7 +67,7 @@ end
 
 --- Toggle buffer local cmp
 ---@param bufnr? integer the buffer to toggle cmp completion on
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.buffer_cmp(bufnr, silent)
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
   if vim.b[bufnr].completion == nil then vim.b[bufnr].completion = require("astrocore").config.features.cmp end
@@ -80,21 +80,21 @@ function M.buffer_cmp(bufnr, silent)
 end
 
 --- Toggle showtabline=2|0
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.tabline(silent)
   vim.opt.showtabline = vim.opt.showtabline:get() == 0 and 2 or 0
   ui_notify(silent, ("tabline %s"):format(bool2str(vim.opt.showtabline:get() == 2)))
 end
 
 --- Toggle conceal=2|0
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.conceal(silent)
   vim.opt.conceallevel = vim.opt.conceallevel:get() == 0 and 2 or 0
   ui_notify(silent, ("conceal %s"):format(bool2str(vim.opt.conceallevel:get() == 2)))
 end
 
 --- Toggle laststatus=3|2|0
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.statusline(silent)
   local laststatus = vim.opt.laststatus:get()
   local status
@@ -112,7 +112,7 @@ function M.statusline(silent)
 end
 
 --- Toggle signcolumn="auto"|"no"
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.signcolumn(silent)
   if vim.wo.signcolumn == "no" then
     vim.wo.signcolumn = "yes"
@@ -125,7 +125,7 @@ function M.signcolumn(silent)
 end
 
 --- Set the indent and tab related numbers
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.indent(silent)
   local input_avail, input = pcall(vim.fn.input, "Set indent value (>0 expandtab, <=0 noexpandtab): ")
   if input_avail then
@@ -141,7 +141,7 @@ function M.indent(silent)
 end
 
 --- Change the number display modes
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.number(silent)
   local number = vim.wo.number -- local to window
   local relativenumber = vim.wo.relativenumber -- local to window
@@ -158,14 +158,14 @@ function M.number(silent)
 end
 
 --- Toggle spell
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.spell(silent)
   vim.wo.spell = not vim.wo.spell -- local to window
   ui_notify(silent, ("spell %s"):format(bool2str(vim.wo.spell)))
 end
 
 --- Toggle paste
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.paste(silent)
   local paste = not assert(vim.opt.paste):get()
   vim.opt.paste = paste -- local to window
@@ -173,7 +173,7 @@ function M.paste(silent)
 end
 
 --- Toggle wrap
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.wrap(silent)
   vim.wo.wrap = not vim.wo.wrap -- local to window
   ui_notify(silent, ("wrap %s"):format(bool2str(vim.wo.wrap)))
@@ -181,7 +181,7 @@ end
 
 --- Toggle syntax highlighting and treesitter
 ---@param bufnr? integer the buffer to toggle syntax on
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.buffer_syntax(bufnr, silent)
   -- HACK: this should just be `bufnr = bufnr or 0` but it looks like `vim.treesitter.stop` has a bug with `0` being current
   bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
@@ -200,7 +200,7 @@ function M.buffer_syntax(bufnr, silent)
 end
 
 --- Toggle URL/URI syntax highlighting rules
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.url_match(silent)
   local features = assert(require("astrocore").config.features)
   features.highlighturl = not features.highlighturl
@@ -213,7 +213,7 @@ end
 
 local last_active_foldcolumn
 --- Toggle foldcolumn=0|1
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.foldcolumn(silent)
   local curr_foldcolumn = vim.wo.foldcolumn
   if curr_foldcolumn ~= "0" then last_active_foldcolumn = curr_foldcolumn end
@@ -222,7 +222,7 @@ function M.foldcolumn(silent)
 end
 
 --- Toggle diagnostics
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.diagnostics(silent)
   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
   ui_notify(silent, ("Diagnostics %s"):format(bool2str(vim.diagnostic.is_enabled())))
@@ -230,7 +230,7 @@ end
 
 local previous_virtual_text
 --- Toggle diagnostics virtual text
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.virtual_text(silent)
   local virtual_text = vim.diagnostic.config().virtual_text
   local new_virtual_text = false
@@ -245,7 +245,7 @@ end
 
 local previous_virtual_lines
 --- Toggle diagnostics virtual lines
----@param silent? boolean if true then don't sent a notification
+---@param silent? boolean if true then do not send a notification
 function M.virtual_lines(silent)
   local virtual_lines = vim.diagnostic.config().virtual_lines
   local new_virtual_lines = false
