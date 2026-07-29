@@ -71,7 +71,7 @@ end
 function M.detectors.pattern()
   return function(bufnr, patterns)
     if type(patterns) == "string" then patterns = { patterns } end
-    local path = M.bufpath(bufnr) or vim.loop.cwd()
+    local path = M.bufpath(bufnr) or vim.uv.cwd()
     if not path then return {} end
     local pattern = M.exists(path) and vim.fs.find(patterns, { path = path, upward = true })[1]
     return pattern and { vim.fs.dirname(pattern) } or {}
@@ -105,7 +105,7 @@ function M.exists(path) return vim.uv.fs_stat(path) ~= nil end
 ---@return string
 function M.normpath(path)
   if path:sub(1, 1) == "~" then
-    local home = assert(vim.loop.os_homedir())
+    local home = assert(vim.uv.os_homedir())
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then home = home:sub(1, -2) end
     path = home .. path:sub(2)
   end
