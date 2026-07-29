@@ -229,7 +229,9 @@ function M.enable(bufnr)
   end
 
   -- if folds are present force update of folds after loading
-  if M.has_parser(ft, "folds") then vim.wo.foldmethod = vim.wo.foldmethod end
+  if M.has_parser(ft, "folds") and vim.api.nvim_get_current_buf() == bufnr then
+    vim.wo.foldmethod = vim.wo.foldmethod
+  end
 
   -- treesitter text objects
   if config.textobjects and pcall(require, "nvim-treesitter-textobjects") then
@@ -259,7 +261,9 @@ function M.disable(bufnr)
   enabled[bufnr] = false
   pcall(vim.treesitter.stop, bufnr)
   if indentexprs[bufnr] then vim.bo[bufnr].indentexpr = indentexprs[bufnr] end
-  vim.schedule(function() vim.cmd "normal! zx" end)
+  vim.schedule(function()
+    if vim.api.nvim_get_current_buf() == bufnr then vim.cmd "normal! zx" end
+  end)
 end
 
 --- Check if treesitter features in buffer
