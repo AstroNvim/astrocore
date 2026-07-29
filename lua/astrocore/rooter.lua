@@ -46,10 +46,9 @@ function M.detectors.lsp(config)
     for _, client in ipairs(vim.lsp.get_clients { buffer = bufnr }) do
       if not server_filter or not server_filter(client) then
         if client.root_dir then table.insert(roots, client.root_dir) end
-        vim.tbl_map(
-          function(ws) table.insert(roots, vim.uri_to_fname(ws.uri)) end,
-          client.config.workspace_folders or {}
-        )
+        for _, ws in pairs(client.config.workspace_folders or {}) do
+          table.insert(roots, vim.uri_to_fname(ws.uri))
+        end
       end
     end
     local found_lsp_roots = {}
