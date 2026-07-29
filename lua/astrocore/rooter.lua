@@ -11,7 +11,7 @@
 ---copyright 2023
 ---license GNU General Public License v3.0
 ---@class astrocore.rooter
-local M = { detectors = {} }
+local M = {}
 
 ---@alias AstroCoreRooterDetectorFunc fun(bufnr: integer,...): string[]
 ---@alias AstroCoreRooterDetector fun(config:AstroCoreRooterOpts?):AstroCoreRooterDetectorFunc
