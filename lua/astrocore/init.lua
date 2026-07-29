@@ -332,7 +332,11 @@ function M.cmd(cmd, show_error)
   local result = vim.fn.system(cmd)
   local success = vim.api.nvim_get_vvar "shell_error" == 0
   if not success and (show_error == nil or show_error) then
-    vim.api.nvim_err_writeln(("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result))
+    vim.api.nvim_echo(
+      { { ("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result) } },
+      true,
+      { err = true }
+    )
   end
   return success and assert(result):gsub("[\27\155][][()#;?%d]*[A-PRZcf-ntqry=><~]", "") or nil
 end
