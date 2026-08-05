@@ -43,10 +43,11 @@ function M.detectors.lsp(config)
     local bufpath = M.bufpath(bufnr)
     if not bufpath then return {} end
     local roots = {} ---@type string[]
-    for _, client in ipairs(vim.lsp.get_clients { buffer = bufnr }) do
+    for _, client in ipairs(vim.lsp.get_clients { bufnr = bufnr }) do
       if not server_filter or not server_filter(client) then
         if client.root_dir then table.insert(roots, client.root_dir) end
-        for _, ws in pairs(client.config.workspace_folders or {}) do
+        local workspace_folders = client.workspace_folders or (client.config and client.config.workspace_folders) or {}
+        for _, ws in pairs(workspace_folders) do
           table.insert(roots, vim.uri_to_fname(ws.uri))
         end
       end
@@ -54,7 +55,8 @@ function M.detectors.lsp(config)
     local found_lsp_roots = {}
     return vim.tbl_filter(function(path)
       path = M.normpath(path)
-      if path and bufpath:find(path, 1, true) == 1 then
+      local prefix = path:sub(-1) == "/" and path or path .. "/"
+      if bufpath == path or bufpath:find(prefix, 1, true) == 1 then
         if not found_lsp_roots[path] then
           found_lsp_roots[path] = true
           return true
@@ -88,7 +90,7 @@ function M.bufpath(bufnr) return M.realpath(vim.api.nvim_buf_get_name(bufnr)) en
 
 --- Resolve a given path
 ---@param path? string the path to resolve
----@return string? the resolved path
+---@return string? path the resolved path
 function M.realpath(path)
   if not path or path == "" then return nil end
   return M.normpath(vim.uv.fs_realpath(path) or path)
@@ -108,8 +110,11 @@ function M.normpath(path)
     if home:sub(-1) == "\\" or home:sub(-1) == "/" then home = home:sub(1, -2) end
     path = home .. path:sub(2)
   end
-  path = path:gsub("\\", "/"):gsub("/+", "/")
-  return (path:sub(-1) == "/" and path ~= "/") and path:sub(1, -2) or path
+  path = path:gsub("\\", "/")
+  local is_unc_path = path:sub(1, 2) == "//"
+  path = path:gsub("/+", "/")
+  if is_unc_path then path = "/" .. path end
+  return (path:sub(-1) == "/" and path ~= "/" and not path:match "^%a:/$") and path:sub(1, -2) or path
 end
 
 --- Resolve the root detection function for a given spec
@@ -139,7 +144,7 @@ function M.detect(bufnr, all, config)
   if not require("astrocore.buffer").is_valid(bufnr) then return ret end
 
   local path = M.bufpath(bufnr)
-  if path and M.is_excluded(path) then return ret end
+  if path and M.is_excluded(path, config) then return ret end
 
   for _, spec in ipairs(config.detector or {}) do
     local paths = M.resolve(spec, config)(bufnr)
@@ -180,7 +185,9 @@ function M.info(config)
           ("%s`%s` *(%s*)%s"):format(
             surround,
             path,
-            type(root.spec) == "table" and table.concat(root.spec --[=[@as string[]]=], ", ") or root.spec,
+            type(root.spec) == "table" and table.concat(root.spec --[=[@as string[]]=], ", ")
+              or type(root.spec) == "function" and vim.inspect(root.spec)
+              or root.spec,
             surround
           )
         )
@@ -213,18 +220,26 @@ function M.set_pwd(root, config)
   local path = root.paths[1]
   if path ~= nil then
     if vim.fn.has "win32" > 0 then path = path:gsub("\\", "/") end
-    if vim.fn.getcwd() ~= path then
-      if config.scope == "global" then
-        vim.api.nvim_set_current_dir(path)
-      elseif config.scope == "tab" then
-        vim.cmd.tchdir(path)
-      elseif config.scope == "win" then
-        vim.cmd.lchdir(path)
-      else
-        vim.api.nvim_echo({ { ("Unable to parse scope: %s"):format(config.scope) } }, true, { err = true })
-        return false
-      end
+    local cwd, has_local_dir, set_dir
+    if config.scope == "global" then
+      cwd = vim.fn.getcwd(-1, -1)
+      has_local_dir = true
+      set_dir = vim.api.nvim_set_current_dir
+    elseif config.scope == "tab" then
+      cwd = vim.fn.getcwd(-1, 0)
+      has_local_dir = vim.fn.haslocaldir(-1, 0) == 1
+      set_dir = vim.cmd.tchdir
+    elseif config.scope == "win" then
+      cwd = vim.fn.getcwd(0, 0)
+      has_local_dir = vim.fn.haslocaldir(0, 0) == 1
+      set_dir = vim.cmd.lchdir
+    else
+      vim.api.nvim_echo({ { ("Unable to parse scope: %s"):format(config.scope) } }, true, { err = true })
+      return false
+    end
 
+    if cwd ~= path or not has_local_dir then
+      set_dir(path)
       if config.notify then notify(("Set CWD to `%s`"):format(path)) end
     end
     return true
