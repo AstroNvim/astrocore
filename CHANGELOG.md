@@ -1,5 +1,27 @@
 # Changelog
 
+## [3.0.6](https://github.com/AstroNvim/astrocore/compare/v3.0.5...v3.0.6) (2026-08-05)
+
+
+### Bug Fixes
+
+* **buffers:** preserve close and session state ([641ff37](https://github.com/AstroNvim/astrocore/commit/641ff37fd238ac40be7c07bddbb418a625164a85))
+* **core:** preserve configuration and runtime state ([f15ca7f](https://github.com/AstroNvim/astrocore/commit/f15ca7f0125c66a6a0d2f55ccd810e6eaeefa88a))
+* **resession:** clear filtered buffer state on restore ([d61be29](https://github.com/AstroNvim/astrocore/commit/d61be29225e68ce7219cf2d20d706fbaab896a59))
+* **rooter:** align pattern detector signature ([765a9eb](https://github.com/AstroNvim/astrocore/commit/765a9eb44a36b24c933cf0806d282fc40e6c935a))
+* **rooter:** honor configured root detection ([2c109f2](https://github.com/AstroNvim/astrocore/commit/2c109f25f7dd57441b77a69d91ad5cfd0184e774))
+* **rooter:** reject invalid directory scopes ([918ce76](https://github.com/AstroNvim/astrocore/commit/918ce765b6782b4f0292999a995298d2dc73a7c8))
+* **toggles:** check syntax parser for target buffer ([1aa4bb0](https://github.com/AstroNvim/astrocore/commit/1aa4bb092149ac25d02172e3902265bc9aae9f69))
+* **toggles:** preserve feature ownership ([b61e871](https://github.com/AstroNvim/astrocore/commit/b61e87181716f205d92afd3169dff27aebf688a8))
+* **toggles:** preserve treesitter syntax state ([207ed7a](https://github.com/AstroNvim/astrocore/commit/207ed7ac007adda0a0991b3cc4da9a449cabbb16))
+* **treesitter:** reconcile parser and buffer state ([bce422f](https://github.com/AstroNvim/astrocore/commit/bce422f2b93d8699992e49b4a1fccacb2bcfdc9c))
+* **treesitter:** scope fold refreshes to current buffer ([640524d](https://github.com/AstroNvim/astrocore/commit/640524da180121be52f72ae0bf841bef6f0d0609))
+
+
+### Performance Improvements
+
+* avoid discarded map allocations ([25f8476](https://github.com/AstroNvim/astrocore/commit/25f8476b52eb08aa81929ccc075d08c915236abb))
+
 ## [3.0.5](https://github.com/AstroNvim/astrocore/compare/v3.0.4...v3.0.5) (2026-06-05)
 
 
