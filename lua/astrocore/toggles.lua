@@ -10,7 +10,9 @@
 local M = {}
 
 local function bool2str(bool) return bool and "on" or "off" end
-local function ui_notify(silent, ...) return not silent and require("astrocore").notify(...) end
+local function ui_notify(silent, message, force)
+  if not silent then require("astrocore").notify(message, nil, nil, force) end
+end
 
 --- Toggle rooter autochdir
 ---@param silent? boolean if true then do not send a notification
@@ -28,8 +30,10 @@ end
 ---@param silent? boolean if true then do not send a notification
 function M.notifications(silent)
   local features = assert(require("astrocore").config.features)
-  features.notifications = not features.notifications
-  ui_notify(silent, ("Notifications %s"):format(bool2str(features.notifications)))
+  local enabled = not features.notifications
+  if enabled then features.notifications = true end
+  ui_notify(silent, ("Notifications %s"):format(bool2str(enabled)), not enabled)
+  features.notifications = enabled
 end
 
 --- Toggle autopairs
@@ -42,7 +46,7 @@ function M.autopairs(silent)
     else
       autopairs.disable()
     end
-    require("astrocore").config.features.autopairs = autopairs.state.disabled
+    require("astrocore").config.features.autopairs = not autopairs.state.disabled
     ui_notify(silent, ("autopairs %s"):format(bool2str(not autopairs.state.disabled)))
   else
     ui_notify(silent, "autopairs not available")
@@ -98,7 +102,7 @@ end
 function M.statusline(silent)
   local laststatus = vim.opt.laststatus:get()
   local status
-  if laststatus == 0 then
+  if laststatus == 0 or laststatus == 1 then
     vim.opt.laststatus = 2
     status = "local"
   elseif laststatus == 2 then
@@ -179,24 +183,37 @@ function M.wrap(silent)
   ui_notify(silent, ("wrap %s"):format(bool2str(vim.wo.wrap)))
 end
 
---- Toggle syntax highlighting and treesitter
+--- Toggle syntax highlighting, treesitter, and LSP semantic tokens
 ---@param bufnr? integer the buffer to toggle syntax on
 ---@param silent? boolean if true then do not send a notification
 function M.buffer_syntax(bufnr, silent)
   -- HACK: this should just be `bufnr = bufnr or 0` but it looks like `vim.treesitter.stop` has a bug with `0` being current
-  bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_win_get_buf(0)
+  bufnr = (bufnr and bufnr ~= 0) and bufnr or vim.api.nvim_get_current_buf()
   local treesitter = require "astrocore.treesitter"
   local astrolsp_avail, lsp_toggle = pcall(require, "astrolsp.toggles")
-  if vim.bo[bufnr].syntax == "off" then
+  local semantic_tokens_enabled = vim.b[bufnr].semantic_tokens
+  if vim.lsp.semantic_tokens.enable then
+    semantic_tokens_enabled = vim.lsp.semantic_tokens.is_enabled { bufnr = bufnr }
+  end
+  local enable = vim.bo[bufnr].syntax == "off"
+  if enable then
+    local syntax = vim.b[bufnr].astrocore_syntax
+    local semantic_tokens_disabled = vim.b[bufnr].astrocore_semantic_tokens_disabled
+    vim.b[bufnr].astrocore_syntax = nil
+    vim.b[bufnr].astrocore_semantic_tokens_disabled = nil
+    vim.bo[bufnr].syntax = syntax or vim.bo[bufnr].filetype
     if treesitter.has_parser(bufnr) then treesitter.enable(bufnr) end
-    vim.bo[bufnr].syntax = "on"
-    if astrolsp_avail and not vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
+    if astrolsp_avail and semantic_tokens_disabled and not semantic_tokens_enabled then
+      lsp_toggle.buffer_semantic_tokens(bufnr, true)
+    end
   else
+    vim.b[bufnr].astrocore_syntax = vim.bo[bufnr].syntax
     treesitter.disable(bufnr)
     vim.bo[bufnr].syntax = "off"
-    if astrolsp_avail and vim.b[bufnr].semantic_tokens then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
+    vim.b[bufnr].astrocore_semantic_tokens_disabled = astrolsp_avail and semantic_tokens_enabled
+    if vim.b[bufnr].astrocore_semantic_tokens_disabled then lsp_toggle.buffer_semantic_tokens(bufnr, true) end
   end
-  ui_notify(silent, ("syntax %s"):format(vim.bo[bufnr].syntax))
+  ui_notify(silent, ("syntax %s"):format(bool2str(enable)))
 end
 
 --- Toggle URL/URI syntax highlighting rules
@@ -211,13 +228,12 @@ function M.url_match(silent)
   ui_notify(silent, ("URL highlighting %s"):format(bool2str(features.highlighturl)))
 end
 
-local last_active_foldcolumn
 --- Toggle foldcolumn=0|1
 ---@param silent? boolean if true then do not send a notification
 function M.foldcolumn(silent)
   local curr_foldcolumn = vim.wo.foldcolumn
-  if curr_foldcolumn ~= "0" then last_active_foldcolumn = curr_foldcolumn end
-  vim.wo.foldcolumn = curr_foldcolumn == "0" and (last_active_foldcolumn or "1") or "0"
+  if curr_foldcolumn ~= "0" then vim.w.astrocore_foldcolumn = curr_foldcolumn end
+  vim.wo.foldcolumn = curr_foldcolumn == "0" and (vim.w.astrocore_foldcolumn or "1") or "0"
   ui_notify(silent, ("foldcolumn=%s"):format(vim.wo.foldcolumn))
 end
 
