@@ -173,13 +173,13 @@ end
 ---@param force? boolean Whether or not to force close the buffers or confirm changes (default: false)
 local function mini_confirm(func, bufnr, force)
   if not force and vim.bo[bufnr].modified then
-    local bufname = vim.fn.expand "%"
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
     local empty = bufname == ""
     if empty then bufname = "Untitled" end
     local confirm = vim.fn.confirm(('Save changes to "%s"?'):format(bufname), "&Yes\n&No\n&Cancel", 1, "Question")
     if confirm == 1 then
       if empty then return end
-      vim.cmd.write()
+      vim.api.nvim_buf_call(bufnr, function() vim.cmd.write() end)
     elseif confirm == 2 then
       force = true
     else
@@ -279,9 +279,8 @@ end
 function M.close_tab(tabpage)
   if #vim.api.nvim_list_tabpages() > 1 then
     tabpage = tabpage or vim.api.nvim_get_current_tabpage()
-    vim.t[tabpage].bufs = nil
-    astro.event "BufsUpdated"
     vim.cmd.tabclose(vim.api.nvim_tabpage_get_number(tabpage))
+    astro.event "BufsUpdated"
   end
 end
 
