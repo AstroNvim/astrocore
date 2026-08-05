@@ -48,7 +48,7 @@ end
 ---@return boolean comparison true if A is sorted before B, false if B should be sorted before A
 function M.unique_path(bufnr_a, bufnr_b) return unique_path(bufnr_a) < unique_path(bufnr_b) end
 
---- Comparator of two buffers based on modification date
+--- Comparator of two buffers based on most recent use
 ---@param bufnr_a integer buffer number A
 ---@param bufnr_b integer buffer number B
 ---@return boolean comparison true if A is sorted before B, false if B should be sorted before A

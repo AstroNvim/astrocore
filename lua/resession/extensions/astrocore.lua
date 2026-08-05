@@ -13,7 +13,7 @@ function M.on_save(opts)
   -- save tab scoped buffers and buffer numbers from buffer name
   for new_tabpage, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
     if tabpage == opts.tabpage then data.tabpage = new_tabpage end
-    data.tabs[new_tabpage] = vim.t[tabpage].bufs
+    data.tabs[new_tabpage] = vim.t[tabpage].bufs or {}
     for _, bufnr in ipairs(data.tabs[new_tabpage]) do
       data.bufnrs[vim.api.nvim_buf_get_name(bufnr)] = bufnr
     end
@@ -33,17 +33,22 @@ function M.on_post_load(data)
   -- build new tab scoped buffer lists
   if not data.tabpage then
     for tabpage, tabs in pairs(data.tabs) do
-      local bufs = {}
-      for _, bufnr in pairs(tabs) do
-        table.insert(bufs, new_bufnrs[bufnr])
+      if new_tabpages[tabpage] then
+        local bufs = {}
+        for _, bufnr in ipairs(tabs) do
+          local new_bufnr = new_bufnrs[bufnr]
+          if new_bufnr then table.insert(bufs, new_bufnr) end
+        end
+        vim.t[new_tabpages[tabpage]].bufs = bufs
       end
-      vim.t[new_tabpages[tabpage]].bufs = bufs
     end
   else
-    vim.t.bufs = {}
-    for _, bufnr in pairs(data.tabs[data.tabpage]) do
-      table.insert(vim.t.bufs, new_bufnrs[bufnr])
+    local bufs = {}
+    for _, bufnr in ipairs(data.tabs[data.tabpage] or {}) do
+      local new_bufnr = new_bufnrs[bufnr]
+      if new_bufnr then table.insert(bufs, new_bufnr) end
     end
+    vim.t.bufs = bufs
   end
 
   local buf_utils = require "astrocore.buffer"
