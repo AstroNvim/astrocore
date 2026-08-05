@@ -1,5 +1,5 @@
 *astrocore.txt*
-                              For Neovim >= 0.9.0    Last change: 2026 July 29
+                            For Neovim >= 0.9.0    Last change: 2026 August 05
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -43,6 +43,7 @@ REQUIREMENTS                                *astrocore-astrocore-requirements*
 - Neovim >= 0.11
 - lazy.nvim <https://github.com/folke/lazy.nvim>
 - resession.nvim <https://github.com/stevearc/resession.nvim/> (_optional_)
+- For `nvim-treesitter` features: the `tree-sitter` CLI, or `mason.nvim` so AstroCore can install `tree-sitter-cli`.
 
 
 INSTALLATION                                *astrocore-astrocore-installation*
@@ -159,7 +160,7 @@ in lazy. Here are descriptions of the options and some example usages:
         -- first key is the type of option `vim.<first_key>`
         opt = {
           relativenumber = true, -- sets `vim.opt.relativenumber`
-          signcolumn = "auto", -- sets `vim.opt.relativenumber`
+          signcolumn = "auto", -- sets `vim.opt.signcolumn`
         },
         g = {
           -- set global `vim.g` settings here
@@ -379,7 +380,7 @@ _return_ `mappings` — a table with entries for each map mode
 EVENT ~
 
 >lua
-    function astrocore.event(event: string|vim.api.keyset_exec_autocmds, instant?: boolean)
+    function astrocore.event(event: string|vim.api.keyset.exec_autocmds, instant?: boolean)
 <
 
 Trigger an AstroNvim user event
@@ -431,7 +432,7 @@ Get the first worktree that a file belongs to
 _param_ `file` — the file to check, defaults to the current file
 
 _param_ `worktrees` — an array like table of worktrees with entries
-`toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
+`toplevel` and `gitdir`, defaults to `config.git_worktrees`
 
 _return_ `worktree` — a table specifying the `toplevel` and `gitdir` of a
 worktree or nil if not found
@@ -511,7 +512,7 @@ Normalize a mappings table to use official keycode casing
 NOTIFY ~
 
 >lua
-    function astrocore.notify(msg: string, type: integer|nil, opts?: table)
+    function astrocore.notify(msg: string, type: integer|nil, opts?: table, force?: boolean)
 <
 
 Serve a notification with a title of AstroNvim
@@ -521,6 +522,8 @@ _param_ `msg` — The notification body
 _param_ `type` — The type of the notification (:help vim.log.levels)
 
 _param_ `opts` — The nvim-notify options to use (:help notify-options)
+
+_param_ `force` — Whether to deliver even when notifications are disabled
 
 
 ON_LOAD ~
@@ -636,7 +639,7 @@ SET_URL_MATCH ~
 
 Add syntax matching rules for highlighting URLs/URIs
 
-_param_ `win` — the window id to remove url highlighting in (default: current
+_param_ `win` — the window id to add url highlighting in (default: current
 window)
 
 
@@ -1066,7 +1069,7 @@ MODIFIED ~
       -> comparison: boolean
 <
 
-Comparator of two buffers based on modification date
+Comparator of two buffers based on most recent use
 
 _param_ `bufnr_a` — buffer number A
 
@@ -1202,14 +1205,14 @@ REALPATH ~
 
 >lua
     function astrocore.rooter.realpath(path?: string)
-      -> the: string?
+      -> path: string?
 <
 
 Resolve a given path
 
 _param_ `path` — the path to resolve
 
-_return_ `the` — resolved path
+_return_ `path` — the resolved path
 
 
 RESOLVE ~
@@ -1319,7 +1322,7 @@ BUFFER_SYNTAX ~
     function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 <
 
-Toggle syntax highlighting and treesitter
+Toggle syntax highlighting, treesitter, and LSP semantic tokens
 
 _param_ `bufnr` — the buffer to toggle syntax on
 
@@ -1563,7 +1566,7 @@ _param_ `query` — the query type to check for support of
 
 _param_ `capture` — the capture type to check for support of
 
-_return_ — whether or not a query is supported by the given parser
+_return_ — whether or not a capture is supported by the given parser
 
 
 HAS_PARSER ~
@@ -1602,7 +1605,7 @@ _return_ — whether or not a query is supported by the given parser
 INSTALL ~
 
 >lua
-    function astrocore.treesitter.install(languages?: "all"|string[], cb?: function)
+    function astrocore.treesitter.install(languages?: "all"|"auto"|string[], cb?: function)
 <
 
 Install the provided parsers with `nvim-treesitter`
@@ -1616,6 +1619,7 @@ finishes
 
 >lua
     languages:
+        | "auto"
         | "all"
 <
 

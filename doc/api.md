@@ -81,7 +81,7 @@ function astrocore.empty_map_table()
 
 
 ```lua
-function astrocore.event(event: string|vim.api.keyset_exec_autocmds, instant?: boolean)
+function astrocore.event(event: string|vim.api.keyset.exec_autocmds, instant?: boolean)
 ```
 
  Trigger an AstroNvim user event
@@ -131,7 +131,7 @@ function astrocore.file_worktree(file?: string, worktrees?: table<string, string
 
 *param* `file` — the file to check, defaults to the current file
 
-*param* `worktrees` — an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
+*param* `worktrees` — an array like table of worktrees with entries `toplevel` and `gitdir`, defaults to `config.git_worktrees`
 
 *return* `worktree` — a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 
@@ -207,7 +207,7 @@ function astrocore.normalize_mappings(mappings?: table<string, table<string, (st
 
 
 ```lua
-function astrocore.notify(msg: string, type: integer|nil, opts?: table)
+function astrocore.notify(msg: string, type: integer|nil, opts?: table, force?: boolean)
 ```
 
  Serve a notification with a title of AstroNvim
@@ -217,6 +217,8 @@ function astrocore.notify(msg: string, type: integer|nil, opts?: table)
 *param* `type` — The type of the notification (:help vim.log.levels)
 
 *param* `opts` — The nvim-notify options to use (:help notify-options)
+
+*param* `force` — Whether to deliver even when notifications are disabled
 
 ### on_load
 
@@ -329,7 +331,7 @@ function astrocore.set_url_match(win?: integer)
 
  Add syntax matching rules for highlighting URLs/URIs
 
-*param* `win` — the window id to remove url highlighting in (default: current window)
+*param* `win` — the window id to add url highlighting in (default: current window)
 
 ### setup
 
@@ -740,7 +742,7 @@ function astrocore.buffer.comparator.modified(bufnr_a: integer, bufnr_b: integer
   -> comparison: boolean
 ```
 
- Comparator of two buffers based on modification date
+ Comparator of two buffers based on most recent use
 
 *param* `bufnr_a` — buffer number A
 
@@ -875,14 +877,14 @@ function astrocore.rooter.normpath(path: string)
 
 ```lua
 function astrocore.rooter.realpath(path?: string)
-  -> the: string?
+  -> path: string?
 ```
 
  Resolve a given path
 
 *param* `path` — the path to resolve
 
-*return* `the` — resolved path
+*return* `path` — the resolved path
 
 ### resolve
 
@@ -992,7 +994,7 @@ function astrocore.toggles.buffer_cmp(bufnr?: integer, silent?: boolean)
 function astrocore.toggles.buffer_syntax(bufnr?: integer, silent?: boolean)
 ```
 
- Toggle syntax highlighting and treesitter
+ Toggle syntax highlighting, treesitter, and LSP semantic tokens
 
 *param* `bufnr` — the buffer to toggle syntax on
 
@@ -1236,7 +1238,7 @@ function astrocore.treesitter.has_capture(lang: string, query: string, capture: 
 
 *param* `capture` — the capture type to check for support of
 
-*return* — whether or not a query is supported by the given parser
+*return* — whether or not a capture is supported by the given parser
 
 ### has_parser
 
@@ -1274,7 +1276,7 @@ function astrocore.treesitter.has_query(lang: string, query: string)
 
 
 ```lua
-function astrocore.treesitter.install(languages?: "all"|string[], cb?: function)
+function astrocore.treesitter.install(languages?: "all"|"auto"|string[], cb?: function)
 ```
 
  Install the provided parsers with `nvim-treesitter`
@@ -1285,6 +1287,7 @@ function astrocore.treesitter.install(languages?: "all"|string[], cb?: function)
 
 ```lua
 languages:
+    | "auto"
     | "all"
 ```
 
