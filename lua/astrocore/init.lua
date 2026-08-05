@@ -15,6 +15,8 @@ M.config = require "astrocore.config"
 ---@type table<string,table<integer,table>>
 M.user_terminals = {}
 
+local default_terminal_key = {}
+
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table
@@ -102,17 +104,26 @@ end
 ---@param msg string The notification body
 ---@param type integer|nil The type of the notification (:help vim.log.levels)
 ---@param opts? table The nvim-notify options to use (:help notify-options)
-function M.notify(msg, type, opts)
-  vim.schedule(function() vim.notify(msg, type, M.extend_tbl({ title = "AstroNvim" }, opts)) end)
+---@param force? boolean Whether to deliver even when notifications are disabled
+function M.notify(msg, type, opts, force)
+  if not force and vim.tbl_get(M.config, "features", "notifications") == false then return end
+  vim.schedule(function()
+    if not force and vim.tbl_get(M.config, "features", "notifications") == false then return end
+    vim.notify(msg, type, M.extend_tbl({ title = "AstroNvim" }, opts))
+  end)
 end
 
 --- Trigger an AstroNvim user event
----@param event string|vim.api.keyset_exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
+---@param event string|vim.api.keyset.exec_autocmds The event pattern or full autocmd options (pattern always prepended with "Astro")
 ---@param instant? boolean Whether or not to execute instantly or schedule
 function M.event(event, instant)
   if type(event) == "string" then event = { pattern = event } end
   event = M.extend_tbl({ modeline = false }, event)
-  event.pattern = "Astro" .. event.pattern
+  if type(event.pattern) == "string" then
+    event.pattern = "Astro" .. event.pattern
+  else
+    event.pattern = vim.tbl_map(function(pattern) return "Astro" .. pattern end, event.pattern)
+  end
   if instant then
     vim.api.nvim_exec_autocmds("User", event)
   else
@@ -140,9 +151,13 @@ end
 ---@return string content the contents of the file
 function M.read_file(path)
   local fd = assert(vim.uv.fs_open(path, "r", 420))
-  local stat = assert(vim.uv.fs_fstat(fd))
-  local content = assert(vim.uv.fs_read(fd, stat.size))
-  assert(vim.uv.fs_close(fd))
+  local success, content = pcall(function()
+    local stat = assert(vim.uv.fs_fstat(fd))
+    return assert(vim.uv.fs_read(fd, stat.size))
+  end)
+  local close_success, close_err = vim.uv.fs_close(fd)
+  if not success then error(content, 0) end
+  assert(close_success, close_err)
   return content
 end
 
@@ -153,20 +168,21 @@ function M.toggle_term_cmd(opts)
   -- if a command string is provided, create a basic table for Terminal:new() options
   if type(opts) == "string" then opts = { cmd = opts } end
   opts = M.extend_tbl({ hidden = true }, opts)
+  local terminal_key = opts.cmd or default_terminal_key
   local num = vim.v.count > 0 and vim.v.count or 1
   -- if terminal doesn't exist yet, create it
-  if not terms[opts.cmd] then terms[opts.cmd] = {} end
-  if not terms[opts.cmd][num] then
+  if not terms[terminal_key] then terms[terminal_key] = {} end
+  if not terms[terminal_key][num] then
     if not opts.count then opts.count = vim.tbl_count(terms) * 100 + num end
     local on_exit = opts.on_exit
     opts.on_exit = function(...)
-      terms[opts.cmd][num] = nil
+      terms[terminal_key][num] = nil
       if on_exit then on_exit(...) end
     end
-    terms[opts.cmd][num] = require("toggleterm.terminal").Terminal:new(opts)
+    terms[terminal_key][num] = require("toggleterm.terminal").Terminal:new(opts)
   end
   -- toggle the terminal
-  terms[opts.cmd][num]:toggle()
+  terms[terminal_key][num]:toggle()
 end
 
 --- Get a plugin spec from lazy
@@ -274,22 +290,21 @@ function M.set_mappings(map_table, base)
       -- build the options for the command accordingly
       if options then
         local cmd
-        local keymap_opts = base or {}
+        local keymap_opts = (base or {}) --[[@as AstroCoreMapping]]
         if type(options) == "string" or type(options) == "function" then
           cmd = options
         else
           cmd = options[1]
-          keymap_opts = vim.tbl_deep_extend("force", keymap_opts, options)
+          keymap_opts = vim.tbl_deep_extend("force", keymap_opts, options) --[[@as AstroCoreMapping]]
           keymap_opts[1] = nil
         end
         if not cmd then -- if which-key mapping, queue it
-          ---@cast keymap_opts wk.Spec
           keymap_opts[1], keymap_opts.mode = keymap, mode
           if not keymap_opts.group then keymap_opts.group = keymap_opts.desc end
           if not M.which_key_queue then M.which_key_queue = {} end
           table.insert(M.which_key_queue, keymap_opts)
         else -- if not which-key mapping, set it
-          vim.keymap.set(mode, keymap, cmd, keymap_opts)
+          vim.keymap.set(mode, keymap, cmd, keymap_opts --[[@as vim.keymap.set.Opts]])
         end
       end
     end
@@ -312,7 +327,7 @@ function M.delete_url_match(win)
 end
 
 --- Add syntax matching rules for highlighting URLs/URIs
----@param win? integer the window id to remove url highlighting in (default: current window)
+---@param win? integer the window id to add url highlighting in (default: current window)
 function M.set_url_match(win)
   if not win then win = vim.api.nvim_get_current_win() end
   M.delete_url_match(win)
@@ -327,13 +342,24 @@ end
 ---@param show_error? boolean Whether or not to show an unsuccessful command as an error to the user
 ---@return string|nil result The result of a successfully executed command or nil
 function M.cmd(cmd, show_error)
-  if type(cmd) == "string" then cmd = { cmd } end
-  if vim.fn.has "win32" == 1 then cmd = vim.list_extend({ "cmd.exe", "/C" }, cmd) end
+  local display_cmd
+  if type(cmd) == "string" then
+    display_cmd = cmd
+  else
+    display_cmd = table.concat(cmd, " ")
+  end
+  if vim.fn.has "win32" == 1 then
+    if type(cmd) == "string" then
+      cmd = { "cmd.exe", "/C", cmd }
+    else
+      cmd = vim.list_extend({ "cmd.exe", "/C" }, cmd)
+    end
+  end
   local result = vim.fn.system(cmd)
   local success = vim.api.nvim_get_vvar "shell_error" == 0
   if not success and (show_error == nil or show_error) then
     vim.api.nvim_echo(
-      { { ("Error running command %s\nError message:\n%s"):format(table.concat(cmd, " "), result) } },
+      { { ("Error running command %s\nError message:\n%s"):format(display_cmd, result) } },
       true,
       { err = true }
     )
@@ -343,7 +369,7 @@ end
 
 --- Get the first worktree that a file belongs to
 ---@param file? string the file to check, defaults to the current file
----@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, default retrieves from `vim.g.git_worktrees`
+---@param worktrees table<string, string>[]? an array like table of worktrees with entries `toplevel` and `gitdir`, defaults to `config.git_worktrees`
 ---@return table<string, string>|nil worktree a table specifying the `toplevel` and `gitdir` of a worktree or nil if not found
 function M.file_worktree(file, worktrees)
   worktrees = worktrees or M.config.git_worktrees
@@ -396,8 +422,12 @@ end
 function M.with_file(filename, mode, callback, on_error)
   local file, errmsg = io.open(filename, mode)
   if file then
-    if callback then callback(file) end
+    local success, err = true, nil
+    if callback then
+      success, err = pcall(callback, file)
+    end
     file:close()
+    if not success then error(err, 0) end
   elseif errmsg and on_error then
     on_error(errmsg)
   end
@@ -430,22 +460,6 @@ function M.rename_file(opts)
   from = vim.fn.fnamemodify(from, ":p")
 
   local from_bufnr = vim.fn.bufnr(from)
-  if from_bufnr >= 0 and vim.bo[from_bufnr].modified then
-    local write_confirm = opts.save ~= nil and (opts.save and 1 or 2)
-      or vim.fn.confirm(
-        ('Save changes to "%s"?'):format(vim.fn.fnamemodify(from, ":.")),
-        "&Yes\n&No\n&Cancel",
-        1,
-        "Question"
-      )
-    -- write_confirm: 1 saves, 2 doesn't save, anything else aborts
-    if write_confirm == 1 then
-      vim.api.nvim_buf_call(from_bufnr, function() vim.cmd.write { mods = { silent = true } } end)
-    elseif write_confirm ~= 2 then
-      M.notify(("Renaming cancelled:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.INFO)
-      return
-    end
-  end
 
   if not vim.uv.fs_stat(from) then
     M.notify(("File does not exists:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.ERROR)
@@ -453,10 +467,27 @@ function M.rename_file(opts)
   end
 
   local _rename_file = function(to)
+    if vim.fn.isabsolutepath(to) == 0 then to = vim.fs.joinpath(vim.fs.dirname(from), to) end
     to = vim.fn.fnamemodify(to, ":p")
     if not opts.force and vim.uv.fs_stat(to) then
       M.notify(("File already exists:\n`%s`\n\n"):format(vim.fn.fnamemodify(to, ":.")), vim.log.levels.ERROR)
       return
+    end
+    if from_bufnr >= 0 and vim.api.nvim_buf_is_valid(from_bufnr) and vim.bo[from_bufnr].modified then
+      local write_confirm = opts.save ~= nil and (opts.save and 1 or 2)
+        or vim.fn.confirm(
+          ('Save changes to "%s"?'):format(vim.fn.fnamemodify(from, ":.")),
+          "&Yes\n&No\n&Cancel",
+          1,
+          "Question"
+        )
+      -- write_confirm: 1 saves, 2 doesn't save, anything else aborts
+      if write_confirm == 1 then
+        vim.api.nvim_buf_call(from_bufnr, function() vim.cmd.write { mods = { silent = true } } end)
+      elseif write_confirm ~= 2 then
+        M.notify(("Renaming cancelled:\n`%s`"):format(vim.fn.fnamemodify(from, ":.")), vim.log.levels.INFO)
+        return
+      end
     end
     vim.fn.mkdir(vim.fs.dirname(to), "p")
     local rename_data = { from = from, to = to }
@@ -464,7 +495,7 @@ function M.rename_file(opts)
     local success = vim.fn.rename(from, to) == 0
     rename_data.success = success
     if success then
-      if from_bufnr >= 0 then
+      if from_bufnr >= 0 and vim.api.nvim_buf_is_valid(from_bufnr) then
         local to_bufnr = vim.fn.bufadd(to)
         vim.bo[to_bufnr].buflisted = true
         for _, win in ipairs(vim.fn.win_findbuf(from_bufnr)) do
@@ -492,19 +523,23 @@ function M.rename_file(opts)
     _rename_file(opts.to)
   else
     local root = vim.fn.getcwd()
-    if from:find(root, 1, true) ~= 1 then root = vim.fn.fnamemodify(from, ":p:h") end
-    local prefix = from:sub(#root + 2)
+    local prefix = vim.fs.relpath(root, from)
+    if not prefix then
+      root = vim.fs.dirname(from)
+      prefix = vim.fs.basename(from)
+    end
     vim.ui.input({
       prompt = "New File Name: ",
       default = prefix,
       completion = "file",
     }, function(input)
-      if input and input ~= "" and input ~= prefix then _rename_file(vim.fs.normalize(root .. "/" .. input)) end
+      if input and input ~= "" and input ~= prefix then _rename_file(vim.fs.joinpath(root, input)) end
     end)
   end
 end
 
 local key_cache = {} ---@type { [string]: string }
+local on_key_namespaces = {}
 --- Normalize a mappings table to use official keycode casing
 ---@param mappings AstroCoreMappings?
 function M.normalize_mappings(mappings)
@@ -578,12 +613,19 @@ function M.setup(opts)
   if M.config.filetypes then vim.filetype.add(M.config.filetypes) end
 
   -- on_key hooks
+  for _, namespace in pairs(on_key_namespaces) do
+    vim.on_key(nil, namespace)
+  end
+  on_key_namespaces = {}
   for namespace, funcs in pairs(M.config.on_keys) do
     if funcs then
       local ns = vim.api.nvim_create_namespace(namespace)
-      for _, func in ipairs(funcs) do
-        vim.on_key(func, ns)
-      end
+      on_key_namespaces[namespace] = ns
+      vim.on_key(function(key)
+        for _, func in ipairs(funcs) do
+          func(key)
+        end
+      end, ns)
     end
   end
 
@@ -685,12 +727,7 @@ function M.setup(opts)
         group = group,
         desc = "Root detection on LSP attach",
         callback = function(args)
-          if root_config.autochdir then
-            local server = assert(vim.lsp.get_client_by_id(args.data.client_id)).name
-            if not vim.tbl_contains(vim.tbl_get(root_config, "ignore", "servers") or {}, server) then
-              require("astrocore.rooter").root(args.buf)
-            end
-          end
+          if root_config.autochdir then require("astrocore.rooter").root(args.buf) end
         end,
       })
     end
