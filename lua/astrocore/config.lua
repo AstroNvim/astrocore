@@ -11,6 +11,8 @@
 
 ---@class AstroCoreMapping: vim.api.keyset.keymap
 ---@field [1] AstroCoreMappingCmd? rhs of keymap
+---@field mode? string|string[] which-key mode(s)
+---@field group? string|fun():string which-key group label
 
 ---@alias AstroCoreMappings table<string,table<string,(AstroCoreMapping|AstroCoreMappingCmd|false)?>?>
 
@@ -149,7 +151,7 @@
 ---```
 ---@field indent AstroCoreTreesitterFeature?
 ---@field auto_install boolean? whether or not to automatically detect and install missing treesitter parsers
----@field ensure_installed string[]|"all"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
+---@field ensure_installed string[]|"all"|"auto"? a list of treesitter parsers to ensure are installed, "all" will install all parsers, "auto" will install when opening a filetype with an available parser
 ---Configuration of textobject mappings to create using `nvim-treesitter-textobjects`
 ---
 ---Examples:
