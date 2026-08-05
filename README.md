@@ -16,6 +16,7 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 - Neovim >= 0.11
 - [lazy.nvim](https://github.com/folke/lazy.nvim)
 - [resession.nvim][resession] (_optional_)
+- For `nvim-treesitter` features: the `tree-sitter` CLI, or `mason.nvim` so AstroCore can install `tree-sitter-cli`.
 
 ## 📦 Installation
 
@@ -128,7 +129,7 @@ local opts = {
     -- first key is the type of option `vim.<first_key>`
     opt = {
       relativenumber = true, -- sets `vim.opt.relativenumber`
-      signcolumn = "auto", -- sets `vim.opt.relativenumber`
+      signcolumn = "auto", -- sets `vim.opt.signcolumn`
     },
     g = {
       -- set global `vim.g` settings here
