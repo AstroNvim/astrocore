@@ -322,14 +322,17 @@ function M.disable(bufnr)
     textobject_mappings[bufnr] = nil
     return
   end
+  local was_enabled = enabled[bufnr] == true
   enabled[bufnr] = false
   pcall(vim.treesitter.stop, bufnr)
   highlights[bufnr] = nil
   restore_owned_indentexpr(bufnr)
   clear_textobject_mappings(bufnr)
-  vim.schedule(function()
-    if vim.api.nvim_get_current_buf() == bufnr and vim.bo[bufnr].buftype ~= "terminal" then vim.cmd "normal! zx" end
-  end)
+  if was_enabled then
+    vim.schedule(function()
+      if vim.api.nvim_get_current_buf() == bufnr and vim.bo[bufnr].buftype ~= "terminal" then vim.cmd "normal! zx" end
+    end)
+  end
 end
 
 --- Check if treesitter features in buffer
