@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.7](https://github.com/AstroNvim/astrocore/compare/v3.0.6...v3.0.7) (2026-08-07)
+
+
+### Bug Fixes
+
+* **treesitter:** preserve prompt cursor position ([5b9ff2e](https://github.com/AstroNvim/astrocore/commit/5b9ff2e17d92d4387324f01aebd83bb9712de65a))
+
 ## [3.0.6](https://github.com/AstroNvim/astrocore/compare/v3.0.5...v3.0.6) (2026-08-05)
 
 
