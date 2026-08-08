@@ -133,7 +133,11 @@ end
 
 T["AC-SES-003 restores only the current tab from a tab-scoped Resession payload"] = function()
   local buffer_state = {}
-  local tab_variables = { bufs = { 999 } }
+  local tab_variables = {
+    bufs = { 999 },
+    [101] = { bufs = { 999 } },
+    [202] = { bufs = { 444 } },
+  }
   helpers.with_module("resession.extensions.astrocore", {
     replace_vim = { opt = true, t = true },
     loaded = {
@@ -161,6 +165,7 @@ T["AC-SES-003 restores only the current tab from a tab-scoped Resession payload"
     }
 
     MiniTest.expect.equality(tab_variables.bufs, { 32, 31 })
+    MiniTest.expect.equality(tab_variables[202].bufs, { 444 })
     MiniTest.expect.equality(buffer_state.current_buf, 32)
     MiniTest.expect.equality(buffer_state.last_buf, 31)
   end)
