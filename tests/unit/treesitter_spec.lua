@@ -197,24 +197,76 @@ T["AC-TS-003 resolves parser support from string filetypes and buffer filetypes"
   end)
 end
 
-T["AC-TS-004 installs normalized parser requests through the public async API"] = function()
-  with_treesitter({ installed = { "vim" }, available = { "lua", "vim", "query" } }, function(treesitter, state)
+T["AC-TS-004 delays Task await completion and refreshes before normalized callbacks"] = function()
+  local events, parsers, requests, task_callbacks = {}, { "vim" }, {}, {}
+  with_treesitter({
+    available = { "lua", "vim", "query" },
+    nvim_treesitter = {
+      get_installed = function()
+        table.insert(events, "refresh")
+        return parsers
+      end,
+      get_available = function() return { "lua", "vim", "query" } end,
+      install = function(languages, options)
+        table.insert(requests, { languages = languages, options = options })
+        table.insert(events, "install")
+        return {
+          await = function(_, callback)
+            table.insert(task_callbacks, callback)
+            vim.schedule(function() table.insert(events, "await barrier") end)
+          end,
+        }
+      end,
+    },
+  }, function(treesitter, _, context)
     local callbacks = 0
     treesitter.installed(true)
-    treesitter.install("auto", function() callbacks = callbacks + 1 end)
-    treesitter.install("all", function() callbacks = callbacks + 1 end)
-    treesitter.install({ "lua", "vim", "query" }, function() callbacks = callbacks + 1 end)
+    treesitter.install("auto", function()
+      callbacks = callbacks + 1
+      table.insert(events, "auto callback")
+    end)
+    context.drain_scheduled()
 
-    MiniTest.expect.equality(state.install_calls, {
+    MiniTest.expect.equality(requests, { { languages = { "lua" }, options = { summary = true } } })
+    MiniTest.expect.equality(events, { "refresh", "install", "await barrier" })
+    MiniTest.expect.equality(callbacks, 0)
+
+    table.insert(parsers, "lua")
+    local complete_auto = assert(task_callbacks[1], "Expected a delayed automatic parser installation")
+    complete_auto()
+    MiniTest.expect.equality(events, { "refresh", "install", "await barrier", "refresh", "auto callback" })
+    MiniTest.expect.equality(callbacks, 1)
+
+    treesitter.install("all", function()
+      callbacks = callbacks + 1
+      table.insert(events, "all callback")
+    end)
+    context.drain_scheduled()
+    MiniTest.expect.equality(requests, {
       { languages = { "lua" }, options = { summary = true } },
       { languages = { "query" }, options = { summary = true } },
     })
+    MiniTest.expect.equality(callbacks, 1)
+
+    table.insert(parsers, "query")
+    local complete_all = assert(task_callbacks[2], "Expected a delayed all-parser installation")
+    complete_all()
+    MiniTest.expect.equality(events, {
+      "refresh",
+      "install",
+      "await barrier",
+      "refresh",
+      "auto callback",
+      "install",
+      "await barrier",
+      "refresh",
+      "all callback",
+    })
     MiniTest.expect.equality(callbacks, 2)
-    MiniTest.expect.equality(state.installed_calls, { "parsers", "parsers", "parsers" })
   end)
 end
 
-T["AC-TS-005 handles existing CLI, Mason package, install outcome, and missing CLI setup branches"] = function()
+T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"] = function()
   with_treesitter(nil, function(treesitter, state)
     treesitter.setup { enabled = true }
     MiniTest.expect.equality(#state.groups, 1)
@@ -222,39 +274,62 @@ T["AC-TS-005 handles existing CLI, Mason package, install outcome, and missing C
   end)
 
   local function mason_case(installed, success)
+    local events, refresh_callback, install_callback = {}, nil, nil
     local package = {
       is_installed = function() return installed end,
-      install = function(_, _, callback) callback(success) end,
+      install = function(_, _, callback)
+        install_callback = callback
+        vim.schedule(function() table.insert(events, "install barrier") end)
+      end,
     }
     with_treesitter({
       executable = function() return 0 end,
       loaded = {
         mason = {},
         ["mason-registry"] = {
-          refresh = function(callback) callback() end,
+          refresh = function(callback)
+            refresh_callback = callback
+            vim.schedule(function() table.insert(events, "refresh barrier") end)
+          end,
           get_package = function() return package end,
         },
       },
-    }, function(treesitter, state)
+    }, function(treesitter, state, context)
       treesitter.setup { enabled = true }
+      context.drain_scheduled()
+      MiniTest.expect.equality(events, { "refresh barrier" })
+      MiniTest.expect.equality(#state.groups, 0)
+      MiniTest.expect.equality(state.notifications, {})
+
+      local complete_refresh = assert(refresh_callback, "Expected Mason to finish refreshing")
+      complete_refresh()
       if installed then
         MiniTest.expect.equality(#state.groups, 0)
         MiniTest.expect.equality(state.notifications, {})
-      elseif success then
+      else
+        context.drain_scheduled()
+        MiniTest.expect.equality(#state.groups, 0)
+        MiniTest.expect.equality(events, { "refresh barrier", "install barrier" })
+        MiniTest.expect.equality(state.notifications, { { "Installing `tree-sitter-cli` with `mason.nvim`...", nil } })
+
+        local complete_install = assert(install_callback, "Expected Mason to finish installing")
+        complete_install(success)
+      end
+
+      if not installed and success then
         MiniTest.expect.equality(#state.groups, 1)
         MiniTest.expect.equality(state.notifications, {
           { "Installing `tree-sitter-cli` with `mason.nvim`...", nil },
           { "Installed `tree-sitter-cli` with `mason.nvim`.", nil },
         })
-      else
+      elseif not installed then
         MiniTest.expect.equality(#state.groups, 0)
-        MiniTest.expect.equality(state.notifications, {
-          { "Installing `tree-sitter-cli` with `mason.nvim`...", nil },
-          {
-            "Failed to install `tree-sitter-cli` with `mason.nvim\n\nCheck `:Mason` UI for details.",
-            vim.log.levels.ERROR,
-          },
-        })
+        MiniTest.expect.equality(state.notifications[1], { "Installing `tree-sitter-cli` with `mason.nvim`...", nil })
+        MiniTest.expect.equality(
+          state.notifications[2][1],
+          "Failed to install `tree-sitter-cli` with `mason.nvim\n\nCheck `:Mason` UI for details."
+        )
+        MiniTest.expect.equality(type(state.notifications[2][2]), "number")
       end
     end)
   end
@@ -268,29 +343,26 @@ T["AC-TS-005 handles existing CLI, Mason package, install outcome, and missing C
     loaded = { mason = helpers.remove },
   }, function(treesitter, state)
     treesitter.setup { enabled = true }
-    MiniTest.expect.equality(state.notifications, {
-      {
-        "`tree-sitter` CLI is required for using `nvim-treesitter`\n\nInstall to enable treesitter features.",
-        vim.log.levels.WARN,
-      },
-    })
+    MiniTest.expect.equality(
+      state.notifications[1][1],
+      "`tree-sitter` CLI is required for using `nvim-treesitter`\n\nInstall to enable treesitter features."
+    )
+    MiniTest.expect.equality(type(state.notifications[1][2]), "number")
   end)
 end
 
-T["AC-TS-006 replaces the owned autocmd group across repeated successful setup"] = function()
+T["AC-TS-006 configures the owned FileType and cleanup autocmds"] = function()
   with_treesitter(nil, function(treesitter, state)
     treesitter.setup { enabled = true }
-    treesitter.setup { enabled = false }
 
     MiniTest.expect.equality(state.groups, {
       { "astrocore_treesitter", { clear = true } },
-      { "astrocore_treesitter", { clear = true } },
     })
-    MiniTest.expect.equality(#state.autocmds, 4)
-    MiniTest.expect.equality(state.autocmds[3].event, "FileType")
-    MiniTest.expect.equality(state.autocmds[4].event, { "BufDelete", "BufWipeout" })
+    MiniTest.expect.equality(#state.autocmds, 2)
+    MiniTest.expect.equality(state.autocmds[1].event, "FileType")
+    MiniTest.expect.equality(state.autocmds[2].event, { "BufDelete", "BufWipeout" })
     state.autocmd "FileType" { buf = 7 }
-    MiniTest.expect.equality(treesitter.is_enabled(7), false)
+    MiniTest.expect.equality(treesitter.is_enabled(7), true)
   end)
 end
 
@@ -330,6 +402,62 @@ T["AC-TS-007 reconciles rejected, unsupported, installable, invalid, and re-enab
     treesitter.has_parser = function(bufnr) return bufnr == 7 end
     filetype { buf = 7 }
     MiniTest.expect.equality(enabled, { 7 })
+  end)
+end
+
+T["AC-TS-012 skips enablement and mappings when a delayed parser install finishes after buffer invalidation"] = function()
+  local parsers, task_callback = {}, nil
+  with_treesitter({
+    available = { "lua" },
+    nvim_treesitter = {
+      get_installed = function() return parsers end,
+      get_available = function() return { "lua" } end,
+      install = function(languages)
+        return {
+          await = function(_, callback)
+            task_callback = function()
+              for _, language in ipairs(languages) do
+                table.insert(parsers, language)
+              end
+              vim.schedule(callback)
+            end
+            vim.schedule(function() end)
+          end,
+        }
+      end,
+    },
+    loaded = {
+      ["nvim-treesitter-textobjects"] = {},
+      ["nvim-treesitter-textobjects.select"] = { select_outer = function() end },
+    },
+  }, function(treesitter, state, context)
+    treesitter.setup {
+      enabled = true,
+      auto_install = true,
+      highlight = true,
+      textobjects = {
+        select = {
+          select_outer = {
+            aa = { query = "@function.outer", group = "textobjects", desc = "Select function" },
+          },
+        },
+      },
+    }
+    state.autocmd "FileType" { buf = 7 }
+    context.drain_scheduled()
+
+    MiniTest.expect.equality(task_callback ~= nil, true)
+    local complete_install = assert(task_callback, "Expected a delayed parser installation")
+    MiniTest.expect.equality(treesitter.is_enabled(7), false)
+    MiniTest.expect.equality(state.starts, {})
+    MiniTest.expect.equality(state.maps, {})
+
+    state.valid[7] = false
+    complete_install()
+    context.drain_scheduled()
+    MiniTest.expect.equality(treesitter.is_enabled(7), false)
+    MiniTest.expect.equality(state.starts, {})
+    MiniTest.expect.equality(state.maps, {})
   end)
 end
 

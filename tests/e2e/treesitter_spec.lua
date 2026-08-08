@@ -117,4 +117,64 @@ T["AC-TS-011 and AC-INT-005 preserve real buffer option and keymap ownership thr
   end)
 end
 
+T["AC-TS-013 keeps exactly one active owned FileType callback after repeated setup"] = function()
+  with_child(function(child)
+    local result = child.lua_get [[
+      (function()
+        local original_language = vim.treesitter.language.get_lang
+        local original_query = vim.treesitter.query.get
+        local original_executable = vim.fn.executable
+        vim.treesitter.language.get_lang = function(filetype) return filetype == "lua" and "lua" or nil end
+        vim.treesitter.query.get = function() return {} end
+        vim.fn.executable = function(program)
+          if program == "tree-sitter" then return 1 end
+          return original_executable(program)
+        end
+        package.loaded["nvim-treesitter"] = {
+          get_installed = function() return { "lua" } end,
+          get_available = function() return { "lua" } end,
+          install = function() error "parser installation is outside this state test" end,
+        }
+
+        vim.api.nvim_create_augroup("astrocore_treesitter", { clear = true })
+        local treesitter = require "astrocore.treesitter"
+        treesitter.setup { enabled = true, highlight = true }
+        treesitter.setup { enabled = true, highlight = true }
+
+        local group = vim.api.nvim_create_augroup("astrocore_treesitter", { clear = false })
+        local callbacks = vim.api.nvim_get_autocmds { group = group, event = "FileType" }
+        local callback_count, groups = 0, {}
+        for _, callback in ipairs(callbacks) do
+          callback_count = callback_count + 1
+          groups[callback.group] = true
+        end
+        local active_groups = 0
+        for _ in pairs(groups) do
+          active_groups = active_groups + 1
+        end
+
+        local bufnr = vim.api.nvim_create_buf(true, false)
+        vim.bo[bufnr].filetype = "lua"
+        vim.api.nvim_exec_autocmds("FileType", { buffer = bufnr })
+
+        local enabled = treesitter.is_enabled(bufnr)
+        vim.treesitter.language.get_lang = original_language
+        vim.treesitter.query.get = original_query
+        vim.fn.executable = original_executable
+        return {
+          callback_count = callback_count,
+          active_groups = active_groups,
+          group_name = callbacks[1] and callbacks[1].group_name,
+          enabled = enabled,
+        }
+      end)()
+    ]]
+
+    MiniTest.expect.equality(result.callback_count, 1)
+    MiniTest.expect.equality(result.active_groups, 1)
+    MiniTest.expect.equality(result.group_name, "astrocore_treesitter")
+    MiniTest.expect.equality(result.enabled, true)
+  end)
+end
+
 return T
