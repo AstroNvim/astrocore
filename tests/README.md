@@ -1,6 +1,6 @@
 # AstroCore test harness
 
-Requirements: `make`, Git, and Neovim 0.11 or newer. Neovim 0.12.4 is the exact maintainer-aligned stable baseline; the semantic suite also runs on the minimum supported Neovim 0.11.0.
+Requirements: `make`, Git, and Neovim 0.11 or newer. Neovim 0.12.4 is the exact maintainer-aligned stable baseline; `make test-semantic` is the full compatibility target and also runs on the minimum supported Neovim 0.11.0.
 
 ```sh
 make test

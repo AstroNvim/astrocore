@@ -16,7 +16,7 @@ env:
 jobs:
   CI:
     uses: AstroNvim/.github/.github/workflows/plugin_ci.yml@main
-    if: ${{ github.event_name != 'pull_request_target' }}
+    if: ${{ github.event_name != 'pull_request_target' && github.event_name != 'schedule' }}
     secrets: inherit
     with:
       plugin_name: ${{ github.event.repository.name }}
@@ -100,7 +100,7 @@ jobs:
           - name: Windows smoke
             os: windows-latest
             neovim: v0.12.4
-    name: Semantic Tests (${{ matrix.name }})
+    name: Compatibility Tests (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     permissions:
@@ -214,7 +214,7 @@ jobs:
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
   Dependency-Refresh:
-    name: Weekly Dependency Rebuild
+    name: Weekly Dependency Validation
     if: ${{ github.event_name == 'schedule' && github.event.schedule == '0 8 * * 1' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -236,16 +236,8 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
-      - name: Compute test environment fingerprint
-        id: test-fingerprint
-        run: echo "value=$(nvim -l tests/fingerprint.lua)" >> "$GITHUB_OUTPUT"
       - name: Rebuild test environment from current dependencies
         run: make test-update-deps
-      - name: Save rebuilt environment
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: .tests
-          key: test-environment-${{ runner.os }}-${{ runner.arch }}-nvim-${{ env.NVIM_VERSION }}-schema-${{ env.TEST_ENVIRONMENT_SCHEMA }}-fingerprint-${{ steps.test-fingerprint.outputs.value }}-rotation-${{ env.TEST_ENVIRONMENT_CACHE_ROTATION }}-weekly-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Run full suite
         env:
           LAZY_OFFLINE: "1"
