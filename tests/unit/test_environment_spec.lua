@@ -68,6 +68,43 @@ T["AC-ENV-003 requires full commits and the exact managed lock set"] = function(
     environment.validate_ready(marker, manifest, lock, function(path, kind) return paths[path] == kind end),
     true
   )
+
+  local missing_marker, missing_manifest, missing_lock, missing_paths = ready_values()
+  missing_lock.say = nil
+  MiniTest.expect.equality(
+    environment.validate_ready(
+      missing_marker,
+      missing_manifest,
+      missing_lock,
+      function(path, kind) return missing_paths[path] == kind end
+    ),
+    false
+  )
+
+  local extra_marker, extra_manifest, extra_lock, extra_paths = ready_values()
+  extra_lock.unmanaged = { commit = string.rep("c", 40) }
+  MiniTest.expect.equality(
+    environment.validate_ready(
+      extra_marker,
+      extra_manifest,
+      extra_lock,
+      function(path, kind) return extra_paths[path] == kind end
+    ),
+    false
+  )
+
+  local mismatched_marker, mismatched_manifest, mismatched_lock, mismatched_paths = ready_values()
+  mismatched_lock.say.commit = string.rep("c", 40)
+  MiniTest.expect.equality(
+    environment.validate_ready(
+      mismatched_marker,
+      mismatched_manifest,
+      mismatched_lock,
+      function(path, kind) return mismatched_paths[path] == kind end
+    ),
+    false
+  )
+
   manifest.plugins.say.commit = "abc"
   MiniTest.expect.equality(
     environment.validate_ready(marker, manifest, lock, function(path, kind) return paths[path] == kind end),
@@ -82,6 +119,30 @@ T["AC-ENV-004 requires every explicit copied-library checksum"] = function()
     environment.validate_ready(marker, manifest, lock, function(path, kind) return paths[path] == kind end),
     false
   )
+
+  local missing_marker, missing_manifest, missing_lock, missing_paths = ready_values()
+  missing_manifest.copied_libraries.say.files["init.lua"] = nil
+  MiniTest.expect.equality(
+    environment.validate_ready(
+      missing_marker,
+      missing_manifest,
+      missing_lock,
+      function(path, kind) return missing_paths[path] == kind end
+    ),
+    false
+  )
+
+  local malformed_marker, malformed_manifest, malformed_lock, malformed_paths = ready_values()
+  malformed_manifest.copied_libraries.say.files["init.lua"] = string.rep("g", 64)
+  MiniTest.expect.equality(
+    environment.validate_ready(
+      malformed_marker,
+      malformed_manifest,
+      malformed_lock,
+      function(path, kind) return malformed_paths[path] == kind end
+    ),
+    false
+  )
 end
 
 T["AC-ENV-005 validates prepared repository heads and allowlisted generated files"] = function()
@@ -90,7 +151,7 @@ T["AC-ENV-005 validates prepared repository heads and allowlisted generated file
   MiniTest.expect.equality(validation_error, nil)
 end
 
-T["AC-ENV-006 retries only lock contention and releases after failure"] = function()
+T["AC-ENV-006 rejects unsafe locks, times out, and reports release failures"] = function()
   local attempts, now, removed = 0, 0, false
   local filesystem = {
     mkdir = function()
@@ -114,7 +175,46 @@ T["AC-ENV-006 retries only lock contention and releases after failure"] = functi
   MiniTest.expect.equality(removed, true)
   MiniTest.expect.equality(environment.lock_error_is_retryable "EPERM", false)
 
-  local ok, error_message = pcall(function()
+  local timed_out, timeout_message = pcall(function()
+    environment.with_lifecycle_lock({
+      mkdir = function() return nil, "EEXIST" end,
+      lstat = function() return { type = "directory" } end,
+      rmdir = function() error "must not release" end,
+      now = function()
+        now = now + 1
+        return now
+      end,
+      wait = function() end,
+    }, "/lock", function() error "must not run" end, { timeout_ns = 1 })
+  end)
+  MiniTest.expect.equality(timed_out, false)
+  MiniTest.expect.equality(timeout_message:find("Timed out waiting", 1, true) ~= nil, true)
+
+  local linked, link_message = pcall(function()
+    environment.with_lifecycle_lock({
+      mkdir = function() return nil, "EEXIST" end,
+      lstat = function() return { type = "link" } end,
+      rmdir = function() error "must not release" end,
+      now = function() return 0 end,
+      wait = function() error "must not wait" end,
+    }, "/lock", function() error "must not run" end)
+  end)
+  MiniTest.expect.equality(linked, false)
+  MiniTest.expect.equality(link_message:find("symbolic link", 1, true) ~= nil, true)
+
+  local non_directory, non_directory_message = pcall(function()
+    environment.with_lifecycle_lock({
+      mkdir = function() return nil, "EEXIST" end,
+      lstat = function() return { type = "file" } end,
+      rmdir = function() error "must not release" end,
+      now = function() return 0 end,
+      wait = function() error "must not wait" end,
+    }, "/lock", function() error "must not run" end)
+  end)
+  MiniTest.expect.equality(non_directory, false)
+  MiniTest.expect.equality(non_directory_message:find("not a directory", 1, true) ~= nil, true)
+
+  local callback_failed, callback_failure_message = pcall(function()
     environment.with_lifecycle_lock({
       mkdir = function() return true end,
       lstat = function() end,
@@ -123,9 +223,21 @@ T["AC-ENV-006 retries only lock contention and releases after failure"] = functi
       wait = function() end,
     }, "/lock", function() error("primary failure", 0) end)
   end)
-  MiniTest.expect.equality(ok, false)
-  MiniTest.expect.equality(error_message:find("primary failure", 1, true) ~= nil, true)
-  MiniTest.expect.equality(error_message:find("release failed", 1, true) ~= nil, true)
+  MiniTest.expect.equality(callback_failed, false)
+  MiniTest.expect.equality(callback_failure_message:find("primary failure", 1, true) ~= nil, true)
+  MiniTest.expect.equality(callback_failure_message:find("release failed", 1, true) ~= nil, true)
+
+  local released, release_message = pcall(function()
+    environment.with_lifecycle_lock({
+      mkdir = function() return true end,
+      lstat = function() end,
+      rmdir = function() return nil, "release failed" end,
+      now = function() return 0 end,
+      wait = function() end,
+    }, "/lock", function() return "done" end)
+  end)
+  MiniTest.expect.equality(released, false)
+  MiniTest.expect.equality(release_message:find("Failed to release", 1, true) ~= nil, true)
 end
 
 T["AC-ENV-007 rejects partial environments instead of legacy adoption"] = function()
@@ -137,13 +249,19 @@ T["AC-ENV-007 rejects partial environments instead of legacy adoption"] = functi
   )
 end
 
-T["AC-ENV-008 requires complete staging and a missing publication target"] = function()
+T["AC-ENV-008 rejects symbolic-link staging and publication targets"] = function()
   local entries = { ["/staging"] = { type = "directory" } }
   MiniTest.expect.equality(
     environment.can_publish_fresh({ lstat = function(path) return entries[path] end }, "/staging", "/target"),
     true
   )
-  entries["/target"] = { type = "directory" }
+  entries["/staging"] = { type = "link" }
+  MiniTest.expect.equality(
+    environment.can_publish_fresh({ lstat = function(path) return entries[path] end }, "/staging", "/target"),
+    false
+  )
+  entries["/staging"] = { type = "directory" }
+  entries["/target"] = { type = "link" }
   MiniTest.expect.equality(
     environment.can_publish_fresh({ lstat = function(path) return entries[path] end }, "/staging", "/target"),
     false
@@ -163,12 +281,21 @@ T["AC-ENV-009 preflights symbolic links before cleanup"] = function()
   local removed, error_message = environment.remove_tree(filesystem, "/tree")
   MiniTest.expect.equality(removed, false)
   MiniTest.expect.equality(error_message:find "symbolic%-link" ~= nil, true)
+
+  local root_removed, root_error = environment.remove_tree({
+    lstat = function(path)
+      if path == "/tree-link" then return { type = "link" } end
+    end,
+  }, "/tree-link")
+  MiniTest.expect.equality(root_removed, false)
+  MiniTest.expect.equality(root_error:find "symbolic%-link" ~= nil, true)
+
   MiniTest.expect.error(
     function() environment.clear_test_environment(filesystem, "/repository", "/repository/not-tests") end
   )
 end
 
-T["AC-ENV-010 reuses a marked environment offline without lifecycle mutation"] = function()
+T["AC-ENV-010 preserves ready marker, manifest, and lockfile during preparation"] = function()
   local files = { config.ready, config.manifest, config.lockfile }
   local before = {}
   for _, path in ipairs(files) do

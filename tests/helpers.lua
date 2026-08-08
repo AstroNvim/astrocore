@@ -235,6 +235,13 @@ function M.fixture_project(child)
   return case.project
 end
 
+function M.fixture_root(child)
+  local case = assert(cases[child], "Child fixture is unavailable")
+  return case.root
+end
+
+function M.child_job_id(child) return child_job_id(child) end
+
 function M.parent_xdg_environment()
   local snapshot = {}
   for _, name in ipairs(xdg_variables) do
@@ -244,8 +251,8 @@ function M.parent_xdg_environment()
 end
 
 function M.restore_parent_xdg_environment(snapshot)
-  for name, value in pairs(snapshot) do
-    vim.env[name] = value
+  for _, name in ipairs(xdg_variables) do
+    vim.env[name] = snapshot[name]
   end
 end
 
