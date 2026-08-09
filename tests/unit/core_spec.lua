@@ -11,10 +11,12 @@ end
 
 local function setup_boundaries(records)
   return {
-    replace_vim = { bo = true, opt = true, g = true },
+    replace_vim = { b = true, bo = true, g = true, opt = true, w = true },
     vim = {
+      b = records.buffers or {},
       bo = { filetype = "" },
       opt = {},
+      w = records.windows or {},
       g = {},
       api = {
         nvim_create_augroup = function(name, options)
@@ -35,8 +37,11 @@ local function setup_boundaries(records)
       filetype = { add = function(options) records.filetypes = options end },
       diagnostic = {
         config = function(options)
-          if options then records.diagnostics = options end
-          return {}
+          if options then
+            records.diagnostics = options
+            records.diagnostic_config = options
+          end
+          return records.diagnostic_config or {}
         end,
         enable = function(value) records.diagnostic_enabled = value end,
       },
@@ -646,7 +651,7 @@ T["AC-CORE-021 honors rename save yes, no, and cancellation paths"] = function()
   end)
 end
 
-T["AC-CORE-024 normalizes mapping keys once while preserving values"] = function()
+T["AC-CORE-024 reuses cached raw mapping normalization across tables"] = function()
   local replace_calls, keytrans_calls = 0, 0
   helpers.with_module("astrocore", {
     vim = {
@@ -665,13 +670,17 @@ T["AC-CORE-024 normalizes mapping keys once while preserving values"] = function
     },
   }, function(core)
     local action = function() end
-    local mappings = { n = { ["<c-a>"] = action }, v = { ["<c-a>"] = "visual" } }
+    local mappings = { n = { ["<c-a>"] = action } }
     core.normalize_mappings(mappings)
-    MiniTest.expect.equality(mappings, { n = { ["<C-A>"] = action }, v = { ["<C-A>"] = "visual" } })
-    core.normalize_mappings(mappings)
-    MiniTest.expect.equality(mappings, { n = { ["<C-A>"] = action }, v = { ["<C-A>"] = "visual" } })
-    MiniTest.expect.equality(replace_calls > 0, true)
-    MiniTest.expect.equality(keytrans_calls > 0, true)
+    MiniTest.expect.equality(mappings, { n = { ["<C-A>"] = action } })
+    MiniTest.expect.equality(replace_calls, 1)
+    MiniTest.expect.equality(keytrans_calls, 1)
+
+    local repeated = { v = { ["<c-a>"] = "visual" } }
+    core.normalize_mappings(repeated)
+    MiniTest.expect.equality(repeated, { v = { ["<C-A>"] = "visual" } })
+    MiniTest.expect.equality(replace_calls, 1)
+    MiniTest.expect.equality(keytrans_calls, 1)
   end)
 end
 
@@ -798,6 +807,96 @@ T["AC-CORE-027 forwards setup declarations to public Neovim and integration boun
     MiniTest.expect.equality(records.highlights[1], { 0, "HighlightURL", { default = true, underline = true } })
     MiniTest.expect.equality(records.commands[2][1], "AstroRootInfo")
     MiniTest.expect.equality(records.commands[3][1], "AstroRoot")
+  end)
+end
+
+T["AC-CORE-029 executes setup-owned deferred and autocmd callbacks at their public boundaries"] = function()
+  local records = {
+    augroups = {},
+    autocmds = {},
+    commands = {},
+    namespaces = {},
+    highlights = {},
+    signs = {},
+    on_keys = {},
+    keymaps = {},
+    buffers = { [7] = {} },
+    windows = { [41] = { highlighturl_enabled = false } },
+    diagnostic_config = { virtual_text = false, virtual_lines = true },
+  }
+  local events, notifications, roots, toggles, url_windows = {}, {}, {}, {}, {}
+  local options = setup_boundaries(records)
+  options.loaded = {
+    ["astrocore.buffer"] = {
+      is_large = function(bufnr)
+        MiniTest.expect.equality(bufnr, 7)
+        return true
+      end,
+    },
+    ["astrocore.config"] = dofile "lua/astrocore/config.lua",
+    ["astrocore.rooter"] = { root = function(bufnr) table.insert(roots, bufnr) end },
+    ["astrocore.toggles"] = {
+      virtual_text = function(silent) table.insert(toggles, { "virtual_text", silent }) end,
+      virtual_lines = function(silent) table.insert(toggles, { "virtual_lines", silent }) end,
+    },
+    astroui = helpers.remove,
+  }
+  options.preload = { astroui = helpers.remove }
+  options.vim.api.nvim_buf_get_name = function(bufnr)
+    MiniTest.expect.equality(bufnr, 7)
+    return "/workspace/large.lua"
+  end
+  options.vim.api.nvim_list_wins = function() return { 41 } end
+  options.vim.api.nvim_win_get_buf = function(win)
+    MiniTest.expect.equality(win, 41)
+    return 7
+  end
+  options.vim.fn.fnamemodify = function(path, modifier)
+    MiniTest.expect.equality({ path, modifier }, { "/workspace/large.lua", ":p:~:." })
+    return "large.lua"
+  end
+
+  local function callback(description)
+    for _, entry in ipairs(records.autocmds) do
+      if entry[2].desc == description then return entry[2].callback end
+    end
+    error("Missing setup callback: " .. description, 0)
+  end
+
+  helpers.with_module("astrocore", options, function(core, context)
+    core.event = function(name, immediate) table.insert(events, { name, immediate }) end
+    core.notify = function(message) table.insert(notifications, message) end
+    core.set_url_match = function(win) table.insert(url_windows, win) end
+    core.setup {
+      options = { opt = { clipboard = "unnamedplus" } },
+      diagnostics = { virtual_text = false, virtual_lines = true },
+      features = {
+        diagnostics = { virtual_text = true, virtual_lines = false },
+        highlighturl = true,
+        large_buf = { notify = true },
+      },
+      rooter = { enabled = true, autochdir = true, detector = { "lsp" } },
+      treesitter = false,
+    }
+
+    MiniTest.expect.equality(context.scheduled_count(), 1)
+    MiniTest.expect.equality(vim.opt.clipboard, nil)
+    context.drain_scheduled()
+    MiniTest.expect.equality(vim.opt.clipboard, "unnamedplus")
+    MiniTest.expect.equality(toggles, { { "virtual_text", true }, { "virtual_lines", true } })
+
+    callback "Large buffer detection loading a file into a buffer" { buf = 7 }
+    callback "Set up HighlightURL hlgroup"()
+    callback "Highlight URLs" { buf = 7 }
+    callback "Root detection when entering a buffer" { buf = 7 }
+    callback "Root detection on LSP attach" { buf = 8 }
+
+    MiniTest.expect.equality(records.buffers[7].large_buf, true)
+    MiniTest.expect.equality(notifications[1]:find("Large file detected `large.lua`", 1, true) ~= nil, true)
+    MiniTest.expect.equality(events, { { "LargeBuf", true } })
+    MiniTest.expect.equality(#records.highlights, 2)
+    MiniTest.expect.equality(url_windows, { 41 })
+    MiniTest.expect.equality(roots, { 7, 8 })
   end)
 end
 
