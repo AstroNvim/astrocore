@@ -492,6 +492,7 @@ end
 
 local function with_comparator(options, callback)
   local infos = options.infos or {}
+  local notifications = {}
   local fnamemodify = options.fnamemodify
     or function(name, modifier)
       if modifier == ":e" then return name:match "%.([^./]+)$" or "" end
@@ -500,28 +501,39 @@ local function with_comparator(options, callback)
     end
   helpers.with_module("astrocore.buffer.comparator", {
     loaded = options.loaded or {},
+    preload = options.preload or {},
+    notify = function(...) table.insert(notifications, { ... }) end,
     vim = {
       fn = {
         getbufinfo = function(bufnr) return { infos[bufnr] } end,
         fnamemodify = fnamemodify,
       },
     },
-  }, callback)
+  }, function(comparator) callback(comparator, notifications) end)
 end
 
 T["AC-CMP-001 orders buffers by number"] = function()
   with_comparator({}, function(comparator)
     MiniTest.expect.equality(comparator.bufnr(2, 10), true)
     MiniTest.expect.equality(comparator.bufnr(10, 2), false)
+    MiniTest.expect.equality(comparator.bufnr(2, 2), false)
   end)
 end
 
 T["AC-CMP-002 orders extensions and full paths from resolved buffer names"] = function()
   with_comparator({
-    infos = { [1] = { name = "/work/beta.lua" }, [2] = { name = "/work/alpha.txt" } },
+    infos = {
+      [1] = { name = "/work/beta.lua" },
+      [2] = { name = "/work/alpha.txt" },
+      [3] = { name = "/other/one.lua" },
+      [4] = { name = "/other/two.lua" },
+    },
   }, function(comparator)
     MiniTest.expect.equality(comparator.extension(1, 2), true)
     MiniTest.expect.equality(comparator.full_path(2, 1), true)
+    MiniTest.expect.equality(comparator.extension(3, 4), false)
+    MiniTest.expect.equality(comparator.extension(4, 3), false)
+    MiniTest.expect.equality(comparator.full_path(3, 3), false)
   end)
 end
 
@@ -543,12 +555,27 @@ T["AC-CMP-003 delegates unique-path prefixes to AstroUI for both buffer numbers"
     MiniTest.expect.equality(comparator.unique_path(1, 2), true)
     MiniTest.expect.equality(requested, { 1, 2 })
   end)
+
+  with_comparator({
+    infos = { [1] = { name = "/work/one.lua" }, [2] = { name = "/work/two.lua" } },
+    loaded = { ["astroui.status.provider"] = helpers.remove },
+    preload = { ["astroui.status.provider"] = helpers.remove },
+  }, function(comparator, notifications)
+    MiniTest.expect.equality(comparator.unique_path(1, 2), false)
+    MiniTest.expect.equality(#notifications, 2)
+    for _, notification in ipairs(notifications) do
+      MiniTest.expect.equality(notification[1], "AstroUI required for unique path calculation")
+      MiniTest.expect.equality(notification[2], vim.log.levels.ERROR)
+      MiniTest.expect.equality(notification[3], { title = "AstroNvim" })
+    end
+  end)
 end
 
 T["AC-CMP-004 orders most recently used buffers first"] = function()
   with_comparator({ infos = { [1] = { lastused = 20 }, [2] = { lastused = 10 } } }, function(comparator)
     MiniTest.expect.equality(comparator.modified(1, 2), true)
     MiniTest.expect.equality(comparator.modified(2, 1), false)
+    MiniTest.expect.equality(comparator.modified(1, 1), false)
   end)
 end
 
