@@ -56,6 +56,12 @@ end
 T["AC-ENV-002 fingerprints only canonical schema specification"] = function()
   MiniTest.expect.equality(environment.canonical_json { z = 1, a = { "x", true } }, '{"a":["x",true],"z":1}')
   MiniTest.expect.equality(environment.fingerprint(spec), environment.expected_fingerprint)
+  local changed_spec = vim.deepcopy(spec)
+  changed_spec.schema = changed_spec.schema + 1
+  MiniTest.expect.equality(environment.fingerprint(changed_spec) ~= environment.expected_fingerprint, true)
+  local excluded_field = vim.deepcopy(spec)
+  excluded_field.audit_only = true
+  MiniTest.expect.equality(environment.fingerprint(excluded_field), environment.expected_fingerprint)
   MiniTest.expect.equality(
     #environment.expected_fingerprint == 64 and environment.expected_fingerprint:match "^[0-9a-f]+$" ~= nil,
     true
@@ -145,18 +151,81 @@ T["AC-ENV-004 requires every explicit copied-library checksum"] = function()
   )
 end
 
-T["AC-ENV-005 validates prepared repository heads and allowlisted generated files"] = function()
+T["AC-ENV-005 rejects prepared repository and copied-library drift without changing source timestamps"] = function()
   local valid, validation_error = config.validate_ready_environment()
   MiniTest.expect.equality(valid, true)
   MiniTest.expect.equality(validation_error, nil)
+
+  local dependency_path = config.plugin_root .. "/mini.test/README.md"
+  local copied_path = config.test_lua_dir .. "/say/init.lua"
+  local dependency_backup = config.test_root .. "/.astrocore-mini-test-readme-backup"
+  local copied_backup = config.test_root .. "/.astrocore-say-init-backup"
+  local function read_file(path)
+    local file = assert(io.open(path, "rb"))
+    local contents = assert(file:read "*a")
+    file:close()
+    return contents
+  end
+  local function write_file(path, contents)
+    local file = assert(io.open(path, "wb"))
+    assert(file:write(contents))
+    file:close()
+  end
+  local dependency_contents = read_file(dependency_path)
+  local copied_contents = read_file(copied_path)
+  local dependency_stat = assert(vim.uv.fs_stat(dependency_path))
+  local copied_stat = assert(vim.uv.fs_stat(copied_path))
+  local dependency_moved, copied_moved = false, false
+  local repository_result, copied_result, pristine_result
+  local ok, error_message = xpcall(function()
+    MiniTest.expect.equality(vim.uv.fs_lstat(dependency_backup), nil)
+    MiniTest.expect.equality(vim.uv.fs_lstat(copied_backup), nil)
+    assert(vim.uv.fs_rename(dependency_path, dependency_backup))
+    dependency_moved = true
+    write_file(dependency_path, dependency_contents .. "\ncorrupted\n")
+    repository_result = { config.validate_ready_environment() }
+    write_file(dependency_path, dependency_contents)
+
+    assert(vim.uv.fs_rename(copied_path, copied_backup))
+    copied_moved = true
+    write_file(copied_path, copied_contents .. "\n-- corrupted\n")
+    copied_result = { config.validate_ready_environment() }
+    write_file(copied_path, copied_contents)
+    pristine_result = { config.validate_ready_environment() }
+  end, debug.traceback)
+  if dependency_moved then
+    pcall(vim.uv.fs_unlink, dependency_path)
+    assert(vim.uv.fs_rename(dependency_backup, dependency_path))
+  end
+  if copied_moved then
+    pcall(vim.uv.fs_unlink, copied_path)
+    assert(vim.uv.fs_rename(copied_backup, copied_path))
+  end
+  if not ok then error(error_message, 0) end
+
+  MiniTest.expect.equality(repository_result[1], false)
+  MiniTest.expect.equality(
+    repository_result[2],
+    "repository has tracked changes or disallowed untracked files: data/nvim/lazy/mini.test"
+  )
+  MiniTest.expect.equality(copied_result[1], false)
+  MiniTest.expect.equality(copied_result[2], "copied-library checksum does not match: say/init.lua: nil")
+  MiniTest.expect.equality(pristine_result, { true, nil })
+  local restored_dependency_stat = assert(vim.uv.fs_stat(dependency_path))
+  local restored_copied_stat = assert(vim.uv.fs_stat(copied_path))
+  MiniTest.expect.equality(restored_dependency_stat.atime, dependency_stat.atime)
+  MiniTest.expect.equality(restored_dependency_stat.mtime, dependency_stat.mtime)
+  MiniTest.expect.equality(restored_copied_stat.atime, copied_stat.atime)
+  MiniTest.expect.equality(restored_copied_stat.mtime, copied_stat.mtime)
 end
 
 T["AC-ENV-006 rejects unsafe locks, times out, and reports release failures"] = function()
-  local attempts, now, removed = 0, 0, false
+  local attempts, callbacks, now, removed, waits = 0, 0, 0, false, 0
   local filesystem = {
     mkdir = function()
       attempts = attempts + 1
-      return attempts == 1 and nil or true, attempts == 1 and "EEXIST" or nil
+      if attempts == 1 then return nil, "EEXIST" end
+      return true
     end,
     lstat = function() return attempts == 1 and { type = "directory" } or nil end,
     rmdir = function()
@@ -167,11 +236,16 @@ T["AC-ENV-006 rejects unsafe locks, times out, and reports release failures"] = 
       now = now + 1
       return now
     end,
-    wait = function() end,
+    wait = function() waits = waits + 1 end,
   }
-  MiniTest.expect.no_error(function()
-    environment.with_lifecycle_lock(filesystem, "/lock", function() return "done" end, { timeout_ns = 10 })
-  end)
+  local result = environment.with_lifecycle_lock(filesystem, "/lock", function()
+    callbacks = callbacks + 1
+    return "done"
+  end, { timeout_ns = 10 })
+  MiniTest.expect.equality(result, "done")
+  MiniTest.expect.equality(attempts, 2)
+  MiniTest.expect.equality(waits, 1)
+  MiniTest.expect.equality(callbacks, 1)
   MiniTest.expect.equality(removed, true)
   MiniTest.expect.equality(environment.lock_error_is_retryable "EPERM", false)
 
