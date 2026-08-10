@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.8](https://github.com/AstroNvim/astrocore/compare/v3.0.7...v3.0.8) (2026-08-10)
+
+
+### Bug Fixes
+
+* **treesitter:** prevent treesitter from deleting non-lua buffer mappings ([6f09825](https://github.com/AstroNvim/astrocore/commit/6f09825015868c8a64151c8963d3a15d3ec497f5))
+
 ## [3.0.7](https://github.com/AstroNvim/astrocore/compare/v3.0.6...v3.0.7) (2026-08-07)
 
 
