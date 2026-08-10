@@ -37,9 +37,8 @@ local function clear_textobject_mappings(bufnr)
   if vim.api.nvim_buf_is_valid(bufnr) then
     for mode, mappings in pairs(textobject_mappings[bufnr] or {}) do
       for _, mapping in ipairs(vim.api.nvim_buf_get_keymap(bufnr, mode)) do
-        if mappings[normalize_key(mapping.lhs)] == mapping.callback then
-          vim.api.nvim_buf_del_keymap(bufnr, mode, mapping.lhs)
-        end
+        local cb = mappings[normalize_key(mapping.lhs)]
+        if cb and cb == mapping.callback then vim.api.nvim_buf_del_keymap(bufnr, mode, mapping.lhs) end
       end
     end
   end
