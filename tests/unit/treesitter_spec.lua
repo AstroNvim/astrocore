@@ -493,13 +493,27 @@ T["AC-TS-008 AC-TS-009 and AC-TS-010 own enabled feature state and matching text
     state.maps[7].x[1].callback()
     MiniTest.expect.equality(textobject_calls, { { "@function.outer", "textobjects" } })
 
+    local foreign_rhs = "<Plug>(AstroCoreForeign)"
+    for _, mode in ipairs { "x", "o" } do
+      table.insert(state.maps[7][mode], { lhs = "bb", rhs = foreign_rhs })
+    end
+    local function find_mapping(mode, lhs)
+      for _, mapping in ipairs(state.maps[7][mode]) do
+        if mapping.lhs == lhs then return mapping end
+      end
+    end
+    MiniTest.expect.equality(find_mapping("x", "bb").callback, nil)
+    MiniTest.expect.equality(find_mapping("o", "bb").callback, nil)
+
     treesitter.disable(7)
     context.drain_scheduled()
     MiniTest.expect.equality(treesitter.is_enabled(7), false)
     MiniTest.expect.equality(state.stops, { 7 })
     MiniTest.expect.equality(state.buffer_options[7].indentexpr, "manual")
-    MiniTest.expect.equality(state.maps[7].x, {})
-    MiniTest.expect.equality(state.maps[7].o, {})
+    MiniTest.expect.equality(find_mapping("x", "aa"), nil)
+    MiniTest.expect.equality(find_mapping("o", "aa"), nil)
+    MiniTest.expect.equality(find_mapping("x", "bb"), { lhs = "bb", rhs = foreign_rhs })
+    MiniTest.expect.equality(find_mapping("o", "bb"), { lhs = "bb", rhs = foreign_rhs })
     MiniTest.expect.equality(state.commands, { "normal! zx" })
 
     state.current = 8

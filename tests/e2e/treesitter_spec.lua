@@ -177,4 +177,88 @@ T["AC-TS-013 keeps exactly one active owned FileType callback after repeated set
   end)
 end
 
+T["AC-TS-014 preserves foreign string mappings while clearing owned Treesitter callbacks"] = function()
+  with_child(function(child)
+    local result = child.lua_get [[
+      (function()
+        local original_language = vim.treesitter.language.get_lang
+        local original_query = vim.treesitter.query.get
+        local original_executable = vim.fn.executable
+        vim.treesitter.language.get_lang = function(filetype) return filetype == "lua" and "lua" or nil end
+        vim.treesitter.query.get = function(_, query)
+          if query == "textobjects" then return { captures = { "function.outer" } } end
+          return {}
+        end
+        vim.fn.executable = function(program)
+          if program == "tree-sitter" then return 1 end
+          return original_executable(program)
+        end
+        package.loaded["nvim-treesitter"] = {
+          get_installed = function() return { "lua" } end,
+          get_available = function() return { "lua" } end,
+          install = function() error "parser installation is outside this mapping ownership test" end,
+        }
+        package.loaded["nvim-treesitter-textobjects"] = {}
+        package.loaded["nvim-treesitter-textobjects.select"] = { select_outer = function() end }
+
+        local treesitter = require "astrocore.treesitter"
+        treesitter.setup {
+          enabled = true,
+          highlight = false,
+          indent = false,
+          textobjects = {
+            select = {
+              select_outer = {
+                aa = { query = "@function.outer", group = "textobjects", desc = "Select function" },
+              },
+            },
+          },
+        }
+
+        local bufnr = vim.api.nvim_create_buf(true, false)
+        vim.bo[bufnr].filetype = "lua"
+        vim.api.nvim_exec_autocmds("FileType", { buffer = bufnr })
+        local foreign_rhs = "<Plug>(AstroCoreForeign)"
+        vim.keymap.set("x", "bb", foreign_rhs, { buffer = bufnr, remap = true })
+        vim.keymap.set("o", "bb", foreign_rhs, { buffer = bufnr, remap = true })
+
+        local function mapping(mode, lhs)
+          for _, candidate in ipairs(vim.api.nvim_buf_get_keymap(bufnr, mode)) do
+            if candidate.lhs == lhs then
+              return { lhs = candidate.lhs, rhs = candidate.rhs, callback_nil = candidate.callback == nil }
+            end
+          end
+        end
+        local before = {
+          owned_x = mapping("x", "aa"),
+          owned_o = mapping("o", "aa"),
+          foreign_x = mapping("x", "bb"),
+          foreign_o = mapping("o", "bb"),
+        }
+        treesitter.disable(bufnr)
+        local after = {
+          owned_x = mapping("x", "aa"),
+          owned_o = mapping("o", "aa"),
+          foreign_x = mapping("x", "bb"),
+          foreign_o = mapping("o", "bb"),
+        }
+
+        vim.treesitter.language.get_lang = original_language
+        vim.treesitter.query.get = original_query
+        vim.fn.executable = original_executable
+        return { before = before, after = after, foreign_rhs = foreign_rhs }
+      end)()
+    ]]
+
+    MiniTest.expect.equality(result.before.owned_x.callback_nil, false)
+    MiniTest.expect.equality(result.before.owned_o.callback_nil, false)
+    MiniTest.expect.equality(result.before.foreign_x, { lhs = "bb", rhs = result.foreign_rhs, callback_nil = true })
+    MiniTest.expect.equality(result.before.foreign_o, { lhs = "bb", rhs = result.foreign_rhs, callback_nil = true })
+    MiniTest.expect.equality(result.after.owned_x, nil)
+    MiniTest.expect.equality(result.after.owned_o, nil)
+    MiniTest.expect.equality(result.after.foreign_x, result.before.foreign_x)
+    MiniTest.expect.equality(result.after.foreign_o, result.before.foreign_o)
+  end)
+end
+
 return T
