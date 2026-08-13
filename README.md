@@ -214,6 +214,8 @@ local opts = {
     ensure_installed = { "lua", "vim", "vimdoc" },
     -- Automatically detect missing treesitter parser and install when editing file
     auto_install = false,
+    -- Automatically detect missing treesitter CLI and install it with Mason if needed
+    auto_install_cli = true,
     -- Configure treesitter based text objects
     textobjects = {
       select = {
