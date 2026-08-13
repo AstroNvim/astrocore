@@ -1,5 +1,5 @@
 *astrocore.txt*
-                            For Neovim >= 0.9.0    Last change: 2026 August 10
+                            For Neovim >= 0.9.0    Last change: 2026 August 13
 
 ==============================================================================
 Table of Contents                                *astrocore-table-of-contents*
@@ -245,6 +245,8 @@ in lazy. Here are descriptions of the options and some example usages:
         ensure_installed = { "lua", "vim", "vimdoc" },
         -- Automatically detect missing treesitter parser and install when editing file
         auto_install = false,
+        -- Automatically detect missing treesitter CLI and install it with Mason if needed
+        auto_install_cli = true,
         -- Configure treesitter based text objects
         textobjects = {
           select = {
