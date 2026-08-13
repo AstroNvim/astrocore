@@ -65,6 +65,7 @@ T["AC-CFG-001 exposes selected documented defaults"] = function()
     MiniTest.expect.equality(config.sessions.ignore.filetypes, { "gitcommit", "gitrebase" })
     MiniTest.expect.equality(config.treesitter, {
       enabled = true,
+      auto_install_cli = true,
       highlight = true,
       indent = true,
       ensure_installed = {},
@@ -104,6 +105,7 @@ T["AC-CFG-003 merges sparse nested options without losing defaults"] = function(
     MiniTest.expect.equality(core.config.features.autopairs, true)
     MiniTest.expect.equality(core.config.sessions.ignore.filetypes, { "gitcommit", "gitrebase" })
     MiniTest.expect.equality(core.config.treesitter.enabled, true)
+    MiniTest.expect.equality(core.config.treesitter.auto_install_cli, true)
     MiniTest.expect.equality(core.config.treesitter.highlight, false)
   end)
 end

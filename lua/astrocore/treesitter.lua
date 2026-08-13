@@ -209,7 +209,8 @@ function M.setup(opts)
   local astrocore = require "astrocore"
   config = astrocore.extend_tbl(config, opts) --[[ @as AstroCoreTreesitterOpts ]]
 
-  if vim.fn.executable "tree-sitter" ~= 1 then
+  cli_available = vim.fn.executable "tree-sitter" == 1
+  if not cli_available then
     if config.auto_install_cli and pcall(require, "mason") and vim.fn.executable "tree-sitter" ~= 1 then
       local mr = require "mason-registry"
       mr.refresh(function()

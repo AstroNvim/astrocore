@@ -83,6 +83,7 @@ local function with_treesitter(options, callback)
 
   helpers.with_module("astrocore.treesitter", {
     loaded = loaded,
+    preload = options.preload,
     vim = {
       api = {
         nvim_get_current_buf = function() return state.current end,
@@ -266,7 +267,7 @@ T["AC-TS-004 delays Task await completion and refreshes before normalized callba
   end)
 end
 
-T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"] = function()
+T["AC-TS-005 resolves CLI installation outcomes before setup and parser installation"] = function()
   with_treesitter(nil, function(treesitter, state)
     treesitter.setup { enabled = true }
     MiniTest.expect.equality(#state.groups, 1)
@@ -274,7 +275,7 @@ T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"]
   end)
 
   local function mason_case(installed, success)
-    local events, refresh_callback, install_callback = {}, nil, nil
+    local cli_available, events, refresh_callback, install_callback = false, {}, nil, nil
     local package = {
       is_installed = function() return installed end,
       install = function(_, _, callback)
@@ -283,7 +284,7 @@ T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"]
       end,
     }
     with_treesitter({
-      executable = function() return 0 end,
+      executable = function() return cli_available and 1 or 0 end,
       loaded = {
         mason = {},
         ["mason-registry"] = {
@@ -295,16 +296,21 @@ T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"]
         },
       },
     }, function(treesitter, state, context)
-      treesitter.setup { enabled = true }
+      treesitter.setup { enabled = true, auto_install_cli = true, ensure_installed = { "vim" } }
       context.drain_scheduled()
       MiniTest.expect.equality(events, { "refresh barrier" })
       MiniTest.expect.equality(#state.groups, 0)
       MiniTest.expect.equality(state.notifications, {})
 
+      local pending_callbacks = 0
+      treesitter.install({ "vim" }, function() pending_callbacks = pending_callbacks + 1 end)
+      MiniTest.expect.equality(state.install_calls, {})
+      MiniTest.expect.equality(pending_callbacks, 0)
+
       local complete_refresh = assert(refresh_callback, "Expected Mason to finish refreshing")
       complete_refresh()
       if installed then
-        MiniTest.expect.equality(#state.groups, 0)
+        MiniTest.expect.equality(#state.groups, 1)
         MiniTest.expect.equality(state.notifications, {})
       else
         context.drain_scheduled()
@@ -313,23 +319,32 @@ T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"]
         MiniTest.expect.equality(state.notifications, { { "Installing `tree-sitter-cli` with `mason.nvim`...", nil } })
 
         local complete_install = assert(install_callback, "Expected Mason to finish installing")
+        cli_available = success
         complete_install(success)
       end
 
+      MiniTest.expect.equality(#state.groups, 1)
       if not installed and success then
-        MiniTest.expect.equality(#state.groups, 1)
         MiniTest.expect.equality(state.notifications, {
           { "Installing `tree-sitter-cli` with `mason.nvim`...", nil },
           { "Installed `tree-sitter-cli` with `mason.nvim`.", nil },
         })
       elseif not installed then
-        MiniTest.expect.equality(#state.groups, 0)
         MiniTest.expect.equality(state.notifications[1], { "Installing `tree-sitter-cli` with `mason.nvim`...", nil })
         MiniTest.expect.equality(
           state.notifications[2][1],
           "Failed to install `tree-sitter-cli` with `mason.nvim\n\nCheck `:Mason` UI for details."
         )
         MiniTest.expect.equality(type(state.notifications[2][2]), "number")
+      end
+
+      state.on_load()
+      if not installed and success then
+        MiniTest.expect.equality(state.install_calls, {
+          { languages = { "vim" }, options = { summary = true } },
+        })
+      else
+        MiniTest.expect.equality(state.install_calls, {})
       end
     end)
   end
@@ -338,17 +353,36 @@ T["AC-TS-005 delays Mason outcomes and only sets up after a successful install"]
   mason_case(false, true)
   mason_case(false, false)
 
-  with_treesitter({
-    executable = function() return 0 end,
-    loaded = { mason = helpers.remove },
-  }, function(treesitter, state)
-    treesitter.setup { enabled = true }
-    MiniTest.expect.equality(
-      state.notifications[1][1],
-      "`tree-sitter` CLI is required for using `nvim-treesitter`\n\nInstall to enable treesitter features."
-    )
-    MiniTest.expect.equality(type(state.notifications[1][2]), "number")
-  end)
+  local function unavailable_mason_case(auto_install_cli, expected_attempts)
+    local mason_attempts, callbacks = 0, 0
+    with_treesitter({
+      executable = function() return 0 end,
+      loaded = { mason = helpers.remove },
+      preload = {
+        mason = function()
+          mason_attempts = mason_attempts + 1
+          error "Mason is unavailable"
+        end,
+      },
+    }, function(treesitter, state)
+      treesitter.setup {
+        enabled = true,
+        auto_install_cli = auto_install_cli,
+        ensure_installed = { "vim" },
+      }
+      MiniTest.expect.equality(mason_attempts, expected_attempts)
+      MiniTest.expect.equality(#state.groups, 1)
+      MiniTest.expect.equality(state.notifications, {})
+
+      state.on_load()
+      treesitter.install({ "vim" }, function() callbacks = callbacks + 1 end)
+      MiniTest.expect.equality(state.install_calls, {})
+      MiniTest.expect.equality(callbacks, 0)
+    end)
+  end
+
+  unavailable_mason_case(true, 1)
+  unavailable_mason_case(false, 0)
 end
 
 T["AC-TS-006 configures the owned FileType and cleanup autocmds"] = function()

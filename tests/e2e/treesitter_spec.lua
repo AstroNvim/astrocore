@@ -261,4 +261,81 @@ T["AC-TS-014 preserves foreign string mappings while clearing owned Treesitter c
   end)
 end
 
+T["AC-TS-015 uses installed parsers without a CLI and suppresses parser installation"] = function()
+  with_child(function(child)
+    local result = child.lua_get [[
+      (function()
+        local original_executable = vim.fn.executable
+        local original_mason = package.loaded["mason"]
+        local original_mason_preload = package.preload["mason"]
+        local original_treesitter = package.loaded["nvim-treesitter"]
+        local mason_attempts, dependency_installs, await_calls, callback_calls = 0, 0, 0, 0
+        local requested_languages, requested_options
+
+        vim.fn.executable = function(program)
+          if program == "tree-sitter" then return 0 end
+          return original_executable(program)
+        end
+        package.loaded["mason"] = nil
+        package.preload["mason"] = function()
+          mason_attempts = mason_attempts + 1
+          error "Mason must not load when CLI installation is disabled"
+        end
+        package.loaded["nvim-treesitter"] = {
+          get_installed = function() return { "lua" } end,
+          get_available = function() return { "lua", "vim" } end,
+          install = function(languages, options)
+            dependency_installs = dependency_installs + 1
+            requested_languages = languages
+            requested_options = options
+            return {
+              await = function(_, callback)
+                await_calls = await_calls + 1
+                callback()
+              end,
+            }
+          end,
+        }
+
+        local treesitter = require "astrocore.treesitter"
+        treesitter.setup {
+          enabled = true,
+          auto_install_cli = false,
+          highlight = false,
+          indent = false,
+          ensure_installed = {},
+        }
+
+        local bufnr = vim.api.nvim_create_buf(true, false)
+        vim.bo[bufnr].filetype = "lua"
+        vim.api.nvim_exec_autocmds("FileType", { buffer = bufnr })
+        local enabled = treesitter.is_enabled(bufnr)
+        treesitter.install({ "vim" }, function() callback_calls = callback_calls + 1 end)
+
+        vim.fn.executable = original_executable
+        package.loaded["mason"] = original_mason
+        package.preload["mason"] = original_mason_preload
+        package.loaded["nvim-treesitter"] = original_treesitter
+        return {
+          enabled = enabled,
+          mason_attempts = mason_attempts,
+          dependency_installs = dependency_installs,
+          await_calls = await_calls,
+          callback_calls = callback_calls,
+          requested_languages = requested_languages,
+          requested_options = requested_options,
+        }
+      end)()
+    ]]
+
+    MiniTest.expect.equality(result.enabled, true)
+    MiniTest.expect.equality(result.mason_attempts, 0)
+    MiniTest.expect.equality(result.dependency_installs, 0)
+    MiniTest.expect.equality(result.await_calls, 0)
+    MiniTest.expect.equality(result.callback_calls, 0)
+    MiniTest.expect.equality(result.requested_languages, nil)
+    MiniTest.expect.equality(result.requested_options, nil)
+  end)
+end
+
 return T
