@@ -6,7 +6,7 @@ Requirements: `make`, Git, and Neovim 0.11 or newer. Neovim 0.12.4 is the exact 
 make test
 ```
 
-Every test target first runs `make test-prepare`. Preparation creates a generated `.tests/` environment from stable `lazy.nvim` and the ordered locked plugins: `echasnovski/mini.test`, `lunarmodules/luassert`, `Olivine-Labs/say`, `stevearc/resession.nvim`, and `nvim-treesitter/nvim-treesitter`. AstroCore always loads from the local checkout.
+Every test suite target first runs `make test-prepare`. `make test-fingerprint` is standalone and prints the deterministic environment fingerprint without preparing the environment. Preparation creates a generated `.tests/` environment from stable `lazy.nvim` and the ordered locked plugins: `echasnovski/mini.test`, `lunarmodules/luassert`, `Olivine-Labs/say`, `stevearc/resession.nvim`, and `nvim-treesitter/nvim-treesitter`. AstroCore always loads from the local checkout.
 
 The schema 3 manifest records full dependency commits, the generated lockfile, copied luassert and say checksums, and allowed generated untracked files. The compatibility fingerprint contains only the canonical schema specification: dependency declarations, required paths, copied-library file lists, and untracked allowlists. It never contains local paths, resolved commits, or timestamps.
 

@@ -1,4 +1,4 @@
-.PHONY: test test-semantic test-prepare test-clear test-update-deps test-unit test-unit-environment test-unit-unit-helpers test-unit-helpers test-unit-core test-unit-buffer test-unit-rooter test-unit-toggles test-unit-treesitter test-unit-health-resession test-e2e test-setup test-files test-buffer test-rooter test-toggles test-treesitter
+.PHONY: test test-semantic test-fingerprint test-prepare test-clear test-update-deps test-unit test-unit-environment test-unit-unit-helpers test-unit-helpers test-unit-core test-unit-buffer test-unit-rooter test-unit-toggles test-unit-treesitter test-unit-health-resession test-e2e test-setup test-files test-buffer test-rooter test-toggles test-treesitter
 
 TEST_TARGETS := test test-semantic test-unit test-unit-environment test-unit-unit-helpers test-unit-helpers test-unit-core test-unit-buffer test-unit-rooter test-unit-toggles test-unit-treesitter test-unit-health-resession test-e2e test-setup test-files test-buffer test-rooter test-toggles test-treesitter
 
@@ -9,6 +9,10 @@ test:
 
 test-semantic:
 	@nvim -l tests/minit.lua --minitest tests/unit/*_spec.lua tests/e2e/*_spec.lua
+
+test-fingerprint:
+	@nvim -l tests/fingerprint.lua
+	@printf '\n'
 
 test-prepare:
 	@nvim -l tests/bootstrap.lua
