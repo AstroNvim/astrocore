@@ -114,6 +114,7 @@
 
 ---@class AstroCoreTreesitterOpts
 ---@field enabled AstroCoreTreesitterEnable? Control over the global enabling of treesitter features
+---@field auto_install_cli boolean? Automatically install tree-sitter from Mason if not detected
 ---Whether or not to enable treesitter based highlighting. Can be one of the following:
 ---
 ---  - A boolean to apply to all languages
@@ -450,6 +451,7 @@ local M = {
   },
   treesitter = {
     enabled = true,
+    auto_install_cli = true,
     highlight = true,
     indent = true,
     ensure_installed = {},

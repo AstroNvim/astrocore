@@ -13,6 +13,7 @@ local M = {}
 local config = {}
 
 local available
+local cli_available = true
 local installed_checked = false
 local installed = {}
 local queries = {}
@@ -88,6 +89,7 @@ end
 ---@param languages? "auto"|"all"|string[] a list of languages to install, automatically detect the current language to install, or install all available parsers (default: "auto")
 ---@param cb? function optional callback function to execute after installation finishes
 function M.install(languages, cb)
+  if not cli_available then return end
   local patch_func = require("astrocore").patch_func
   local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
   if not treesitter_avail then return end
@@ -150,6 +152,7 @@ function M.has_parser(filetype, query)
 end
 
 local function _setup()
+  cli_available = vim.fn.executable "tree-sitter" == 1
   require("astrocore").on_load("nvim-treesitter", function()
     available = nil
     M.installed(true)
@@ -207,7 +210,7 @@ function M.setup(opts)
   config = astrocore.extend_tbl(config, opts) --[[ @as AstroCoreTreesitterOpts ]]
 
   if vim.fn.executable "tree-sitter" ~= 1 then
-    if pcall(require, "mason") and vim.fn.executable "tree-sitter" ~= 1 then
+    if config.auto_install_cli and pcall(require, "mason") and vim.fn.executable "tree-sitter" ~= 1 then
       local mr = require "mason-registry"
       mr.refresh(function()
         local p = mr.get_package "tree-sitter-cli"
@@ -218,24 +221,19 @@ function M.setup(opts)
             vim.schedule_wrap(function(success)
               if success then
                 astrocore.notify "Installed `tree-sitter-cli` with `mason.nvim`."
-                _setup()
               else
                 astrocore.notify(
                   "Failed to install `tree-sitter-cli` with `mason.nvim\n\nCheck `:Mason` UI for details.",
                   vim.log.levels.ERROR
                 )
               end
+              _setup()
             end)
           )
+        else
+          _setup()
         end
       end)
-      return
-    end
-    if vim.fn.executable "tree-sitter" ~= 1 then
-      astrocore.notify(
-        "`tree-sitter` CLI is required for using `nvim-treesitter`\n\nInstall to enable treesitter features.",
-        vim.log.levels.WARN
-      )
       return
     end
   end
