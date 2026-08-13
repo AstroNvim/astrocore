@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/AstroNvim/astrocore/compare/v3.0.8...v3.1.0) (2026-08-13)
+
+
+### Features
+
+* add option to disable automatic tree-sitter CLI installation ([b593dc9](https://github.com/AstroNvim/astrocore/commit/b593dc9345b6536bf704c67e8cf26c18fe3d11c3))
+
 ## [3.0.8](https://github.com/AstroNvim/astrocore/compare/v3.0.7...v3.0.8) (2026-08-10)
 
 
