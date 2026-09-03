@@ -11,6 +11,9 @@ local M = {}
 
 local astro = require "astrocore"
 
+-- TODO: Remove the `vim.F.if_nil` fallback when Neovim 0.12 support is dropped.
+local if_nil = vim.nonnil or vim.F.if_nil
+
 --- Placeholders for keeping track of most recent and previous buffer
 M.current_buf, M.last_buf = nil, nil
 
@@ -42,7 +45,7 @@ function M.is_large(bufnr, large_buf_opts)
         if type(enabled) == "table" then large_buf_opts = enabled end
       end
       local large_buf = false
-      if vim.F.if_nil(enabled, true) then
+      if if_nil(enabled, true) then
         if not buf_size_cache[bufnr] then
           local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(bufnr))
           buf_size_cache[bufnr] = ok and stats and stats.size or 0
