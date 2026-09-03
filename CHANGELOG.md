@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.1](https://github.com/AstroNvim/astrocore/compare/v3.1.0...v3.1.1) (2026-09-03)
+
+
+### Bug Fixes
+
+* align compatibility with Neovim 0.13 ([adc25f7](https://github.com/AstroNvim/astrocore/commit/adc25f733f74589ae32ca52b3de64c4a577326f1))
+
 ## [3.1.0](https://github.com/AstroNvim/astrocore/compare/v3.0.8...v3.1.0) (2026-08-13)
 
 
