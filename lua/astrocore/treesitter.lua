@@ -21,6 +21,8 @@ local installed_checked = false
 local installed = {}
 local queries = {}
 local captures = {}
+local injection_languages = {}
+local potential_captures = {}
 
 local enabled = {}
 local highlights = {}
@@ -49,6 +51,67 @@ local function clear_textobject_mappings(bufnr)
   textobject_mappings[bufnr] = nil
 end
 
+local function has_textobject_capture(lang, group, capture)
+  if not lang or not group or not capture then return false end
+  local ok, result = pcall(M.has_capture, lang, group, capture)
+  return ok and result
+end
+
+local function possible_injection_languages(lang)
+  if injection_languages[lang] then return injection_languages[lang] end
+
+  local languages, seen = {}, {}
+  local function add_language(candidate)
+    if type(candidate) == "string" and candidate ~= lang and not seen[candidate] then
+      seen[candidate] = true
+      languages[#languages + 1] = candidate
+    end
+  end
+
+  local query = vim.treesitter.query.get(lang, "injections")
+  if query then
+    local query_captures = query.captures or {}
+    local dynamic = vim.tbl_contains(query_captures, "injection.language")
+      or vim.tbl_contains(query_captures, "injection.filename")
+    for _, directives in pairs((query.info or {}).patterns or {}) do
+      for _, directive in ipairs(directives) do
+        if directive[1] == "set!" then
+          for index = 2, #directive - 1 do
+            if directive[index] == "injection.language" then add_language(directive[index + 1]) end
+          end
+        end
+      end
+    end
+    if dynamic then
+      local installed_parsers = vim.tbl_keys(M.installed())
+      table.sort(installed_parsers)
+      for _, candidate in ipairs(installed_parsers) do
+        add_language(candidate)
+      end
+    end
+  end
+
+  injection_languages[lang] = languages
+  return languages
+end
+
+local function has_potential_textobject_capture(lang, group, capture)
+  local cache = potential_captures[lang] or {}
+  potential_captures[lang] = cache
+  local key = group .. ":" .. capture
+  if cache[key] ~= nil then return cache[key] end
+
+  local potential_available = false
+  for _, injected_lang in ipairs(possible_injection_languages(lang)) do
+    if has_textobject_capture(injected_lang, group, capture) then
+      potential_available = true
+      break
+    end
+  end
+  cache[key] = potential_available
+  return potential_available
+end
+
 --- Configure the keymap modes for each textobject type
 M.textobject_modes = {
   select = { "x", "o" },
@@ -63,7 +126,7 @@ function M.installed(update)
   if update then
     local treesitter_avail, treesitter = pcall(require, "nvim-treesitter")
     if treesitter_avail then
-      installed, queries, captures = {}, {}, {}
+      installed, queries, captures, injection_languages, potential_captures = {}, {}, {}, {}, {}
       for _, lang in ipairs(treesitter.get_installed "parsers") do
         installed[lang] = true
       end
@@ -298,7 +361,13 @@ function M.enable(bufnr)
       for method, keys in pairs(methods) do
         for key, opts in pairs(keys) do
           local group = opts.group or "textobjects"
-          if M.has_capture(lang, group, string.sub(opts.query, 2)) then
+          local capture = string.sub(opts.query, 2)
+          local capture_available = has_textobject_capture(lang, group, capture)
+          -- Only select textobjects support nested language injections.
+          if not capture_available and type == "select" then
+            capture_available = has_potential_textobject_capture(lang, group, capture)
+          end
+          if capture_available then
             local callback = function() require("nvim-treesitter-textobjects." .. type)[method](opts.query, group) end
             for _, map_mode in ipairs(mode) do
               vim.keymap.set(map_mode, key, callback, { [buffer_key] = bufnr, desc = opts.desc, silent = true })
