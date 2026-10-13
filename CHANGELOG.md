@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.2](https://github.com/AstroNvim/astrocore/compare/v3.1.1...v3.1.2) (2026-10-13)
+
+
+### Bug Fixes
+
+* **treesitter:** support injected textobject keymappings ([a13a741](https://github.com/AstroNvim/astrocore/commit/a13a7418d9298617cbcd575e0d3ab98382a83c5a))
+
 ## [3.1.1](https://github.com/AstroNvim/astrocore/compare/v3.1.0...v3.1.1) (2026-09-03)
 
 
