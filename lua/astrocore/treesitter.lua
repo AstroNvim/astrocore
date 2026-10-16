@@ -9,9 +9,6 @@
 ---@class astrocore.treesitter
 local M = {}
 
--- TODO: Remove the `buffer` fallback when Neovim 0.11 support is dropped.
-local buffer_key = vim.fn.has "nvim-0.12" == 1 and "buf" or "buffer"
-
 ---@type AstroCoreTreesitterOpts
 local config = {}
 
@@ -370,7 +367,7 @@ function M.enable(bufnr)
           if capture_available then
             local callback = function() require("nvim-treesitter-textobjects." .. type)[method](opts.query, group) end
             for _, map_mode in ipairs(mode) do
-              vim.keymap.set(map_mode, key, callback, { [buffer_key] = bufnr, desc = opts.desc, silent = true })
+              vim.keymap.set(map_mode, key, callback, { buf = bufnr, desc = opts.desc, silent = true })
               textobject_mappings[bufnr] = textobject_mappings[bufnr] or {}
               textobject_mappings[bufnr][map_mode] = textobject_mappings[bufnr][map_mode] or {}
               textobject_mappings[bufnr][map_mode][normalize_key(key)] = callback
