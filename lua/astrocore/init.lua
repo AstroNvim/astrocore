@@ -17,16 +17,6 @@ M.user_terminals = {}
 
 local default_terminal_key = {}
 
--- TODO: Remove the `buffer` fallback when Neovim 0.11 support is dropped.
-local buffer_key = vim.fn.has "nvim-0.12" == 1 and "buf" or "buffer"
-local other_buffer_key = buffer_key == "buf" and "buffer" or "buf"
-
-local function normalize_buffer_option(opts)
-  if opts[buffer_key] == nil then opts[buffer_key] = opts[other_buffer_key] end
-  opts[other_buffer_key] = nil
-  return opts
-end
-
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table
@@ -34,6 +24,13 @@ end
 function M.extend_tbl(default, opts)
   opts = opts or {}
   return default and vim.tbl_deep_extend("force", default, opts) or opts
+end
+
+-- TODO: remove when dropping support for Neovim v0.12
+local function normalize_buffer_option(opts)
+  if not opts.buf then opts.buf = opts.buffer end
+  opts.buffer = nil
+  return opts
 end
 
 --- Sync Lazy plugins, Treesitter parsers, and Mason packages
@@ -149,7 +146,7 @@ function M.exec_buffer_autocmds(event, opts)
   for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
     for _, bufnr in ipairs(vim.t[tabpage].bufs or {}) do
       if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].filetype then
-        opts[buffer_key] = bufnr
+        opts.buf = bufnr
         pcall(vim.api.nvim_exec_autocmds, event, opts)
       end
     end

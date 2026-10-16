@@ -13,7 +13,7 @@ AstroCore provides the core Lua API that powers [AstroNvim](https://github.com/A
 
 ## ⚡️ Requirements
 
-- Neovim >= 0.11
+- Neovim >= 0.12
 - [lazy.nvim](https://github.com/folke/lazy.nvim)
 - [resession.nvim][resession] (_optional_)
 - For `nvim-treesitter` features: the `tree-sitter` CLI, or `mason.nvim` so AstroCore can install `tree-sitter-cli`.
