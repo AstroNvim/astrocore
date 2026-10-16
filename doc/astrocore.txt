@@ -40,7 +40,7 @@ FEATURES                                        *astrocore-astrocore-features*
 
 REQUIREMENTS                                *astrocore-astrocore-requirements*
 
-- Neovim >= 0.11
+- Neovim >= 0.12
 - lazy.nvim <https://github.com/folke/lazy.nvim>
 - resession.nvim <https://github.com/stevearc/resession.nvim/> (_optional_)
 - For `nvim-treesitter` features: the `tree-sitter` CLI, or `mason.nvim` so AstroCore can install `tree-sitter-cli`.

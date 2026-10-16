@@ -17,16 +17,6 @@ M.user_terminals = {}
 
 local default_terminal_key = {}
 
--- TODO: Remove the `buffer` fallback when Neovim 0.11 support is dropped.
-local buffer_key = vim.fn.has "nvim-0.12" == 1 and "buf" or "buffer"
-local other_buffer_key = buffer_key == "buf" and "buffer" or "buf"
-
-local function normalize_buffer_option(opts)
-  if opts[buffer_key] == nil then opts[buffer_key] = opts[other_buffer_key] end
-  opts[other_buffer_key] = nil
-  return opts
-end
-
 --- Merge extended options with a default table of options
 ---@param default? table The default table that you want to merge into
 ---@param opts? table The new options that should be merged with the default table
@@ -128,7 +118,7 @@ end
 ---@param instant? boolean Whether or not to execute instantly or schedule
 function M.event(event, instant)
   if type(event) == "string" then event = { pattern = event } end
-  event = normalize_buffer_option(M.extend_tbl({ modeline = false }, event))
+  event = M.extend_tbl({ modeline = false }, event)
   if type(event.pattern) == "string" then
     event.pattern = "Astro" .. event.pattern
   else
@@ -145,11 +135,11 @@ end
 ---@param event string|string[] the event or events to execute
 ---@param opts vim.api.keyset.exec_autocmds Dictionary of autocommand options
 function M.exec_buffer_autocmds(event, opts)
-  opts = normalize_buffer_option(vim.tbl_extend("force", {}, opts or {}, { modeline = false }))
+  opts = vim.tbl_extend("force", {}, opts or {}, { modeline = false })
   for _, tabpage in ipairs(vim.api.nvim_list_tabpages()) do
     for _, bufnr in ipairs(vim.t[tabpage].bufs or {}) do
       if vim.api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].filetype then
-        opts[buffer_key] = bufnr
+        opts.buf = bufnr
         pcall(vim.api.nvim_exec_autocmds, event, opts)
       end
     end
@@ -314,7 +304,7 @@ function M.set_mappings(map_table, base)
           if not M.which_key_queue then M.which_key_queue = {} end
           table.insert(M.which_key_queue, keymap_opts)
         else -- if not which-key mapping, set it
-          local map_opts = normalize_buffer_option(vim.tbl_extend("force", {}, keymap_opts))
+          local map_opts = vim.tbl_extend("force", {}, keymap_opts)
           vim.keymap.set(mode, keymap, cmd, map_opts --[[@as vim.keymap.set.Opts]])
         end
       end
@@ -601,7 +591,7 @@ function M.setup(opts)
     if autocmds then
       local augroup_id = vim.api.nvim_create_augroup(augroup, { clear = true })
       for _, autocmd in ipairs(autocmds) do
-        local autocmd_opts = normalize_buffer_option(vim.tbl_extend("force", {}, autocmd))
+        local autocmd_opts = vim.tbl_extend("force", {}, autocmd)
         local event = autocmd_opts.event
         autocmd_opts.event = nil
         autocmd_opts.group = augroup_id
