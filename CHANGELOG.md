@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/AstroNvim/astrocore/compare/v3.1.2...v4.0.0) (2026-11-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for Neovim v0.11
+
+### Code Refactoring
+
+* drop support for Neovim v0.11 ([17a8ffe](https://github.com/AstroNvim/astrocore/commit/17a8ffe94e2f95c619b022a2efa990cd49ae7e07))
+
 ## [3.1.2](https://github.com/AstroNvim/astrocore/compare/v3.1.1...v3.1.2) (2026-10-13)
 
 
